@@ -7,6 +7,7 @@ router.get("/saude", (req, res) => {
 });
 
 router.use("/auth", require("./auth"));
+router.use("/me", require("./me"));
 router.use("/areas", require("./areas"));
 router.use("/usuarios", require("./usuarios"));
 
