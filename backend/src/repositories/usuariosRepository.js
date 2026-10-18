@@ -18,6 +18,11 @@ function buscarPorEmail(email) {
   return db.prepare(`SELECT ${COLUNAS} FROM usuarios WHERE email = ?`).get(email);
 }
 
+// unico lugar que le a senha_hash, so para conferir no login
+function buscarSenhaPorEmail(email) {
+  return db.prepare("SELECT id, senha_hash FROM usuarios WHERE email = ?").get(email);
+}
+
 function criar(u) {
   const { lastInsertRowid } = db
     .prepare(`
@@ -40,4 +45,4 @@ function excluir(id) {
   db.prepare("DELETE FROM usuarios WHERE id = ?").run(id);
 }
 
-module.exports = { listar, buscarPorId, buscarPorEmail, criar, atualizar, excluir };
+module.exports = { listar, buscarPorId, buscarPorEmail, buscarSenhaPorEmail, criar, atualizar, excluir };
