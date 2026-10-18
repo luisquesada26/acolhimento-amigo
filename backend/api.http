@@ -163,3 +163,175 @@ Content-Type: application/json
 
 ### Excluir usuario (libera os horarios que ele tinha reservado)
 DELETE {{api}}/usuarios/5
+
+
+#################### VOLUNTARIOS ####################
+
+### Busca sem filtro
+GET {{api}}/voluntarios
+
+### Busca por palavra
+GET {{api}}/voluntarios?q=visto
+
+### Filtro por area e idioma
+GET {{api}}/voluntarios?area=4&idioma=ar
+
+### Quem tem horario livre nos proximos 7 dias e fala frances
+GET {{api}}/voluntarios?idioma=fr&disponivel=semana
+
+### Perfil com servicos e horarios livres
+GET {{api}}/voluntarios/1
+
+### Editar dados profissionais
+PUT {{api}}/voluntarios/1
+Content-Type: application/json
+
+{
+  "bio": "Advogado especialista em refúgio e regularização migratória.",
+  "idiomas": ["pt", "es", "en"]
+}
+
+### Desativar voluntario (some da busca)
+PUT {{api}}/voluntarios/3
+Content-Type: application/json
+
+{
+  "ativo": false
+}
+
+
+#################### SERVICOS ####################
+
+### Servicos do voluntario 1
+GET {{api}}/servicos?voluntario_id=1
+
+### Criar servico
+POST {{api}}/servicos
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "titulo": "Direitos trabalhistas",
+  "descricao": "Orientação sobre carteira de trabalho, salário e direitos do trabalhador.",
+  "duracao_min": 30
+}
+
+### Editar servico
+PUT {{api}}/servicos/1
+Content-Type: application/json
+
+{
+  "duracao_min": 60
+}
+
+### Excluir servico com agendamentos (so desativa)
+DELETE {{api}}/servicos/1
+
+
+#################### HORARIOS ####################
+
+### Agenda do voluntario 1 (os reservados vem com o agendamento)
+GET {{api}}/horarios?voluntario_id=1
+
+### So os reservados
+GET {{api}}/horarios?voluntario_id=1&status=reservado
+
+### Criar horario
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{daquiTresDias}}",
+  "hora_inicio": "14:00",
+  "hora_fim": "14:45"
+}
+
+### Horario sobreposto (409)
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{daquiTresDias}}",
+  "hora_inicio": "14:30",
+  "hora_fim": "15:00"
+}
+
+### Hora de fim antes do inicio (400)
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{amanha}}",
+  "hora_inicio": "15:00",
+  "hora_fim": "14:00"
+}
+
+### Excluir horario reservado sem confirmar (409 com precisaConfirmar)
+DELETE {{api}}/horarios/103
+
+### Excluir horario reservado confirmando
+DELETE {{api}}/horarios/103?confirmar=true
+
+
+#################### AGENDAMENTOS ####################
+
+### Agendamentos do usuario 1
+GET {{api}}/agendamentos?usuario_id=1
+
+### Agendamentos confirmados do voluntario 1
+GET {{api}}/agendamentos?voluntario_id=1&status=confirmado
+
+### Marcar atendimento
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 4,
+  "horario_id": 2,
+  "servico_id": 2,
+  "descricao": "Preciso entender como renovar meu protocolo de refúgio."
+}
+
+### Mesmo horario de novo (409, ja reservado)
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 3,
+  "horario_id": 2,
+  "servico_id": 2,
+  "descricao": "Também preciso de ajuda com o meu protocolo de refúgio."
+}
+
+### Descricao curta (400)
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 3,
+  "horario_id": 3,
+  "servico_id": 2,
+  "descricao": "ajuda"
+}
+
+### Remarcar para outro horario do mesmo voluntario
+PUT {{api}}/agendamentos/1
+Content-Type: application/json
+
+{
+  "horario_id": 4
+}
+
+### Marcar como realizado antes do horario (400)
+PUT {{api}}/agendamentos/1
+Content-Type: application/json
+
+{
+  "status": "realizado"
+}
+
+### Cancelar (o horario volta a ficar livre)
+DELETE {{api}}/agendamentos/1
