@@ -14,5 +14,6 @@ router.use("/voluntarios", require("./voluntarios"));
 router.use("/servicos", require("./servicos"));
 router.use("/horarios", require("./horarios"));
 router.use("/agendamentos", require("./agendamentos"));
+router.use(require("./meus"));
 
 module.exports = router;

@@ -12,8 +12,8 @@ const data = z
 
 const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Hora deve estar no formato HH:MM");
 
+// o voluntario vem do token, nao do corpo
 const criarHorarioSchema = z.object({
-  voluntario_id: z.number().int().positive("Voluntário inválido"),
   data,
   hora_inicio: hora,
   hora_fim: hora,
