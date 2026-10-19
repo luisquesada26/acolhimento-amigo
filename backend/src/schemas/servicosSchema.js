@@ -6,8 +6,8 @@ const campos = {
   duracao_min: z.number().int().min(15, "Duração mínima de 15 minutos").max(180, "Duração máxima de 180 minutos"),
 };
 
+// o voluntario vem do token, nao do corpo
 const criarServicoSchema = z.object({
-  voluntario_id: z.number().int().positive("Voluntário inválido"),
   ...campos,
   duracao_min: campos.duracao_min.default(45),
 });

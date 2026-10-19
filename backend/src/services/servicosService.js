@@ -1,11 +1,17 @@
 const repo = require("../repositories/servicosRepository");
-const voluntariosRepo = require("../repositories/voluntariosRepository");
+const { voluntarioLogado, garantirDono } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 
 const formatar = (s) => ({ ...s, ativo: Boolean(s.ativo) });
 
+// lista publica: so os servicos ativos
 function listar(filtros) {
-  return repo.listar(filtros).map(formatar);
+  return repo.listar({ ...filtros, somenteAtivos: true }).map(formatar);
+}
+
+// os servicos do voluntario logado, ativos ou nao
+function meus(usuario) {
+  return repo.listar({ voluntario_id: voluntarioLogado(usuario).id }).map(formatar);
 }
 
 function buscar(id) {
@@ -14,23 +20,22 @@ function buscar(id) {
   return formatar(servico);
 }
 
-function criar(dados) {
-  if (!voluntariosRepo.buscarPorId(dados.voluntario_id)) {
-    throw new ErroApp(400, "Voluntário não encontrado");
-  }
-  return formatar(repo.criar(dados));
+function criar(usuario, dados) {
+  const voluntario = voluntarioLogado(usuario);
+  return formatar(repo.criar({ ...dados, voluntario_id: voluntario.id }));
 }
 
-function atualizar(id, dados) {
-  buscar(id);
+function atualizar(usuario, id, dados) {
+  garantirDono(buscar(id).voluntario_id, usuario);
+
   const campos = { ...dados };
   if (campos.ativo !== undefined) campos.ativo = campos.ativo ? 1 : 0;
   return formatar(repo.atualizar(id, campos));
 }
 
 // se ja tem agendamento ligado, so desativa para nao perder o historico
-function excluir(id) {
-  buscar(id);
+function excluir(usuario, id) {
+  garantirDono(buscar(id).voluntario_id, usuario);
 
   if (repo.contarAgendamentos(id) > 0) {
     const servico = repo.atualizar(id, { ativo: 0 });
@@ -41,4 +46,4 @@ function excluir(id) {
   return { desativado: false };
 }
 
-module.exports = { listar, buscar, criar, atualizar, excluir };
+module.exports = { listar, meus, buscar, criar, atualizar, excluir };

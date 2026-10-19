@@ -10,41 +10,30 @@ Erros sempre vêm assim:
 
 Em erro de validação, `detalhes` traz `{ "campo", "mensagem" }` de cada campo.
 
-## Login
+## Quem pode o quê
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| POST | `/auth/cadastro` | Cria a conta (mesmo corpo de `POST /usuarios`) e já devolve `{ token, usuario }` |
-| POST | `/auth/login` | Recebe `{ email, senha }` e devolve `{ token, usuario }` |
-| GET | `/me` | Dados de quem está logado |
-| PUT | `/me` | Edita os próprios dados (inclusive a senha) |
-| DELETE | `/me` | Exclui a própria conta |
+As rotas privadas pedem o header `Authorization: Bearer <token>`. O token sai do login e vale 7 dias.
 
-As rotas `/me` precisam do header `Authorization: Bearer <token>`. O token vale 7 dias.
+A API descobre quem é a pessoa pelo token. Por isso ninguém manda `usuario_id` ou `voluntario_id` no corpo, e cada um só vê e altera o que é seu.
+
+| Resposta | Quando |
+| --- | --- |
+| `401` | Sem token ou token inválido |
+| `403` | Perfil errado (ex.: usuário criando serviço) ou tentando mexer no que é de outra pessoa |
+
+## Login e meu perfil
+
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| POST | `/auth/cadastro` | público | Cria a conta e já devolve `{ token, usuario }` |
+| POST | `/auth/login` | público | Recebe `{ email, senha }` e devolve `{ token, usuario }` |
+| GET | `/me` | os dois | Meus dados. O voluntário recebe junto `voluntario` com os dados profissionais |
+| PUT | `/me` | os dois | Edita meus dados, inclusive a senha. O voluntário pode mandar `voluntario` com area_id, registro_profissional, idiomas, bio e ativo |
+| DELETE | `/me` | os dois | Exclui a minha conta e libera os horários que eu tinha reservado |
 
 A senha é salva com bcrypt na coluna `senha_hash` e nunca volta nas respostas. E-mail ou senha errados dão sempre a mesma mensagem: `401 "E-mail ou senha incorretos"`.
 
-## Áreas
-
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/areas` | Lista as áreas |
-| GET | `/areas/:id` | Uma área |
-| POST | `/areas` | Cria `{ nome }` |
-| PUT | `/areas/:id` | Edita `{ nome }` |
-| DELETE | `/areas/:id` | Exclui. `409` se tiver voluntários |
-
-## Usuários
-
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/usuarios?perfil=` | Lista (`usuario` ou `voluntario`) |
-| GET | `/usuarios/:id` | Um usuário. Se for voluntário, vem com `voluntario` |
-| POST | `/usuarios` | Cria conta |
-| PUT | `/usuarios/:id` | Edita nome, email, senha, telefone, pais_origem, idioma |
-| DELETE | `/usuarios/:id` | Exclui a conta e libera os horários que ele tinha reservado |
-
-`senha_hash` nunca aparece nas respostas.
+Cadastro de voluntário:
 
 ```json
 {
@@ -64,41 +53,58 @@ A senha é salva com bcrypt na coluna `senha_hash` e nunca volta nas respostas. 
 }
 ```
 
-`voluntario` só é obrigatório quando `perfil` é `voluntario`.
+`voluntario` só é obrigatório quando `perfil` é `voluntario`. Sem `"aceite_lgpd": true` o cadastro não passa.
 
-## Voluntários
+## Minhas coisas
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana` | Busca. Só aparece quem está ativo e tem serviço ativo |
-| GET | `/voluntarios/:id` | Perfil com serviços ativos e horários livres futuros |
-| POST | `/voluntarios` | Cria conta de voluntário (mesmo corpo de `/usuarios`, sem `perfil`) |
-| PUT | `/voluntarios/:id` | Edita area_id, registro_profissional, idiomas, bio, ativo |
-| DELETE | `/voluntarios/:id` | Exclui a conta inteira |
+Cada pessoa só recebe o que é dela.
 
-`q` procura no nome, na bio e no título e descrição dos serviços.
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| GET | `/meus-servicos` | voluntário | Meus serviços, ativos ou não |
+| GET | `/meus-horarios?status=&de=&ate=` | voluntário | Minha agenda. Horário reservado vem com o `agendamento` (usuário, serviço e descrição do caso) |
+| GET | `/meus-agendamentos?status=` | os dois | Usuário: os que ele marcou. Voluntário: os da agenda dele. `status=confirmado` mostra os próximos e `status=realizado` o histórico |
+
+## Áreas
+
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| GET | `/areas` | público | Lista as áreas |
+| GET | `/areas/:id` | público | Uma área |
+| POST | `/areas` | voluntário | Cria `{ nome }` |
+| PUT | `/areas/:id` | voluntário | Edita `{ nome }` |
+| DELETE | `/areas/:id` | voluntário | Exclui. `409` se tiver voluntários |
+
+Ainda não existe perfil de administrador, então quem cuida das áreas são os voluntários.
+
+## Busca de voluntários
+
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana` | público | Busca. Só aparece quem está ativo e tem serviço ativo |
+| GET | `/voluntarios/:id` | público | Perfil com serviços ativos e horários livres futuros |
+
+`q` procura no nome, na bio e no título e descrição dos serviços. O voluntário edita os próprios dados pelo `PUT /me`.
 
 ## Serviços
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/servicos?voluntario_id=` | Lista |
-| GET | `/servicos/:id` | Um serviço |
-| POST | `/servicos` | Cria `{ voluntario_id, titulo, descricao, duracao_min }` (duração padrão 45) |
-| PUT | `/servicos/:id` | Edita titulo, descricao, duracao_min, ativo |
-| DELETE | `/servicos/:id` | Exclui. Se já tiver agendamento, só desativa e responde `200` com o serviço |
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| GET | `/servicos?voluntario_id=` | público | Serviços ativos |
+| GET | `/servicos/:id` | público | Um serviço |
+| POST | `/servicos` | voluntário | Cria `{ titulo, descricao, duracao_min }` (duração padrão 45) |
+| PUT | `/servicos/:id` | voluntário dono | Edita titulo, descricao, duracao_min, ativo |
+| DELETE | `/servicos/:id` | voluntário dono | Exclui. Se já tiver agendamento, só desativa e responde `200` com o serviço |
 
 ## Horários
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/horarios?voluntario_id=&status=&de=&ate=` | Agenda. Horário reservado vem com o `agendamento` |
-| GET | `/horarios/:id` | Um horário |
-| POST | `/horarios` | Cria `{ voluntario_id, data, hora_inicio, hora_fim }` |
-| PUT | `/horarios/:id` | Edita um horário livre |
-| DELETE | `/horarios/:id?confirmar=true` | Exclui |
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| POST | `/horarios` | voluntário | Cria `{ data, hora_inicio, hora_fim }` |
+| PUT | `/horarios/:id` | voluntário dono | Edita um horário livre |
+| DELETE | `/horarios/:id?confirmar=true` | voluntário dono | Exclui |
 
-Regras:
+A agenda é lida em `GET /meus-horarios`. Regras:
 
 - Data `AAAA-MM-DD` e hora `HH:MM`, no horário de Brasília
 - `hora_fim` maior que `hora_inicio`, nada no passado e sem sobrepor outro horário do mesmo voluntário
@@ -106,36 +112,36 @@ Regras:
 
 ## Agendamentos
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| GET | `/agendamentos?usuario_id=&voluntario_id=&status=` | Lista |
-| GET | `/agendamentos/:id` | Um agendamento |
-| POST | `/agendamentos` | Cria `{ usuario_id, horario_id, servico_id, descricao }` |
-| PUT | `/agendamentos/:id` | Remarca (`horario_id`), marca `status: "realizado"` ou edita `descricao` |
-| DELETE | `/agendamentos/:id` | Cancela: status vira `cancelado` e o horário volta a ficar livre |
+| Método | Rota | Quem | Descrição |
+| --- | --- | --- | --- |
+| POST | `/agendamentos` | usuário | Marca `{ horario_id, servico_id, descricao }` |
+| GET | `/agendamentos/:id` | quem marcou e o voluntário do horário | Um agendamento |
+| PUT | `/agendamentos/:id` | ver abaixo | Remarca, marca como realizado ou edita a descrição |
+| DELETE | `/agendamentos/:id` | quem marcou e o voluntário do horário | Cancela: status vira `cancelado` e o horário volta a ficar livre |
 
-Regras:
+A lista de cada um fica em `GET /meus-agendamentos`. Regras:
 
-- Só perfil `usuario` cria agendamento
+- Só perfil `usuario` marca atendimento
 - O horário precisa estar livre e no futuro. Se já foi reservado: `409 "Este horário acabou de ser reservado. Escolha outro."`
 - O serviço precisa ser do mesmo voluntário do horário
 - No máximo 3 agendamentos `confirmado` por usuário
 - Descrição com pelo menos 20 caracteres
-- Remarcar só para outro horário livre do mesmo voluntário
-- `realizado` só depois que o horário terminou
+- Só quem marcou remarca (`horario_id`) ou edita a `descricao`, e só para outro horário livre do mesmo voluntário
+- Só o voluntário marca `"status": "realizado"`, e só depois que o horário terminou
 - Só agendamento `confirmado` pode ser alterado ou cancelado
+- A descrição do caso só aparece para quem marcou e para o voluntário daquele horário
 
 Resposta de `POST /agendamentos`:
 
 ```json
 {
-  "id": 9,
+  "id": 11,
   "status": "confirmado",
-  "descricao": "Meu protocolo de refúgio vence mês que vem e não sei como renovar.",
-  "criado_em": "2026-10-17 23:29:10",
-  "horario": { "id": 21, "data": "2026-10-19", "hora_inicio": "19:00", "hora_fim": "19:45" },
-  "voluntario": { "id": 2, "nome": "Mariana Costa" },
-  "servico": { "id": 3, "titulo": "Visto e residência" },
+  "descricao": "Preciso entender como renovar meu protocolo de refúgio.",
+  "criado_em": "2026-10-18 16:20:00",
+  "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
+  "voluntario": { "id": 1, "nome": "Rafael Almeida" },
+  "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
   "usuario": { "id": 1, "nome": "Carlos Mendoza" }
 }
 ```

@@ -31,9 +31,13 @@ const criarUsuarioSchema = z
     path: ["voluntario"],
   });
 
+// usado no PUT /me. "voluntario" so vale para quem tem perfil voluntario
 const atualizarUsuarioSchema = z
-  .object(camposUsuario)
+  .object({
+    ...camposUsuario,
+    voluntario: dadosVoluntario.extend({ ativo: z.boolean() }).partial(),
+  })
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "Nenhum campo para atualizar" });
 
-module.exports = { criarUsuarioSchema, atualizarUsuarioSchema, camposUsuario, dadosVoluntario };
+module.exports = { criarUsuarioSchema, atualizarUsuarioSchema };

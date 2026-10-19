@@ -1,14 +1,27 @@
 const db = require("../database/conexao");
 const repo = require("../repositories/horariosRepository");
-const voluntariosRepo = require("../repositories/voluntariosRepository");
+const { voluntarioLogado, garantirDono } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 const { agora } = require("../utils/datas");
 
 function formatar(h) {
-  const { agendamento_id, agendamento_status, agendamento_usuario, agendamento_servico, ...horario } = h;
+  const {
+    agendamento_id,
+    agendamento_status,
+    agendamento_usuario,
+    agendamento_servico,
+    agendamento_descricao,
+    ...horario
+  } = h;
 
   horario.agendamento = agendamento_id
-    ? { id: agendamento_id, status: agendamento_status, usuario: agendamento_usuario, servico: agendamento_servico }
+    ? {
+        id: agendamento_id,
+        status: agendamento_status,
+        usuario: agendamento_usuario,
+        servico: agendamento_servico,
+        descricao: agendamento_descricao,
+      }
     : null;
 
   return horario;
@@ -29,30 +42,27 @@ function validarHorario(h, ignorarId) {
   }
 }
 
-function listar(filtros) {
-  return repo.listar(filtros).map(formatar);
-}
-
 function buscarSimples(id) {
   const horario = repo.buscarPorId(id);
   if (!horario) throw new ErroApp(404, "Horário não encontrado");
   return horario;
 }
 
-function buscar(id) {
-  return formatar(buscarSimples(id));
+// agenda do voluntario logado, com o agendamento de cada horario reservado
+function meus(usuario, filtros) {
+  const voluntario = voluntarioLogado(usuario);
+  return repo.listar({ ...filtros, voluntario_id: voluntario.id }).map(formatar);
 }
 
-function criar(dados) {
-  if (!voluntariosRepo.buscarPorId(dados.voluntario_id)) {
-    throw new ErroApp(400, "Voluntário não encontrado");
-  }
-  validarHorario(dados);
-  return formatar(repo.criar(dados));
+function criar(usuario, dados) {
+  const novo = { ...dados, voluntario_id: voluntarioLogado(usuario).id };
+  validarHorario(novo);
+  return formatar(repo.criar(novo));
 }
 
-function atualizar(id, dados) {
+function atualizar(usuario, id, dados) {
   const atual = buscarSimples(id);
+  garantirDono(atual.voluntario_id, usuario);
 
   if (atual.status === "reservado") {
     throw new ErroApp(409, "Só é possível editar horários livres");
@@ -70,8 +80,9 @@ function atualizar(id, dados) {
 }
 
 // horario reservado so sai se o front confirmar, porque o agendamento ligado a ele some junto
-const excluir = db.transaction((id, confirmar) => {
+const excluir = db.transaction((usuario, id, confirmar) => {
   const horario = buscarSimples(id);
+  garantirDono(horario.voluntario_id, usuario);
 
   if (horario.status === "reservado" && !confirmar) {
     throw new ErroApp(409, "Este horário já tem um agendamento. Confirme para excluir mesmo assim.", {
@@ -82,4 +93,4 @@ const excluir = db.transaction((id, confirmar) => {
   repo.excluir(id);
 });
 
-module.exports = { listar, buscar, criar, atualizar, excluir };
+module.exports = { meus, criar, atualizar, excluir };
