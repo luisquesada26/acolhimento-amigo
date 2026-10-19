@@ -6,6 +6,11 @@ if (!JWT_SECRET) {
   process.exit(1);
 }
 
-app.listen(PORT, () => {
+// no Express 5 o erro de porta ocupada chega aqui no callback
+app.listen(PORT, (erro) => {
+  if (erro) {
+    console.error(`Não foi possível subir a API na porta ${PORT}: ${erro.code === "EADDRINUSE" ? "a porta já está em uso" : erro.message}`);
+    process.exit(1);
+  }
   console.log(`API rodando em http://localhost:${PORT}/api`);
 });

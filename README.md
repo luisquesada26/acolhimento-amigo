@@ -75,9 +75,18 @@ refactor(lq): separa services do controller
 chore(lq): atualiza dependencias
 ```
 
+## API
+
+As rotas estão em [docs/api.md](docs/api.md).
+
+Para testar pelo VS Code, instale a extensão **REST Client**, rode `npm run dev`, abra o arquivo [backend/api.http](backend/api.http) e clique em **Send Request** em cima de cada requisição. Rode primeiro os logins: o token é usado sozinho nas rotas que precisam dele.
+
+Quem preferir o Postman pode importar a coleção [docs/acolhimento-amigo.postman_collection.json](docs/acolhimento-amigo.postman_collection.json), que tem as mesmas requisições separadas por pasta.
+
 ## Integrantes
 
 - Achille Landa Kintenda (al)
 - Giovanni Antonio Vielma Vivas (av)
 - Jesus Eduardo Oliveros Vicent (jo)
 - Luis Alberto Quesada González (lq)
+

@@ -1,0 +1,337 @@
+# Requisicoes para testar a API com a extensao REST Client do VS Code.
+# Rode npm run dev e clique em "Send Request" em cima de cada uma.
+# Os ids batem com o banco recem criado pelo npm run db:reset.
+
+@api = http://localhost:3000/api
+@amanha = {{$localDatetime "YYYY-MM-DD" 1 d}}
+@daquiTresDias = {{$localDatetime "YYYY-MM-DD" 3 d}}
+
+### Servidor no ar
+GET {{api}}/saude
+
+
+#################### LOGIN ####################
+
+### Login do usuario de teste (rode antes das rotas com token)
+# @name loginUsuario
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@teste.com",
+  "senha": "senha123"
+}
+
+### Login do voluntario de teste
+# @name loginVoluntario
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "voluntario@teste.com",
+  "senha": "senha123"
+}
+
+### Login com senha errada (401)
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@teste.com",
+  "senha": "errada"
+}
+
+### Cadastro de usuario
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Mariam Diallo",
+  "email": "mariam@email.com",
+  "senha": "minhasenha",
+  "telefone": "11912345678",
+  "perfil": "usuario",
+  "pais_origem": "Guiné",
+  "idioma": "fr",
+  "aceite_lgpd": true
+}
+
+### Cadastro de voluntario
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Paula Ventura",
+  "email": "paula@email.com",
+  "senha": "minhasenha",
+  "perfil": "voluntario",
+  "aceite_lgpd": true,
+  "voluntario": {
+    "area_id": 2,
+    "registro_profissional": "CRP 06/111111",
+    "idiomas": ["pt", "es"],
+    "bio": "Psicóloga com experiência em atendimento a migrantes."
+  }
+}
+
+### Cadastro sem aceitar a LGPD (400)
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Teste",
+  "email": "teste@email.com",
+  "senha": "123456",
+  "perfil": "usuario",
+  "aceite_lgpd": false
+}
+
+
+#################### MEU PERFIL (precisa de token) ####################
+
+### Meus dados (usa o token do loginUsuario)
+GET {{api}}/me
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+
+### Meus dados como voluntario
+GET {{api}}/me
+Authorization: Bearer {{loginVoluntario.response.body.$.token}}
+
+### Editar meus dados
+PUT {{api}}/me
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "telefone": "11900001111"
+}
+
+### Sem token (401)
+GET {{api}}/me
+
+
+#################### AREAS ####################
+
+### Listar areas
+GET {{api}}/areas
+
+### Uma area
+GET {{api}}/areas/1
+
+### Criar area
+POST {{api}}/areas
+Content-Type: application/json
+
+{
+  "nome": "Tradução de documentos"
+}
+
+### Editar area (id 13 e a criada acima)
+PUT {{api}}/areas/13
+Content-Type: application/json
+
+{
+  "nome": "Tradução e interpretação"
+}
+
+### Excluir area
+DELETE {{api}}/areas/13
+
+### Excluir area com voluntarios (409)
+DELETE {{api}}/areas/1
+
+
+#################### USUARIOS ####################
+
+### Listar todos
+GET {{api}}/usuarios
+
+### So quem tem perfil usuario
+GET {{api}}/usuarios?perfil=usuario
+
+### Um usuario (o 6 e voluntario e vem com os dados profissionais)
+GET {{api}}/usuarios/6
+
+### Editar usuario
+PUT {{api}}/usuarios/2
+Content-Type: application/json
+
+{
+  "pais_origem": "Haiti",
+  "idioma": "ht"
+}
+
+### Excluir usuario (libera os horarios que ele tinha reservado)
+DELETE {{api}}/usuarios/5
+
+
+#################### VOLUNTARIOS ####################
+
+### Busca sem filtro
+GET {{api}}/voluntarios
+
+### Busca por palavra
+GET {{api}}/voluntarios?q=visto
+
+### Filtro por area e idioma
+GET {{api}}/voluntarios?area=4&idioma=ar
+
+### Quem tem horario livre nos proximos 7 dias e fala frances
+GET {{api}}/voluntarios?idioma=fr&disponivel=semana
+
+### Perfil com servicos e horarios livres
+GET {{api}}/voluntarios/1
+
+### Editar dados profissionais
+PUT {{api}}/voluntarios/1
+Content-Type: application/json
+
+{
+  "bio": "Advogado especialista em refúgio e regularização migratória.",
+  "idiomas": ["pt", "es", "en"]
+}
+
+### Desativar voluntario (some da busca)
+PUT {{api}}/voluntarios/3
+Content-Type: application/json
+
+{
+  "ativo": false
+}
+
+
+#################### SERVICOS ####################
+
+### Servicos do voluntario 1
+GET {{api}}/servicos?voluntario_id=1
+
+### Criar servico
+POST {{api}}/servicos
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "titulo": "Direitos trabalhistas",
+  "descricao": "Orientação sobre carteira de trabalho, salário e direitos do trabalhador.",
+  "duracao_min": 30
+}
+
+### Editar servico
+PUT {{api}}/servicos/1
+Content-Type: application/json
+
+{
+  "duracao_min": 60
+}
+
+### Excluir servico com agendamentos (so desativa)
+DELETE {{api}}/servicos/1
+
+
+#################### HORARIOS ####################
+
+### Agenda do voluntario 1 (os reservados vem com o agendamento)
+GET {{api}}/horarios?voluntario_id=1
+
+### So os reservados
+GET {{api}}/horarios?voluntario_id=1&status=reservado
+
+### Criar horario
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{daquiTresDias}}",
+  "hora_inicio": "14:00",
+  "hora_fim": "14:45"
+}
+
+### Horario sobreposto (409)
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{daquiTresDias}}",
+  "hora_inicio": "14:30",
+  "hora_fim": "15:00"
+}
+
+### Hora de fim antes do inicio (400)
+POST {{api}}/horarios
+Content-Type: application/json
+
+{
+  "voluntario_id": 1,
+  "data": "{{amanha}}",
+  "hora_inicio": "15:00",
+  "hora_fim": "14:00"
+}
+
+### Excluir horario reservado sem confirmar (409 com precisaConfirmar)
+DELETE {{api}}/horarios/103
+
+### Excluir horario reservado confirmando
+DELETE {{api}}/horarios/103?confirmar=true
+
+
+#################### AGENDAMENTOS ####################
+
+### Agendamentos do usuario 1
+GET {{api}}/agendamentos?usuario_id=1
+
+### Agendamentos confirmados do voluntario 1
+GET {{api}}/agendamentos?voluntario_id=1&status=confirmado
+
+### Marcar atendimento
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 4,
+  "horario_id": 2,
+  "servico_id": 2,
+  "descricao": "Preciso entender como renovar meu protocolo de refúgio."
+}
+
+### Mesmo horario de novo (409, ja reservado)
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 3,
+  "horario_id": 2,
+  "servico_id": 2,
+  "descricao": "Também preciso de ajuda com o meu protocolo de refúgio."
+}
+
+### Descricao curta (400)
+POST {{api}}/agendamentos
+Content-Type: application/json
+
+{
+  "usuario_id": 3,
+  "horario_id": 3,
+  "servico_id": 2,
+  "descricao": "ajuda"
+}
+
+### Remarcar para outro horario do mesmo voluntario
+PUT {{api}}/agendamentos/1
+Content-Type: application/json
+
+{
+  "horario_id": 4
+}
+
+### Marcar como realizado antes do horario (400)
+PUT {{api}}/agendamentos/1
+Content-Type: application/json
+
+{
+  "status": "realizado"
+}
+
+### Cancelar (o horario volta a ficar livre)
+DELETE {{api}}/agendamentos/1
