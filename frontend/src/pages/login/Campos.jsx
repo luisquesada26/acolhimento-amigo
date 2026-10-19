@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { IDIOMAS } from "./useFormularios";
 
 export function Logo({ claro = false }) {
@@ -18,11 +19,52 @@ export function Logo({ claro = false }) {
   );
 }
 
-export function Campo({ id, rotulo, erro, ...props }) {
+function IconeOlho({ aberto }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {aberto ? (
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z" />
+      ) : (
+        <path d="M17.9 17.9A10.1 10.1 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.1-5.9 M9.9 4.2A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.2 3.2 M14.1 14.1a3 3 0 1 1-4.2-4.2 M1 1l22 22" />
+      )}
+    </svg>
+  );
+}
+
+export function Campo({ id, rotulo, erro, type = "text", ...props }) {
+  const [verSenha, setVerSenha] = useState(false);
+  const ehSenha = type === "password";
+
+  const input = (
+    <input
+      id={id}
+      type={ehSenha && verSenha ? "text" : type}
+      aria-invalid={Boolean(erro)}
+      aria-describedby={erro ? `${id}-erro` : undefined}
+      {...props}
+    />
+  );
+
   return (
     <div className="campo">
       <label htmlFor={id}>{rotulo}</label>
-      <input id={id} aria-invalid={Boolean(erro)} aria-describedby={erro ? `${id}-erro` : undefined} {...props} />
+      {ehSenha ? (
+        <div className="campo-senha">
+          {input}
+          <button
+            type="button"
+            className="ver-senha"
+            aria-label={verSenha ? "Ocultar senha" : "Mostrar senha"}
+            aria-pressed={verSenha}
+            aria-controls={id}
+            onClick={() => setVerSenha((atual) => !atual)}
+          >
+            <IconeOlho aberto={!verSenha} />
+          </button>
+        </div>
+      ) : (
+        input
+      )}
       {erro && (
         <span id={`${id}-erro`} className="campo-erro">
           {erro}

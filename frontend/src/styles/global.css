@@ -131,6 +131,40 @@ a {
   box-shadow: 0 0 0 4px rgba(23, 87, 216, 0.15);
 }
 
+/* senha com o botão de olho dentro do campo */
+.campo-senha {
+  position: relative;
+  display: flex;
+}
+
+.campo-senha input {
+  flex: 1;
+  width: 100%;
+  padding-right: 56px !important;
+}
+
+.ver-senha {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto-3);
+  cursor: pointer;
+}
+
+.ver-senha:hover {
+  color: var(--azul);
+  background: var(--azul-claro);
+}
+
 .campo [aria-invalid="true"] {
   border-color: var(--erro) !important;
 }
