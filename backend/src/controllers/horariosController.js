@@ -9,38 +9,27 @@ function lerData(valor) {
   return valor;
 }
 
-function listar(req, res) {
-  const { voluntario_id, status, de, ate } = req.query;
+function meus(req, res) {
+  const { status, de, ate } = req.query;
 
   if (status && !["livre", "reservado"].includes(status)) {
     throw new ErroApp(400, "Status deve ser livre ou reservado");
   }
 
-  res.json(
-    service.listar({
-      voluntario_id: voluntario_id ? lerId(voluntario_id) : undefined,
-      status,
-      de: lerData(de),
-      ate: lerData(ate),
-    })
-  );
-}
-
-function buscar(req, res) {
-  res.json(service.buscar(lerId(req.params.id)));
+  res.json(service.meus(req.usuario, { status, de: lerData(de), ate: lerData(ate) }));
 }
 
 function criar(req, res) {
-  res.status(201).json(service.criar(req.body));
+  res.status(201).json(service.criar(req.usuario, req.body));
 }
 
 function atualizar(req, res) {
-  res.json(service.atualizar(lerId(req.params.id), req.body));
+  res.json(service.atualizar(req.usuario, lerId(req.params.id), req.body));
 }
 
 function excluir(req, res) {
-  service.excluir(lerId(req.params.id), req.query.confirmar === "true");
+  service.excluir(req.usuario, lerId(req.params.id), req.query.confirmar === "true");
   res.status(204).end();
 }
 
-module.exports = { listar, buscar, criar, atualizar, excluir };
+module.exports = { meus, criar, atualizar, excluir };

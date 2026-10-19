@@ -9,10 +9,10 @@ router.get("/saude", (req, res) => {
 router.use("/auth", require("./auth"));
 router.use("/me", require("./me"));
 router.use("/areas", require("./areas"));
-router.use("/usuarios", require("./usuarios"));
 router.use("/voluntarios", require("./voluntarios"));
 router.use("/servicos", require("./servicos"));
 router.use("/horarios", require("./horarios"));
 router.use("/agendamentos", require("./agendamentos"));
+router.use(require("./meus"));
 
 module.exports = router;

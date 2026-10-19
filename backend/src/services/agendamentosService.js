@@ -3,6 +3,8 @@ const repo = require("../repositories/agendamentosRepository");
 const horariosRepo = require("../repositories/horariosRepository");
 const servicosRepo = require("../repositories/servicosRepository");
 const usuariosRepo = require("../repositories/usuariosRepository");
+const voluntariosRepo = require("../repositories/voluntariosRepository");
+const { voluntarioLogado } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 const { agora } = require("../utils/datas");
 
@@ -41,18 +43,37 @@ function horarioDisponivel(horarioId) {
   return horario;
 }
 
-function listar(filtros) {
-  return repo.listar(filtros).map(formatar);
-}
-
 function buscar(id) {
   const agendamento = repo.buscarPorId(id);
   if (!agendamento) throw new ErroApp(404, "Agendamento não encontrado");
   return formatar(agendamento);
 }
 
-const criar = db.transaction((dados) => {
-  const usuario = usuariosRepo.buscarPorId(dados.usuario_id);
+// so quem marcou e o voluntario do horario enxergam o agendamento (e a descricao do caso)
+function ehParticipante(agendamento, usuario) {
+  if (usuario.perfil === "usuario") return agendamento.usuario.id === usuario.id;
+  const voluntario = voluntariosRepo.buscarPorUsuarioId(usuario.id);
+  return Boolean(voluntario) && agendamento.voluntario.id === voluntario.id;
+}
+
+function buscarPara(usuario, id) {
+  const agendamento = buscar(id);
+  if (!ehParticipante(agendamento, usuario)) {
+    throw new ErroApp(403, "Você não tem acesso a este agendamento");
+  }
+  return agendamento;
+}
+
+// usuario ve os que marcou, voluntario ve os da agenda dele
+function meus(usuario, { status }) {
+  const filtros = usuario.perfil === "usuario"
+    ? { usuario_id: usuario.id, status }
+    : { voluntario_id: voluntarioLogado(usuario).id, status };
+  return repo.listar(filtros).map(formatar);
+}
+
+const criar = db.transaction((logado, dados) => {
+  const usuario = usuariosRepo.buscarPorId(logado.id);
   if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
   if (usuario.perfil !== "usuario") throw new ErroApp(403, "Só usuários podem marcar atendimentos");
 
@@ -68,13 +89,20 @@ const criar = db.transaction((dados) => {
     throw new ErroApp(409, `Você já tem ${LIMITE_CONFIRMADOS} agendamentos confirmados. Cancele um para marcar outro.`);
   }
 
-  const id = repo.criar(dados);
+  const id = repo.criar({ ...dados, usuario_id: usuario.id });
   horariosRepo.mudarStatus(horario.id, "reservado");
   return buscar(id);
 });
 
-const atualizar = db.transaction((id, dados) => {
-  const atual = buscar(id);
+const atualizar = db.transaction((usuario, id, dados) => {
+  const atual = buscarPara(usuario, id);
+
+  if ((dados.horario_id || dados.descricao) && usuario.perfil !== "usuario") {
+    throw new ErroApp(403, "Só quem marcou o atendimento pode remarcar ou mudar a descrição");
+  }
+  if (dados.status === "realizado" && usuario.perfil !== "voluntario") {
+    throw new ErroApp(403, "Só o voluntário pode marcar o atendimento como realizado");
+  }
 
   if (atual.status !== "confirmado") {
     throw new ErroApp(409, "Só é possível alterar agendamentos confirmados");
@@ -107,8 +135,8 @@ const atualizar = db.transaction((id, dados) => {
 });
 
 // cancelar nao apaga: muda o status e devolve o horario para a agenda
-const cancelar = db.transaction((id) => {
-  const atual = buscar(id);
+const cancelar = db.transaction((usuario, id) => {
+  const atual = buscarPara(usuario, id);
 
   if (atual.status !== "confirmado") {
     throw new ErroApp(409, "Só é possível cancelar agendamentos confirmados");
@@ -119,4 +147,4 @@ const cancelar = db.transaction((id) => {
   return buscar(id);
 });
 
-module.exports = { listar, buscar, criar, atualizar, cancelar };
+module.exports = { meus, buscarPara, criar, atualizar, cancelar };

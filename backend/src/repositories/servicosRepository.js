@@ -1,10 +1,17 @@
 const db = require("../database/conexao");
 
-function listar({ voluntario_id } = {}) {
+function listar({ voluntario_id, somenteAtivos = false } = {}) {
+  const filtros = [];
+  const params = {};
+
   if (voluntario_id) {
-    return db.prepare("SELECT * FROM servicos WHERE voluntario_id = ? ORDER BY titulo").all(voluntario_id);
+    filtros.push("voluntario_id = @voluntario_id");
+    params.voluntario_id = voluntario_id;
   }
-  return db.prepare("SELECT * FROM servicos ORDER BY voluntario_id, titulo").all();
+  if (somenteAtivos) filtros.push("ativo = 1");
+
+  const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
+  return db.prepare(`SELECT * FROM servicos ${where} ORDER BY voluntario_id, titulo`).all(params);
 }
 
 function buscarPorId(id) {

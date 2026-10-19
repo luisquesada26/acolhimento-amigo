@@ -25,10 +25,6 @@ function montar(usuario) {
   return resultado;
 }
 
-function listar(filtros) {
-  return repo.listar(filtros).map((u) => ({ ...u, aceite_lgpd: Boolean(u.aceite_lgpd) }));
-}
-
 function buscar(id) {
   const usuario = repo.buscarPorId(id);
   if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
@@ -72,18 +68,34 @@ async function criar(dados) {
   return buscar(salvar());
 }
 
+// o voluntario edita tambem os dados profissionais pelo mesmo PUT /me
 async function atualizar(id, dados) {
-  buscar(id);
+  const usuario = buscar(id);
+  const { senha, voluntario, ...campos } = dados;
 
-  if (dados.email) {
-    const outro = repo.buscarPorEmail(dados.email);
+  if (campos.email) {
+    const outro = repo.buscarPorEmail(campos.email);
     if (outro && outro.id !== id) throw new ErroApp(409, "Este e-mail já está cadastrado");
   }
 
-  const { senha, ...campos } = dados;
+  if (voluntario && usuario.perfil !== "voluntario") {
+    throw new ErroApp(400, "Só voluntários têm dados profissionais");
+  }
+  if (voluntario?.area_id && !areasRepo.buscarPorId(voluntario.area_id)) {
+    throw new ErroApp(400, "Área não encontrada");
+  }
+
   if (senha) campos.senha_hash = await bcrypt.hash(senha, 10);
 
-  repo.atualizar(id, campos);
+  const camposVoluntario = { ...voluntario };
+  if (camposVoluntario.idiomas) camposVoluntario.idiomas = camposVoluntario.idiomas.join(",");
+  if (camposVoluntario.ativo !== undefined) camposVoluntario.ativo = camposVoluntario.ativo ? 1 : 0;
+
+  db.transaction(() => {
+    repo.atualizar(id, campos);
+    if (voluntario) voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario);
+  })();
+
   return buscar(id);
 }
 
@@ -94,4 +106,4 @@ const excluir = db.transaction((id) => {
   repo.excluir(id);
 });
 
-module.exports = { listar, buscar, criar, atualizar, excluir };
+module.exports = { buscar, criar, atualizar, excluir };

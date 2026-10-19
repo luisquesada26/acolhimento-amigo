@@ -2,7 +2,8 @@ const db = require("../database/conexao");
 
 const SELECT_HORARIO = `
   SELECT h.*, a.id AS agendamento_id, a.status AS agendamento_status,
-         u.nome AS agendamento_usuario, s.titulo AS agendamento_servico
+         u.nome AS agendamento_usuario, s.titulo AS agendamento_servico,
+         a.descricao AS agendamento_descricao
   FROM horarios h
   LEFT JOIN agendamentos a ON a.horario_id = h.id AND a.status <> 'cancelado'
   LEFT JOIN usuarios u ON u.id = a.usuario_id
