@@ -8,7 +8,7 @@ Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 
 - Backend: Node.js, Express, Zod, bcrypt e JWT
 - Banco: SQLite com better-sqlite3
-- Frontend: React + Vite (em construção)
+- Frontend: React + Vite, React Router e Axios
 
 ## Como rodar
 
@@ -25,7 +25,14 @@ npm run db:reset
 npm run dev
 ```
 
-A API sobe em `http://localhost:3000/api`. Para testar: `http://localhost:3000/api/saude`.
+O `npm run dev` sobe as duas partes juntas:
+
+| Parte | Endereço |
+| --- | --- |
+| Frontend (React) | `http://localhost:5173/login` |
+| API (Express) | `http://localhost:3000/api` (teste em `/api/saude`) |
+
+Para entrar, use um dos usuários de teste abaixo ou crie uma conta nova como usuário ou como voluntário.
 
 ### Dia a dia
 
