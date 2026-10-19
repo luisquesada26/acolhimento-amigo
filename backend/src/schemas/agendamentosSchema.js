@@ -6,8 +6,8 @@ const descricao = z
   .min(20, "Descreva o que você precisa com pelo menos 20 caracteres")
   .max(1000);
 
+// o usuario vem do token, nao do corpo
 const criarAgendamentoSchema = z.object({
-  usuario_id: z.number().int().positive("Usuário inválido"),
   horario_id: z.number().int().positive("Horário inválido"),
   servico_id: z.number().int().positive("Serviço inválido"),
   descricao,
