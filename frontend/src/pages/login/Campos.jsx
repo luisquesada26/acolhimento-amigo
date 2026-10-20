@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SeletorArea from "../../components/SeletorArea";
 
 export function Logo({ claro = false }) {
   const fundo = claro ? "#FFFFFF" : "#1757D8";
@@ -196,23 +197,14 @@ export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true
 
       {ehVoluntario && (
         <div className="bloco-voluntario">
-          <div className="campo">
-            <label htmlFor={`${prefixo}-area`}>Área de atuação</label>
-            <select
-              id={`${prefixo}-area`}
-              value={form.areaId}
-              onChange={(e) => form.setAreaId(e.target.value)}
-              aria-invalid={Boolean(form.erros["voluntario.area_id"])}
-            >
-              <option value="">Escolha sua área</option>
-              {form.areas.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.nome}
-                </option>
-              ))}
-            </select>
-            {form.erros["voluntario.area_id"] && <span className="campo-erro">{form.erros["voluntario.area_id"]}</span>}
-          </div>
+          <SeletorArea
+            id={`${prefixo}-area`}
+            rotulo="Área de atuação"
+            areas={form.areas}
+            valor={form.areaId}
+            aoEscolher={form.setAreaId}
+            erro={form.erros["voluntario.area_id"]}
+          />
           <p className="dica">Idiomas, serviços e agenda você completa depois de entrar.</p>
         </div>
       )}
