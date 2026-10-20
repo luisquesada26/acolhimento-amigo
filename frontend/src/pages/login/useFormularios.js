@@ -3,15 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import api, { lerErro } from "../../services/api";
 
-export const IDIOMAS = [
-  { codigo: "pt", nome: "Português" },
-  { codigo: "es", nome: "Español" },
-  { codigo: "fr", nome: "Français" },
-  { codigo: "en", nome: "English" },
-  { codigo: "ar", nome: "العربية" },
-  { codigo: "ht", nome: "Kreyòl" },
-];
-
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function useEntrar() {
@@ -55,7 +46,6 @@ export function useCadastro(perfilInicial = "usuario") {
   const [perfil, setPerfil] = useState(perfilInicial);
   const [dados, setDados] = useState({ nome: "", email: "", senha: "", telefone: "" });
   const [areaId, setAreaId] = useState("");
-  const [idiomas, setIdiomas] = useState(["pt"]);
   const [aceite, setAceite] = useState(false);
   const [areas, setAreas] = useState([]);
   const [erros, setErros] = useState({});
@@ -72,19 +62,14 @@ export function useCadastro(perfilInicial = "usuario") {
     setDados((atual) => ({ ...atual, [campo]: valor }));
   }
 
-  function alternarIdioma(codigo) {
-    setIdiomas((atual) => (atual.includes(codigo) ? atual.filter((c) => c !== codigo) : [...atual, codigo]));
-  }
-
   function validar() {
     const novos = {};
     if (dados.nome.trim().length < 3) novos.nome = "Digite seu nome completo";
     if (!EMAIL_VALIDO.test(dados.email.trim())) novos.email = "Digite um e-mail válido";
     if (dados.senha.length < 6) novos.senha = "A senha precisa ter pelo menos 6 caracteres";
     if (!aceite) novos.aceite_lgpd = "É preciso aceitar os termos de privacidade";
-    if (perfil === "voluntario") {
-      if (!areaId) novos["voluntario.area_id"] = "Escolha sua área de atuação";
-      if (!idiomas.length) novos["voluntario.idiomas"] = "Escolha pelo menos um idioma";
+    if (perfil === "voluntario" && !areaId) {
+      novos["voluntario.area_id"] = "Escolha sua área de atuação";
     }
     return novos;
   }
@@ -106,7 +91,7 @@ export function useCadastro(perfilInicial = "usuario") {
       aceite_lgpd: true,
     };
     if (perfil === "voluntario") {
-      corpo.voluntario = { area_id: Number(areaId), idiomas };
+      corpo.voluntario = { area_id: Number(areaId) };
     }
 
     setEnviando(true);
@@ -129,8 +114,6 @@ export function useCadastro(perfilInicial = "usuario") {
     mudar,
     areaId,
     setAreaId,
-    idiomas,
-    alternarIdioma,
     aceite,
     setAceite,
     areas,
