@@ -32,6 +32,23 @@
   padding-top: clamp(18px, 5vh, 44px);
 }
 
+.login .logo {
+  gap: 10px;
+}
+
+.login .logo svg {
+  width: 44px;
+  height: 44px;
+}
+
+.login .logo-texto span {
+  font-size: 19px;
+}
+
+.login .logo-texto strong {
+  font-size: 23px;
+}
+
 .cartao {
   width: 100%;
   max-width: 432px;
