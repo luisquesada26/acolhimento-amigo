@@ -8,8 +8,8 @@ export function Logo({ claro = false }) {
     <span className={`logo ${claro ? "logo-claro" : ""}`}>
       <svg width="44" height="44" viewBox="0 0 40 40" aria-hidden="true">
         <circle cx="20" cy="20" r="20" fill={fundo} />
-        <path d="M10.5 13.5a5 5 0 0 1 5-5h9a5 5 0 0 1 5 5v6.5a5 5 0 0 1-5 5h-5l-5.2 4.2v-4.4a5 5 0 0 1-3.8-4.8z" fill={frente} />
-        <path d="M20 21.4s-4.3-2.5-4.3-5.4a2.3 2.3 0 0 1 4.3-1.2a2.3 2.3 0 0 1 4.3 1.2c0 2.9-4.3 5.4-4.3 5.4z" fill={fundo} />
+        <path d="M8 15.4a6.2 6.2 0 0 1 6.2-6.2h11.6a6.2 6.2 0 0 1 6.2 6.2v8a6.2 6.2 0 0 1-6.2 6.2h-6.2l-6.4 5.2v-5.4a6.2 6.2 0 0 1-5.2-6z" fill={frente} />
+        <path d="M20 26s-6.2-3.6-6.2-7.8a3.3 3.3 0 0 1 6.2-1.7a3.3 3.3 0 0 1 6.2 1.7c0 4.2-6.2 7.8-6.2 7.8z" fill={fundo} />
       </svg>
       <span className="logo-texto">
         <span>Acolhimento</span>
