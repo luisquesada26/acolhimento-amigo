@@ -1,0 +1,394 @@
+:root {
+  --azul: #1757d8;
+  --azul-escuro: #0e3e9e;
+  --azul-claro: #eef3fd;
+  --marinho: #082152;
+  --texto: #0b1b3a;
+  --texto-2: #4a5b78;
+  --texto-3: #5a6b87;
+  --borda: #e2e9f4;
+  --borda-campo: #d5dfee;
+  --fundo: #f4f7fc;
+  --verde: #16924b;
+  --verde-claro: #ecf8f1;
+  --erro: #b42318;
+  --erro-claro: #fdedec;
+  --raio: 14px;
+  --sombra: 0 20px 50px rgba(10, 42, 94, 0.08);
+  --fonte: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte);
+  color: var(--texto);
+  background: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+a {
+  color: var(--azul);
+}
+
+/* logo */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.logo-texto span {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.logo-texto strong {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--azul);
+}
+
+.logo-claro .logo-texto,
+.logo-claro .logo-texto strong {
+  color: #fff;
+}
+
+/* formulários */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.grade-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.campo label,
+.campo legend {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.campo legend {
+  margin-bottom: 8px;
+}
+
+.campo input:not([type="checkbox"]),
+.campo select {
+  height: 52px;
+  padding: 0 16px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: var(--raio);
+  background: #fbfcfe;
+  color: var(--texto);
+  font-size: 16px;
+  font-weight: 500;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(23, 87, 216, 0.15);
+}
+
+/* senha com o botão de olho dentro do campo */
+.campo-senha {
+  position: relative;
+  display: flex;
+}
+
+.campo-senha input {
+  flex: 1;
+  width: 100%;
+  padding-right: 56px !important;
+}
+
+.ver-senha {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto-3);
+  cursor: pointer;
+}
+
+.ver-senha:hover {
+  color: var(--azul);
+  background: var(--azul-claro);
+}
+
+.campo [aria-invalid="true"] {
+  border-color: var(--erro) !important;
+}
+
+.campo-erro {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--erro);
+}
+
+.dica {
+  font-size: 14px;
+  color: var(--texto-3);
+}
+
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--erro-claro);
+  color: var(--erro);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.aviso svg {
+  flex-shrink: 0;
+}
+
+.aceite {
+  display: flex !important;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: var(--raio);
+  background: var(--fundo);
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  color: #2a3a57;
+  cursor: pointer;
+}
+
+.aceite input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--azul);
+  flex-shrink: 0;
+}
+
+/* botões */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--raio);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.botao-primario {
+  background: var(--azul);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(23, 87, 216, 0.28);
+}
+
+.botao:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.botao:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--azul);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(23, 87, 216, 0.45);
+  outline-offset: 2px;
+}
+
+/* tipo de conta: radio com cara de cartão */
+.escolha-perfil {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.escolha-perfil legend {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.perfis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 12px;
+}
+
+.perfil-cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 18px 18px 50px;
+  border: 2px solid var(--borda);
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.perfil-cartao input {
+  position: absolute;
+  top: 20px;
+  left: 18px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--azul);
+}
+
+.perfil-cartao strong {
+  font-size: 16px;
+}
+
+.perfil-cartao span {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--texto-2);
+}
+
+.perfil-cartao:has(input:checked) {
+  border-color: var(--azul);
+  background: var(--azul-claro);
+}
+
+.perfil-voluntario input {
+  accent-color: var(--verde);
+}
+
+.perfil-voluntario:has(input:checked) {
+  border-color: var(--verde);
+  background: var(--verde-claro);
+}
+
+/* idiomas: checkbox com cara de chip */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 16px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip:has(input:checked) {
+  border-color: var(--azul);
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+}
+
+.chip:has(input:focus-visible) {
+  outline: 3px solid rgba(23, 87, 216, 0.45);
+  outline-offset: 2px;
+}
+
+.bloco-voluntario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed #b9d7c5;
+  background: #f7fcf9;
+}
+
+/* tela depois do login: só a mensagem */
+.bem-vindo {
+  min-height: 100vh;
+  padding: 40px;
+  background: #fff;
+}
+
+.bem-vindo h1 {
+  font-size: 32px;
+}
