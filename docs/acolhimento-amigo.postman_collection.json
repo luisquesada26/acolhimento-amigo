@@ -335,7 +335,7 @@
           ]
         },
         {
-          "name": "Cadastro de voluntario",
+          "name": "Cadastro de voluntario (só a área; idiomas, serviços e agenda vêm depois)",
           "request": {
             "method": "POST",
             "header": [
@@ -356,7 +356,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Paula Ventura\",\n  \"email\": \"paula@email.com\",\n  \"senha\": \"minhasenha\",\n  \"perfil\": \"voluntario\",\n  \"aceite_lgpd\": true,\n  \"voluntario\": {\n    \"area_id\": 2,\n    \"registro_profissional\": \"CRP 06/111111\",\n    \"idiomas\": [\"pt\", \"es\"],\n    \"bio\": \"Psicóloga com experiência em atendimento a migrantes.\"\n  }\n}",
+              "raw": "{\n  \"nome\": \"Paula Ventura\",\n  \"email\": \"paula@email.com\",\n  \"senha\": \"minhasenha\",\n  \"perfil\": \"voluntario\",\n  \"aceite_lgpd\": true,\n  \"voluntario\": {\n    \"area_id\": 2\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"

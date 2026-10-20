@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { IDIOMAS } from "./useFormularios";
 
 export function Logo({ claro = false }) {
   const fundo = claro ? "#FFFFFF" : "#1757D8";
@@ -214,24 +213,7 @@ export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true
             </select>
             {form.erros["voluntario.area_id"] && <span className="campo-erro">{form.erros["voluntario.area_id"]}</span>}
           </div>
-
-          <fieldset className="campo">
-            <legend>Idiomas em que você atende</legend>
-            <div className="chips">
-              {IDIOMAS.map((i) => (
-                <label key={i.codigo} className="chip">
-                  <input
-                    type="checkbox"
-                    checked={form.idiomas.includes(i.codigo)}
-                    onChange={() => form.alternarIdioma(i.codigo)}
-                  />
-                  {i.nome}
-                </label>
-              ))}
-            </div>
-            {form.erros["voluntario.idiomas"] && <span className="campo-erro">{form.erros["voluntario.idiomas"]}</span>}
-          </fieldset>
-          <p className="dica">Seus serviços e sua agenda você completa depois de entrar.</p>
+          <p className="dica">Idiomas, serviços e agenda você completa depois de entrar.</p>
         </div>
       )}
 
@@ -245,7 +227,7 @@ export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true
         {form.erros.aceite_lgpd && <span className="campo-erro">{form.erros.aceite_lgpd}</span>}
       </div>
 
-      <button type="submit" className="botao botao-primario" disabled={form.enviando}>
+      <button type="submit" className={`botao botao-primario ${ehVoluntario ? "botao-voluntario" : ""}`} disabled={form.enviando}>
         {form.enviando ? "Criando conta..." : ehVoluntario ? "Criar conta de voluntário" : "Criar minha conta"}
       </button>
     </form>

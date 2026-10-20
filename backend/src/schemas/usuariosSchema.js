@@ -2,10 +2,11 @@ const { z } = require("zod");
 
 const idiomas = z.array(z.string().trim().min(2).max(5)).min(1, "Informe pelo menos um idioma");
 
+// no cadastro só a área é obrigatória; os idiomas vêm depois, ao completar o perfil
 const dadosVoluntario = z.object({
   area_id: z.number().int().positive("Área inválida"),
   registro_profissional: z.string().trim().max(40).nullish(),
-  idiomas,
+  idiomas: idiomas.optional(),
   bio: z.string().trim().max(500).nullish(),
 });
 
@@ -27,7 +28,7 @@ const criarUsuarioSchema = z
     voluntario: dadosVoluntario.optional(),
   })
   .refine((d) => d.perfil !== "voluntario" || d.voluntario, {
-    message: "Voluntário precisa informar área e idiomas",
+    message: "Voluntário precisa informar a área de atuação",
     path: ["voluntario"],
   });
 
