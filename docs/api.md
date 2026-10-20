@@ -52,6 +52,8 @@ Cadastro de voluntário:
 
 `voluntario` só é obrigatório quando `perfil` é `voluntario`, e no cadastro basta a `area_id`. Registro profissional, idiomas e bio o voluntário completa depois pelo `PUT /me`. Sem `"aceite_lgpd": true` o cadastro não passa.
 
+Os idiomas aceitos são `pt`, `en`, `es` e `fr`. Qualquer outro responde `400`.
+
 ## Minhas coisas
 
 Cada pessoa só recebe o que é dela.

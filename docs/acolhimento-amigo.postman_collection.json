@@ -534,6 +534,46 @@
           }
         },
         {
+          "name": "Idioma que não está na lista (400, só pt, en, es e fr)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/me",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenVoluntario}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voluntario\": {\n    \"idiomas\": [\"pt\", \"ar\"]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
           "name": "Usuario mandando dados de voluntario (400)",
           "request": {
             "method": "PUT",
@@ -881,7 +921,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{api}}/voluntarios?area=4&idioma=ar",
+              "raw": "{{api}}/voluntarios?area=4&idioma=en",
               "host": [
                 "{{api}}"
               ],
@@ -895,7 +935,7 @@
                 },
                 {
                   "key": "idioma",
-                  "value": "ar"
+                  "value": "en"
                 }
               ]
             }
