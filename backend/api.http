@@ -77,7 +77,7 @@ Content-Type: application/json
   "aceite_lgpd": true
 }
 
-### Cadastro de voluntario
+### Cadastro de voluntario (só a área; idiomas, serviços e agenda vêm depois)
 POST {{api}}/auth/cadastro
 Content-Type: application/json
 
@@ -88,10 +88,7 @@ Content-Type: application/json
   "perfil": "voluntario",
   "aceite_lgpd": true,
   "voluntario": {
-    "area_id": 2,
-    "registro_profissional": "CRP 06/111111",
-    "idiomas": ["pt", "es"],
-    "bio": "Psicóloga com experiência em atendimento a migrantes."
+    "area_id": 2
   }
 }
 

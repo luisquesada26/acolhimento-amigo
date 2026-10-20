@@ -45,15 +45,12 @@ Cadastro de voluntário:
   "idioma": "pt",
   "aceite_lgpd": true,
   "voluntario": {
-    "area_id": 1,
-    "registro_profissional": "OAB/SP 000000",
-    "idiomas": ["pt", "es"],
-    "bio": "Advogada com experiência em direito migratório."
+    "area_id": 1
   }
 }
 ```
 
-`voluntario` só é obrigatório quando `perfil` é `voluntario`. Sem `"aceite_lgpd": true` o cadastro não passa.
+`voluntario` só é obrigatório quando `perfil` é `voluntario`, e no cadastro basta a `area_id`. Registro profissional, idiomas e bio o voluntário completa depois pelo `PUT /me`. Sem `"aceite_lgpd": true` o cadastro não passa.
 
 ## Minhas coisas
 
