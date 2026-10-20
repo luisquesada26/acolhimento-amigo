@@ -10,6 +10,7 @@
   --borda-campo: #d5dfee;
   --fundo: #f4f7fc;
   --verde: #16924b;
+  --verde-escuro: #127a3e;
   --verde-claro: #ecf8f1;
   --erro: #b42318;
   --erro-claro: #fdedec;
@@ -237,6 +238,11 @@ a {
   background: var(--azul);
   color: #fff;
   box-shadow: 0 10px 24px rgba(23, 87, 216, 0.28);
+}
+
+.botao-voluntario {
+  background: var(--verde-escuro);
+  box-shadow: 0 10px 24px rgba(18, 122, 62, 0.28);
 }
 
 .botao:hover:not(:disabled) {

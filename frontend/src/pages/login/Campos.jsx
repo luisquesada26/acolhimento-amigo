@@ -227,7 +227,7 @@ export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true
         {form.erros.aceite_lgpd && <span className="campo-erro">{form.erros.aceite_lgpd}</span>}
       </div>
 
-      <button type="submit" className="botao botao-primario" disabled={form.enviando}>
+      <button type="submit" className={`botao botao-primario ${ehVoluntario ? "botao-voluntario" : ""}`} disabled={form.enviando}>
         {form.enviando ? "Criando conta..." : ehVoluntario ? "Criar conta de voluntário" : "Criar minha conta"}
       </button>
     </form>
