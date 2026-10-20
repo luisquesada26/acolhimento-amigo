@@ -14,7 +14,7 @@ export default function Login() {
   return (
     <main className="login">
       <Logo claro />
-      <section className="cartao" aria-labelledby="login-titulo">
+      <section className={ehEntrar ? "cartao" : "cartao cartao-cadastro"} aria-labelledby="login-titulo">
         <header className="cabecalho-form">
           <h1 id="login-titulo">{ehEntrar ? "Entre na sua conta" : "Crie sua conta grátis"}</h1>
           <p>{ehEntrar ? "Que bom te ver de novo." : "Leva menos de um minuto."}</p>

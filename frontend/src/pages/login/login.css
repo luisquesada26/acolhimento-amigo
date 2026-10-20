@@ -1,68 +1,110 @@
 .login {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
-  padding: 48px 20px 64px;
+  padding: 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  justify-content: safe center;
+  gap: 14px;
+  background: var(--marinho);
+}
+
+/* a foto fica presa à janela e usa a largura total (100vw conta a barra de rolagem),
+   então não se reajusta quando o formulário cresce e a barra aparece */
+.login::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
   background:
     linear-gradient(180deg, rgba(8, 33, 82, 0.78) 0%, rgba(8, 33, 82, 0.86) 100%),
-    url("../../assets/login-fundo.jpg") center 30% / cover no-repeat,
-    var(--marinho);
+    url("../../assets/login-fundo.jpg") center 30% / cover no-repeat;
+}
+
+/* no cadastro o cartão fica no alto: trocar usuário e voluntário só cresce para baixo */
+.login:has(.cartao-cadastro) {
+  justify-content: flex-start;
+  padding-top: clamp(18px, 5vh, 44px);
 }
 
 .cartao {
   width: 100%;
-  max-width: 520px;
-  padding: 36px;
+  max-width: 432px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 26px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 30px 70px rgba(3, 14, 38, 0.45);
+}
+
+/* no cadastro o cartão é mais largo para os campos ficarem em duas colunas */
+.cartao-cadastro {
+  max-width: 576px;
 }
 
 .cabecalho-form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
   text-align: center;
 }
 
 .cabecalho-form h1 {
-  font-size: 30px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 
 .cabecalho-form p {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--texto-2);
 }
 
-/* no login o tipo de conta vira um seletor de duas partes */
+/* o título "Tipo de conta" fica só para leitor de tela */
+.login .escolha-perfil {
+  position: relative;
+}
+
 .login .escolha-perfil legend {
-  width: 100%;
-  text-align: center;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .login .perfis {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  padding: 6px;
-  border-radius: 16px;
+  gap: 5px;
+  padding: 5px;
+  border-radius: 14px;
   background: #eef3fb;
 }
 
 .login .perfil-cartao {
-  padding: 12px;
+  min-height: 44px;
+  justify-content: center;
+  padding: 8px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   background: transparent;
   text-align: center;
   transition: background 0.15s, color 0.15s;
+}
+
+.login .perfil-cartao strong {
+  font-size: 15px;
 }
 
 /* azul para quem precisa de atendimento, verde para o voluntário */
@@ -101,23 +143,89 @@
   outline: 3px solid rgba(23, 87, 216, 0.45);
 }
 
+/* formulário mais compacto dentro do login */
+.login .formulario {
+  gap: 12px;
+}
+
+.login .grade-campos {
+  gap: 10px 12px;
+}
+
+.login .campo {
+  gap: 5px;
+}
+
+.login .campo label,
+.login .campo legend {
+  font-size: 13px;
+}
+
+.login .campo input:not([type="checkbox"]),
+.login .seletor-botao {
+  height: 44px;
+  padding-left: 14px;
+}
+
+.login .seletor-botao {
+  padding-left: 8px;
+}
+
+.login .icone-area {
+  width: 30px;
+  height: 30px;
+}
+
+.login .campo-erro {
+  font-size: 12px;
+}
+
+.login .botao {
+  height: 46px;
+  font-size: 15px;
+}
+
+.login .aceite {
+  padding: 9px 12px;
+  font-size: 12.5px !important;
+}
+
+.login .aceite input {
+  width: 18px;
+  height: 18px;
+}
+
+.login .bloco-voluntario {
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.login .dica {
+  font-size: 13px;
+}
+
+.login .aviso {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
 .trocar {
   text-align: center;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--texto-2);
 }
 
 .rodape {
-  font-size: 14px;
+  font-size: 12px;
   color: #dce6f7;
 }
 
 @media (max-width: 640px) {
   .login {
-    padding-top: 32px;
+    justify-content: flex-start;
   }
 
   .cartao {
-    padding: 24px 20px;
+    padding: 20px 16px;
   }
 }
