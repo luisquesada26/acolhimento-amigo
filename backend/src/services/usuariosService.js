@@ -16,7 +16,7 @@ function montar(usuario) {
         id: v.id,
         area_id: v.area_id,
         registro_profissional: v.registro_profissional,
-        idiomas: v.idiomas.split(","),
+        idiomas: v.idiomas ? v.idiomas.split(",") : [],
         bio: v.bio,
         ativo: Boolean(v.ativo),
       };
@@ -58,7 +58,7 @@ async function criar(dados) {
         usuario_id: id,
         area_id: dados.voluntario.area_id,
         registro_profissional: dados.voluntario.registro_profissional ?? null,
-        idiomas: dados.voluntario.idiomas.join(","),
+        idiomas: (dados.voluntario.idiomas ?? []).join(","),
         bio: dados.voluntario.bio ?? null,
       });
     }

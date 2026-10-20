@@ -4,7 +4,7 @@ const { ErroApp } = require("../middlewares/erros");
 // cadastro, edicao e exclusao do voluntario ficam em /auth/cadastro e /me
 
 function formatar(v) {
-  return { ...v, idiomas: v.idiomas.split(","), ativo: Boolean(v.ativo) };
+  return { ...v, idiomas: v.idiomas ? v.idiomas.split(",") : [], ativo: Boolean(v.ativo) };
 }
 
 function listar(filtros) {
