@@ -1,6 +1,11 @@
 const { z } = require("zod");
 
-const idiomas = z.array(z.string().trim().min(2).max(5)).min(1, "Informe pelo menos um idioma");
+// idiomas em que o voluntário atende
+const IDIOMAS = ["pt", "en", "es", "fr"];
+
+const idiomas = z
+  .array(z.enum(IDIOMAS, { error: "Idioma deve ser pt, en, es ou fr" }))
+  .min(1, "Informe pelo menos um idioma");
 
 // no cadastro só a área é obrigatória; os idiomas vêm depois, ao completar o perfil
 const dadosVoluntario = z.object({

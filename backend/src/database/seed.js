@@ -68,8 +68,8 @@ const voluntarios = [
       { nome: "Beatriz Souza", email: "beatriz.souza@email.com", registro: null, idiomas: "pt,es", bio: "Professora de português como língua de acolhimento." },
       { nome: "Felipe Araújo", email: "felipe.araujo@email.com", registro: null, idiomas: "pt,en,fr", bio: "Aulas de conversação para o dia a dia e para entrevistas de emprego." },
       { nome: "Carolina Mendes", email: "carolina.mendes@email.com", registro: null, idiomas: "pt,es", bio: "Português para iniciantes, com foco em situações reais." },
-      { nome: "Rodrigo Freitas", email: "rodrigo.freitas@email.com", registro: null, idiomas: "pt,ar", bio: "Ensino de português para falantes de árabe." },
-      { nome: "Vanessa Pinto", email: "vanessa.pinto@email.com", registro: null, idiomas: "pt,fr,ht", bio: "Aulas para falantes de francês e crioulo haitiano." },
+      { nome: "Rodrigo Freitas", email: "rodrigo.freitas@email.com", registro: null, idiomas: "pt,en", bio: "Ensino de português para quem fala inglês." },
+      { nome: "Vanessa Pinto", email: "vanessa.pinto@email.com", registro: null, idiomas: "pt,fr", bio: "Aulas de português para quem fala francês." },
     ],
     servicos: [
       { titulo: "Português para iniciantes", descricao: "Primeiros passos no português: apresentação, números, compras e transporte." },
@@ -155,7 +155,7 @@ const voluntarios = [
     pessoas: [
       { nome: "Daniela Prado", email: "daniela.prado@email.com", registro: null, idiomas: "pt,es", bio: "Bancária, ajudo a abrir conta e a entender como funciona o banco no Brasil." },
       { nome: "Márcio Tavares", email: "marcio.tavares@email.com", registro: null, idiomas: "pt,en", bio: "Planejador financeiro, monto orçamento simples para quem está começando." },
-      { nome: "Kelly Andrade", email: "kelly.andrade@email.com", registro: null, idiomas: "pt,fr,ht", bio: "Oriento sobre Pix, cartão e como evitar golpes." },
+      { nome: "Kelly Andrade", email: "kelly.andrade@email.com", registro: null, idiomas: "pt,fr", bio: "Oriento sobre Pix, cartão e como evitar golpes." },
       { nome: "Wagner Lima", email: "wagner.lima@email.com", registro: null, idiomas: "pt,es", bio: "Explico como enviar dinheiro para a família no exterior pagando menos." },
       { nome: "Bianca Furtado", email: "bianca.furtado@email.com", registro: null, idiomas: "pt", bio: "Educadora financeira, ajudo a sair das dívidas e a guardar dinheiro." },
     ],
@@ -170,7 +170,7 @@ const voluntarios = [
       { nome: "Roberta Nunes", email: "roberta.nunes@email.com", registro: null, idiomas: "pt,es", bio: "Consultora de pequenos negócios, ajudo a tirar a ideia do papel." },
       { nome: "Cláudio Mendonça", email: "claudio.mendonca@email.com", registro: null, idiomas: "pt,en", bio: "Contador, explico como abrir e manter um MEI." },
       { nome: "Sabrina Coelho", email: "sabrina.coelho@email.com", registro: null, idiomas: "pt,fr", bio: "Ajudo a vender pelas redes sociais e pelo WhatsApp." },
-      { nome: "Alexandre Peixoto", email: "alexandre.peixoto@email.com", registro: null, idiomas: "pt,es,ar", bio: "Empreendedor na área de alimentação, oriento quem quer vender comida." },
+      { nome: "Alexandre Peixoto", email: "alexandre.peixoto@email.com", registro: null, idiomas: "pt,es", bio: "Empreendedor na área de alimentação, oriento quem quer vender comida." },
       { nome: "Jéssica Amaral", email: "jessica.amaral@email.com", registro: null, idiomas: "pt,es", bio: "Explico como emitir nota fiscal e precificar produtos e serviços." },
     ],
     servicos: [
@@ -182,10 +182,10 @@ const voluntarios = [
     area: "Orientação em saúde",
     pessoas: [
       { nome: "Silvia Rezende", email: "silvia.rezende@email.com", registro: "COREN-SP 412398", idiomas: "pt,es", bio: "Enfermeira da atenção básica, explico como funciona o posto de saúde e o SUS." },
-      { nome: "Antônio Galvão", email: "antonio.galvao@email.com", registro: "COREN-SP 398761", idiomas: "pt,fr,ht", bio: "Enfermeiro, atendo muitas famílias haitianas na UBS onde trabalho." },
+      { nome: "Antônio Galvão", email: "antonio.galvao@email.com", registro: "COREN-SP 398761", idiomas: "pt,fr", bio: "Enfermeiro, atendo muitas famílias haitianas na UBS onde trabalho." },
       { nome: "Helena Bragança", email: "helena.braganca@email.com", registro: "CRF-SP 87654", idiomas: "pt,en", bio: "Farmacêutica, oriento sobre remédios gratuitos e a Farmácia Popular." },
       { nome: "Mateus Correia", email: "mateus.correia@email.com", registro: "COREN-RJ 276543", idiomas: "pt,es", bio: "Trabalho com saúde da família e vacinação de adultos e crianças." },
-      { nome: "Raquel Antunes", email: "raquel.antunes@email.com", registro: "COREN-SP 455120", idiomas: "pt,ar", bio: "Enfermeira obstetra, oriento gestantes sobre o pré-natal no SUS." },
+      { nome: "Raquel Antunes", email: "raquel.antunes@email.com", registro: "COREN-SP 455120", idiomas: "pt,en", bio: "Enfermeira obstetra, oriento gestantes sobre o pré-natal no SUS." },
     ],
     servicos: [
       { titulo: "Como usar o SUS", descricao: "Como tirar o Cartão SUS, encontrar a UBS mais perto e marcar consulta." },
@@ -211,9 +211,9 @@ const voluntarios = [
     pessoas: [
       { nome: "Bruna Leal", email: "bruna.leal@email.com", registro: null, idiomas: "pt,es", bio: "Professora de informática, ensino o básico do computador e do celular." },
       { nome: "Igor Marques", email: "igor.marques@email.com", registro: null, idiomas: "pt,en", bio: "Desenvolvedor, ajudo a criar e-mail e a usar os aplicativos do governo." },
-      { nome: "Elisa Cardim", email: "elisa.cardim@email.com", registro: null, idiomas: "pt,fr,ht", bio: "Ensino a usar o gov.br, a carteira de trabalho digital e o app do SUS." },
+      { nome: "Elisa Cardim", email: "elisa.cardim@email.com", registro: null, idiomas: "pt,fr", bio: "Ensino a usar o gov.br, a carteira de trabalho digital e o app do SUS." },
       { nome: "Renan Toledo", email: "renan.toledo@email.com", registro: null, idiomas: "pt,es", bio: "Técnico de suporte, explico como se proteger de golpes na internet." },
-      { nome: "Yasmin Haddad", email: "yasmin.haddad@email.com", registro: null, idiomas: "pt,ar", bio: "Aulas de informática em português e árabe." },
+      { nome: "Yasmin Haddad", email: "yasmin.haddad@email.com", registro: null, idiomas: "pt,en", bio: "Aulas de informática em português e inglês." },
     ],
     servicos: [
       { titulo: "Primeiros passos no celular e no computador", descricao: "Criar e-mail, mandar arquivos, usar WhatsApp e fazer videochamada." },
