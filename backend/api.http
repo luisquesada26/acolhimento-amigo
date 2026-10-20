@@ -136,6 +136,17 @@ Content-Type: application/json
   }
 }
 
+### Idioma que não está na lista (400, só pt, en, es e fr)
+PUT {{api}}/me
+Authorization: Bearer {{loginVoluntario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "voluntario": {
+    "idiomas": ["pt", "ar"]
+  }
+}
+
 ### Usuario mandando dados de voluntario (400)
 PUT {{api}}/me
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
@@ -212,7 +223,7 @@ GET {{api}}/voluntarios
 GET {{api}}/voluntarios?q=visto
 
 ### Filtro por area e idioma
-GET {{api}}/voluntarios?area=4&idioma=ar
+GET {{api}}/voluntarios?area=4&idioma=en
 
 ### Quem tem horario livre nos proximos 7 dias e fala frances
 GET {{api}}/voluntarios?idioma=fr&disponivel=semana
