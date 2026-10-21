@@ -66,7 +66,8 @@ Senha de todos: `senha123`
 
 - `main`: a única branch fixa, com a versão que vai ser apresentada
 - `feature/nome-da-tarefa` e `fix/nome-do-erro`: uma branch por tarefa, criada a partir da `main`
-- Ninguém faz push direto na `main`. Tudo entra por pull request citando a tarefa (`Fecha #12`), e só o Luis aprova
+- Ninguém faz push direto na `main`. Tudo entra por pull request, e só o Luis aprova
+- Na descrição do pull request, escrever `Closes #12` com o número da tarefa: no merge a tarefa fecha sozinha. Tem que ser em inglês (`Closes`, `Fixes` ou `Resolves`), o GitHub não entende `Fecha`
 - Depois do merge, a branch da tarefa é apagada
 
 ### Padrão de commits
