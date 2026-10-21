@@ -36,12 +36,12 @@ Para entrar, use um dos usuários de teste abaixo ou crie uma conta nova como us
 
 ### Dia a dia
 
-1. `git checkout develop` e `git pull`
+1. `git checkout main` e `git pull`
 2. `git checkout -b feature/nome-da-tarefa`
 3. Se o `schema.sql` ou o `seed.js` mudou, rodar `npm run db:reset`. Se o `package.json` mudou, rodar `npm run install:all`
 4. Programar e testar com `npm run dev`
 5. `git add .`, `git commit -m "feat(xx): ..."` e `git push`
-6. Abrir o pull request para a `develop`
+6. Abrir o pull request para a `main` e esperar a aprovação do Luis
 
 ## Banco de dados
 
@@ -64,11 +64,10 @@ Senha de todos: `senha123`
 
 ## Organização no GitHub
 
-- `main`: versão estável, a que vai ser apresentada
-- `develop`: onde o trabalho de todos se junta
-- `feature/nome-da-tarefa` e `fix/nome-do-erro`: uma branch por tarefa, criada a partir da `develop`
-- Ninguém faz push direto na `main` nem na `develop`. Tudo entra por pull request com 1 aprovação, citando a tarefa (`Fecha #12`)
-- No fim de cada semana a `develop` vai para a `main`
+- `main`: a única branch fixa, com a versão que vai ser apresentada
+- `feature/nome-da-tarefa` e `fix/nome-do-erro`: uma branch por tarefa, criada a partir da `main`
+- Ninguém faz push direto na `main`. Tudo entra por pull request citando a tarefa (`Fecha #12`), e só o Luis aprova
+- Depois do merge, a branch da tarefa é apagada
 
 ### Padrão de commits
 
