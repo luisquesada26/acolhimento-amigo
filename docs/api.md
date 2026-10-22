@@ -52,7 +52,7 @@ Cadastro de voluntário:
 
 `voluntario` só é obrigatório quando `perfil` é `voluntario`, e no cadastro basta a `area_id`. Registro profissional, idiomas e bio o voluntário completa depois pelo `PUT /me`. Sem `"aceite_lgpd": true` o cadastro não passa.
 
-Os idiomas aceitos são `pt`, `en`, `es` e `fr`. Qualquer outro responde `400`.
+Os idiomas aceitos são `pt`, `en`, `es` e `fr`, tanto nos idiomas do voluntário quanto no `idioma` do usuário. Qualquer outro responde `400`.
 
 ## Minhas coisas
 
@@ -126,9 +126,10 @@ A lista de cada um fica em `GET /meus-agendamentos`. Regras:
 - No máximo 3 agendamentos `confirmado` por usuário
 - Descrição com pelo menos 20 caracteres
 - Só quem marcou remarca (`horario_id`) ou edita a `descricao`, e só para outro horário livre do mesmo voluntário
-- Só o voluntário marca `"status": "realizado"`, e só depois que o horário terminou
+- Só o voluntário marca `"status": "realizado"` (ao concluir o atendimento, a qualquer momento)
 - Só agendamento `confirmado` pode ser alterado ou cancelado
-- A descrição do caso só aparece para quem marcou e para o voluntário daquele horário
+- A descrição do caso e o contato da pessoa (e-mail, telefone e foto) só aparecem para quem marcou e para o voluntário daquele horário
+- O voluntário escreve a `anotacao` (o que foi feito, o que recomendou e o próximo passo, até 1000 caracteres). Pode mandar junto com `"status": "realizado"` ao concluir, ou depois, com o atendimento já realizado. Quem marcou lê a anotação, mas não altera
 
 Resposta de `POST /agendamentos`:
 
@@ -141,6 +142,6 @@ Resposta de `POST /agendamentos`:
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
   "voluntario": { "id": 1, "nome": "Rafael Almeida" },
   "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
-  "usuario": { "id": 1, "nome": "Carlos Mendoza" }
+  "usuario": { "id": 1, "nome": "Carlos Mendoza", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idioma": "es" }
 }
 ```

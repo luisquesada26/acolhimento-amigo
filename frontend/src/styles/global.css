@@ -163,7 +163,6 @@ a {
 
 .ver-senha:hover {
   color: var(--azul);
-  background: var(--azul-claro);
 }
 
 .campo [aria-invalid="true"] {

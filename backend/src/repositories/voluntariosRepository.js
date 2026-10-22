@@ -4,7 +4,7 @@ const { agora, formatarData, diaMais } = require("../utils/datas");
 const HORARIO_FUTURO = "(h.data > @hoje OR (h.data = @hoje AND h.hora_inicio > @hora))";
 
 const SELECT_VOLUNTARIO = `
-  SELECT v.id, v.usuario_id, u.nome, v.area_id, a.nome AS area,
+  SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
          v.registro_profissional, v.idiomas, v.bio, v.ativo
   FROM voluntarios v
   JOIN usuarios u ON u.id = v.usuario_id

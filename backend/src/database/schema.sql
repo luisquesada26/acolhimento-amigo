@@ -9,6 +9,7 @@ CREATE TABLE usuarios (
   perfil        TEXT    NOT NULL CHECK (perfil IN ('usuario', 'voluntario')),
   pais_origem   TEXT,
   idioma        TEXT    NOT NULL DEFAULT 'pt',
+  foto          TEXT,
   aceite_lgpd   INTEGER NOT NULL DEFAULT 0,
   criado_em     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
@@ -54,6 +55,7 @@ CREATE TABLE agendamentos (
   descricao   TEXT    NOT NULL,
   status      TEXT    NOT NULL DEFAULT 'confirmado'
               CHECK (status IN ('confirmado', 'cancelado', 'realizado')),
+  anotacao    TEXT,
   criado_em   TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 

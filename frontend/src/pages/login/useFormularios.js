@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { paginaInicial, useAuth } from "../../context/AuthContext";
 import api, { lerErro } from "../../services/api";
 
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,8 +26,8 @@ export function useEntrar() {
 
     setEnviando(true);
     try {
-      await entrar(email.trim(), senha);
-      navigate("/bem-vindo");
+      const usuario = await entrar(email.trim(), senha);
+      navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
       const { mensagem: texto, campos } = lerErro(erro);
       setMensagem(texto);
@@ -96,8 +96,8 @@ export function useCadastro(perfilInicial = "usuario") {
 
     setEnviando(true);
     try {
-      await cadastrar(corpo);
-      navigate("/bem-vindo");
+      const usuario = await cadastrar(corpo);
+      navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
       const { mensagem: texto, campos } = lerErro(erro);
       setMensagem(texto);

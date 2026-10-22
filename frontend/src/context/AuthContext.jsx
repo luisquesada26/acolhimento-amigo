@@ -47,6 +47,11 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;
 }
 
+// para onde cada perfil vai depois de entrar
+export function paginaInicial(perfil) {
+  return perfil === "voluntario" ? "/voluntario" : "/bem-vindo";
+}
+
 export function useAuth() {
   return useContext(AuthContext);
 }
