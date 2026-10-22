@@ -142,6 +142,6 @@ Resposta de `POST /agendamentos`:
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
   "voluntario": { "id": 1, "nome": "Rafael Almeida" },
   "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
-  "usuario": { "id": 1, "nome": "Carlos Mendoza", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idioma": "es" }
+  "usuario": { "id": 1, "nome": "Luis Quesada", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idioma": "es" }
 }
 ```

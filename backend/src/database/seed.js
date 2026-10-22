@@ -223,7 +223,7 @@ const voluntarios = [
 ];
 
 const usuarios = [
-  { nome: "Carlos Mendoza", email: "usuario@teste.com", telefone: "11987654321", pais: "Venezuela", idioma: "es" },
+  { nome: "Luis Quesada", email: "usuario@teste.com", telefone: "11987654321", pais: "Venezuela", idioma: "es" },
   { nome: "Wideline Joseph", email: "wideline.joseph@email.com", telefone: "11976543210", pais: "Haiti", idioma: "fr" },
   { nome: "Ahmad Khalil", email: "ahmad.khalil@email.com", telefone: "11965432109", pais: "Síria", idioma: "en" },
   { nome: "María Fernanda Ríos", email: "maria.rios@email.com", telefone: "11954321098", pais: "Colômbia", idioma: "es" },
