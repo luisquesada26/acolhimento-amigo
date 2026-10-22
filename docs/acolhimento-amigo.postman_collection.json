@@ -1,7 +1,8 @@
 {
   "info": {
+    "_postman_id": "d8f4e7b0-6ff3-44f8-82ca-e306756559f6",
     "name": "Acolhimento Amigo",
-    "description": "API do Acolhimento Amigo. Rode npm run db:reset e npm run dev antes. Rode as requisicoes na ordem, comecando pelos logins da pasta Login: cada token fica salvo e as outras requisicoes usam sozinhas.",
+    "description": "Todas as rotas da API, com GET, POST, PUT e DELETE de cada tabela.\n\nNão precisa fazer login: antes de cada envio a coleção entra sozinha com os usuários de teste (usuario@teste.com e voluntario@teste.com) e guarda os tokens.\n\nPUT e DELETE trabalham em cima do que o POST da mesma pasta criou. Se você mandar um PUT ou DELETE antes, a coleção cria o item na hora. Assim nenhum dado do seed é apagado.\n\nAntes de usar: a API precisa estar no ar (`npm run dev` na raiz do projeto). Se o banco foi resetado e alguma requisição der 401 ou 404, é só mandar de novo: a coleção limpa o que ficou velho e prepara outra vez.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -10,15 +11,127 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// datas no formato AAAA-MM-DD a partir de hoje, para os horarios nunca ficarem no passado",
           "{",
+          "  // A coleção entra sozinha com os usuários de teste e cria na hora o que o PUT e o DELETE precisam.",
+          "  // Só prepara o que a requisição usa: o token do cabeçalho e os {{ids}} da URL ou do corpo.",
+          "  const variaveis = pm.collectionVariables;",
+          "  const api = pm.variables.get(\"api\");",
+          "  const texto = [pm.request.url.toString(), JSON.stringify(pm.request.headers.toObject()), pm.request.body ? pm.request.body.toString() : \"\"].join(\" \");",
+          "  const usa = (nome) => texto.includes(\"{{\" + nome + \"}}\");",
+          "",
+          "  // anota o que esta requisição usa: se a resposta vier 401 ou 404, o teste da coleção limpa para o próximo envio preparar de novo",
+          "  pm.variables.set(\"variaveisDaRequisicao\", [\"tokenUsuario\", \"tokenVoluntario\", \"tokenNovaConta\", \"tokenNovoVoluntario\", \"areaId\", \"servicoId\", \"horarioId\", \"agendamentoId\"].filter(usa).join(\",\"));",
+          "",
+          "  // data e hora novas a cada envio, para o horário criado não bater com outro",
+          "  const sorteio = (min, max) => min + Math.floor(Math.random() * (max - min + 1));",
           "  const diaMais = (dias) => {",
           "    const d = new Date();",
           "    d.setDate(d.getDate() + dias);",
-          "    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;",
+          "    return d.getFullYear() + \"-\" + String(d.getMonth() + 1).padStart(2, \"0\") + \"-\" + String(d.getDate()).padStart(2, \"0\");",
           "  };",
-          "  pm.collectionVariables.set('amanha', diaMais(1));",
-          "  pm.collectionVariables.set('daquiTresDias', diaMais(3));",
+          "  const hora = (minutos) => String(Math.floor(minutos / 60)).padStart(2, \"0\") + \":\" + String(minutos % 60).padStart(2, \"0\");",
+          "  const inicio = sorteio(14, 38) * 30;",
+          "  variaveis.set(\"dataLivre\", diaMais(sorteio(20, 80)));",
+          "  variaveis.set(\"horaInicio\", hora(inicio));",
+          "  variaveis.set(\"horaFim\", hora(inicio + 30));",
+          "  variaveis.set(\"sufixo\", String(Date.now()).slice(-6));",
+          "  variaveis.set(\"emailNovo\", \"conta\" + Date.now() + \"@teste.local\");",
+          "",
+          "  const enviar = (metodo, caminho, token, corpo, depois) => pm.sendRequest({",
+          "    url: api + caminho,",
+          "    method: metodo,",
+          "    header: Object.assign({ \"Content-Type\": \"application/json\" }, token ? { Authorization: \"Bearer \" + variaveis.get(token) } : {}),",
+          "    body: corpo ? { mode: \"raw\", raw: JSON.stringify(corpo) } : undefined,",
+          "  }, (erro, res) => {",
+          "    let json = null;",
+          "    try { json = res.json(); } catch (e) { json = null; }",
+          "    depois(erro ? null : json);",
+          "  });",
+          "",
+          "  const conta = (perfil) => Object.assign({",
+          "    nome: perfil === \"voluntario\" ? \"Voluntário de Teste\" : \"Usuário de Teste\",",
+          "    email: \"conta\" + Date.now() + sorteio(100, 999) + \"@teste.local\",",
+          "    senha: \"senha123\",",
+          "    perfil,",
+          "    aceite_lgpd: true,",
+          "  }, perfil === \"voluntario\" ? { voluntario: { area_id: 2 } } : {});",
+          "",
+          "  // horário livre e serviço do Rafael (voluntário 1), lidos de novo a cada envio",
+          "  const buscarLivre = (pronto) => enviar(\"GET\", \"/voluntarios/1\", null, null, (r) => {",
+          "    if (!r || !r.horarios || !r.horarios.length || !r.servicos || !r.servicos.length) return pronto(null);",
+          "    variaveis.set(\"servicoLivreId\", String(r.servicos[0].id));",
+          "    pronto(r.horarios[0].id);",
+          "  });",
+          "",
+          "  const receitas = {",
+          "    tokenUsuario: { criar: (pronto) => enviar(\"POST\", \"/auth/login\", null, { email: \"usuario@teste.com\", senha: \"senha123\" }, (r) => pronto(r && r.token)) },",
+          "    tokenVoluntario: { criar: (pronto) => enviar(\"POST\", \"/auth/login\", null, { email: \"voluntario@teste.com\", senha: \"senha123\" }, (r) => pronto(r && r.token)) },",
+          "    tokenNovaConta: { criar: (pronto) => enviar(\"POST\", \"/auth/cadastro\", null, conta(\"usuario\"), (r) => pronto(r && r.token)) },",
+          "    tokenNovoVoluntario: { criar: (pronto) => enviar(\"POST\", \"/auth/cadastro\", null, conta(\"voluntario\"), (r) => pronto(r && r.token)) },",
+          "    areaId: {",
+          "      precisa: [\"tokenVoluntario\"],",
+          "      criar: (pronto) => enviar(\"POST\", \"/areas\", \"tokenVoluntario\", { nome: \"Área de teste \" + variaveis.get(\"sufixo\") }, (r) => pronto(r && r.id)),",
+          "    },",
+          "    servicoId: {",
+          "      precisa: [\"tokenVoluntario\"],",
+          "      criar: (pronto) => enviar(\"POST\", \"/servicos\", \"tokenVoluntario\", { titulo: \"Serviço de teste\", descricao: \"Serviço criado pela coleção do Postman.\", duracao_min: 30 }, (r) => pronto(r && r.id)),",
+          "    },",
+          "    horarioId: {",
+          "      precisa: [\"tokenVoluntario\"],",
+          "      criar: (pronto) => enviar(\"POST\", \"/horarios\", \"tokenVoluntario\", { data: variaveis.get(\"dataLivre\"), hora_inicio: variaveis.get(\"horaInicio\"), hora_fim: variaveis.get(\"horaFim\") }, (r) => pronto(r && r.id)),",
+          "    },",
+          "    horarioLivreId: { sempre: true, criar: buscarLivre },",
+          "    // o usuário só pode ter 3 agendamentos confirmados: reaproveita o que a coleção já criou antes de marcar outro",
+          "    agendamentoId: {",
+          "      precisa: [\"tokenUsuario\"],",
+          "      criar: (pronto) => enviar(\"GET\", \"/meus-agendamentos?status=confirmado\", \"tokenUsuario\", null, (lista) => {",
+          "        const daColecao = (lista || []).find((a) => String(a.descricao).startsWith(\"Teste pelo Postman\"));",
+          "        if (daColecao) return pronto(daColecao.id);",
+          "        buscarLivre((horarioId) => {",
+          "          if (!horarioId) return pronto(null);",
+          "          enviar(\"POST\", \"/agendamentos\", \"tokenUsuario\", {",
+          "            horario_id: Number(horarioId),",
+          "            servico_id: Number(variaveis.get(\"servicoLivreId\")),",
+          "            descricao: \"Teste pelo Postman: preciso entender como renovar meu protocolo de refúgio.\",",
+          "          }, (r) => pronto(r && r.id));",
+          "        });",
+          "      }),",
+          "    },",
+          "  };",
+          "",
+          "  const feitos = {};",
+          "  const garantir = (nomes, fim) => {",
+          "    const nome = nomes.find((n) => !feitos[n] && (receitas[n].sempre || !variaveis.get(n)));",
+          "    if (!nome) return fim();",
+          "    const receita = receitas[nome];",
+          "    garantir(receita.precisa || [], () => receita.criar((valor) => {",
+          "      feitos[nome] = true;",
+          "      if (valor === null || valor === undefined) {",
+          "        return console.warn(\"Não deu para preparar \" + nome + \". A API está no ar? O banco foi resetado?\");",
+          "      }",
+          "      variaveis.set(nome, String(valor));",
+          "      garantir(nomes, fim);",
+          "    }));",
+          "  };",
+          "",
+          "  const nomes = Object.keys(receitas).filter((n) => usa(n) || (n === \"horarioLivreId\" && usa(\"servicoLivreId\")));",
+          "  garantir(nomes, () => {});",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "{",
+          "  // token ou id que não vale mais (banco resetado, conta ou item excluído): limpa para o próximo envio preparar de novo",
+          "  const codigo = pm.response.code;",
+          "  if (codigo === 401 || codigo === 404) {",
+          "    (pm.variables.get(\"variaveisDaRequisicao\") || \"\").split(\",\").filter(Boolean).forEach((n) => pm.collectionVariables.unset(n));",
+          "  }",
+          "  pm.test(\"Resposta \" + codigo, () => pm.expect(codigo).to.be.below(400));",
           "}"
         ]
       }
@@ -38,29 +151,62 @@
       "value": ""
     },
     {
-      "key": "tokenOutroUsuario",
+      "key": "tokenNovaConta",
       "value": ""
     },
     {
-      "key": "tokenOutroVoluntario",
+      "key": "tokenNovoVoluntario",
       "value": ""
     },
     {
-      "key": "tokenNovoUsuario",
+      "key": "areaId",
       "value": ""
     },
     {
-      "key": "amanha",
+      "key": "servicoId",
       "value": ""
     },
     {
-      "key": "daquiTresDias",
+      "key": "horarioId",
+      "value": ""
+    },
+    {
+      "key": "agendamentoId",
+      "value": ""
+    },
+    {
+      "key": "horarioLivreId",
+      "value": ""
+    },
+    {
+      "key": "servicoLivreId",
+      "value": ""
+    },
+    {
+      "key": "dataLivre",
+      "value": ""
+    },
+    {
+      "key": "horaInicio",
+      "value": ""
+    },
+    {
+      "key": "horaFim",
+      "value": ""
+    },
+    {
+      "key": "sufixo",
+      "value": ""
+    },
+    {
+      "key": "emailNovo",
       "value": ""
     }
   ],
   "item": [
     {
       "name": "Geral",
+      "description": "Confere se a API está no ar.",
       "item": [
         {
           "name": "Servidor no ar",
@@ -76,15 +222,17 @@
                 "saude"
               ]
             }
-          }
+          },
+          "response": []
         }
       ]
     },
     {
       "name": "Login",
+      "description": "Opcional: a coleção já entra sozinha. Serve para ver o que o login devolve.",
       "item": [
         {
-          "name": "Login do usuario de teste (Carlos)",
+          "name": "Entrar como usuário (Carlos)",
           "request": {
             "method": "POST",
             "header": [
@@ -113,22 +261,21 @@
               }
             }
           },
+          "response": [],
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "  pm.collectionVariables.set(\"tokenUsuario\", pm.response.json().token);",
-                  "}"
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"tokenUsuario\", String(pm.response.json().token));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Login do voluntario de teste (Rafael, Jurídico)",
+          "name": "Entrar como voluntário (Rafael)",
           "request": {
             "method": "POST",
             "header": [
@@ -157,518 +304,27 @@
               }
             }
           },
+          "response": [],
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "  pm.collectionVariables.set(\"tokenVoluntario\", pm.response.json().token);",
-                  "}"
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"tokenVoluntario\", String(pm.response.json().token));"
                 ]
               }
             }
           ]
-        },
-        {
-          "name": "Login de outro usuario (María)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/login",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"maria.rios@email.com\",\n  \"senha\": \"senha123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "  pm.collectionVariables.set(\"tokenOutroUsuario\", pm.response.json().token);",
-                  "}"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Login de outro voluntario (Mariana)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/login",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"mariana.costa@email.com\",\n  \"senha\": \"senha123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "  pm.collectionVariables.set(\"tokenOutroVoluntario\", pm.response.json().token);",
-                  "}"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Login com senha errada (401)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/login",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"usuario@teste.com\",\n  \"senha\": \"errada\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Cadastro de usuario (ja devolve o token)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/cadastro",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "cadastro"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Mariam Diallo\",\n  \"email\": \"mariam@email.com\",\n  \"senha\": \"minhasenha\",\n  \"telefone\": \"11912345678\",\n  \"perfil\": \"usuario\",\n  \"pais_origem\": \"Guiné\",\n  \"idioma\": \"fr\",\n  \"aceite_lgpd\": true\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "  pm.collectionVariables.set(\"tokenNovoUsuario\", pm.response.json().token);",
-                  "}"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Cadastro de voluntario (só a área; idiomas, serviços e agenda vêm depois)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/cadastro",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "cadastro"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Paula Ventura\",\n  \"email\": \"paula@email.com\",\n  \"senha\": \"minhasenha\",\n  \"perfil\": \"voluntario\",\n  \"aceite_lgpd\": true,\n  \"voluntario\": {\n    \"area_id\": 2\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Cadastro sem aceitar a LGPD (400)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/auth/cadastro",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "auth",
-                "cadastro"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Teste\",\n  \"email\": \"teste@email.com\",\n  \"senha\": \"123456\",\n  \"perfil\": \"usuario\",\n  \"aceite_lgpd\": false\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
         }
       ]
     },
     {
-      "name": "Meu perfil",
+      "name": "Usuários",
+      "description": "Cria uma conta nova de usuário e mexe só nela, sem tocar nos usuários do seed.",
       "item": [
         {
-          "name": "Meus dados (usuario)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Meus dados (voluntario, vem com os dados profissionais)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Editar meus dados (usuario)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"telefone\": \"11900001111\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Editar meus dados profissionais (voluntario)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"voluntario\": {\n    \"bio\": \"Advogado especialista em refúgio e regularização migratória.\",\n    \"idiomas\": [\"pt\", \"es\", \"en\"]\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Idioma que não está na lista (400, só pt, en, es e fr)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"voluntario\": {\n    \"idiomas\": [\"pt\", \"ar\"]\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Usuario mandando dados de voluntario (400)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"voluntario\": {\n    \"bio\": \"Não sou voluntário.\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Sem token (401)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Areas",
-      "item": [
-        {
-          "name": "Listar areas (publico)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/areas",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "areas"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Uma area (publico)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/areas/1",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "areas",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Criar area (voluntario)",
+          "name": "Criar conta de usuário",
           "request": {
             "method": "POST",
             "header": [
@@ -678,207 +334,137 @@
               }
             ],
             "url": {
-              "raw": "{{api}}/areas",
+              "raw": "{{api}}/auth/cadastro",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "areas"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "auth",
+                "cadastro"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Tradução de documentos\"\n}",
+              "raw": "{\n  \"nome\": \"Usuário de Teste\",\n  \"email\": \"{{emailNovo}}\",\n  \"senha\": \"senha123\",\n  \"telefone\": \"11912345678\",\n  \"perfil\": \"usuario\",\n  \"pais_origem\": \"Venezuela\",\n  \"idioma\": \"es\",\n  \"aceite_lgpd\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
+            },
+            "description": "O e-mail muda a cada envio. A resposta já traz o token da conta nova."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"tokenNovaConta\", String(pm.response.json().token));"
+                ]
+              }
             }
-          }
+          ]
         },
         {
-          "name": "Criar area como usuario (403)",
+          "name": "Ver minha conta",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{tokenNovaConta}}"
               }
             ],
             "url": {
-              "raw": "{{api}}/areas",
+              "raw": "{{api}}/me",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "areas"
+                "me"
               ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Outra área\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Criar area sem login (401)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/areas",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "areas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Outra área\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Editar area (id 13 e a criada acima)",
+          "name": "Editar minha conta",
           "request": {
             "method": "PUT",
             "header": [
               {
+                "key": "Authorization",
+                "value": "Bearer {{tokenNovaConta}}"
+              },
+              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "url": {
-              "raw": "{{api}}/areas/13",
+              "raw": "{{api}}/me",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "areas",
-                "13"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "me"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Tradução e interpretação\"\n}",
+              "raw": "{\n  \"telefone\": \"11988887777\",\n  \"pais_origem\": \"Colômbia\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Excluir area",
+          "name": "Excluir minha conta",
           "request": {
             "method": "DELETE",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenNovaConta}}"
+              }
+            ],
             "url": {
-              "raw": "{{api}}/areas/13",
+              "raw": "{{api}}/me",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "areas",
-                "13"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "me"
               ]
             }
-          }
-        },
-        {
-          "name": "Excluir area com voluntarios (409)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/areas/1",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "areas",
-                "1"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"tokenNovaConta\");"
+                ]
+              }
             }
-          }
+          ]
         }
       ]
     },
     {
-      "name": "Busca de voluntarios",
+      "name": "Voluntários",
+      "description": "Busca e perfil público, mais uma conta nova de voluntário para editar e excluir.",
       "item": [
         {
-          "name": "Busca sem filtro (publico)",
+          "name": "Buscar voluntários",
           "request": {
             "method": "GET",
             "header": [],
@@ -889,86 +475,40 @@
               ],
               "path": [
                 "voluntarios"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Busca por palavra",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/voluntarios?q=visto",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "voluntarios"
-              ],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "visto"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Filtro por area e idioma",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/voluntarios?area=4&idioma=en",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "voluntarios"
               ],
               "query": [
                 {
                   "key": "area",
-                  "value": "4"
+                  "value": "4",
+                  "disabled": true,
+                  "description": "id da área"
                 },
                 {
                   "key": "idioma",
-                  "value": "en"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Quem tem horario livre nos proximos 7 dias e fala frances",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/voluntarios?idioma=fr&disponivel=semana",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "voluntarios"
-              ],
-              "query": [
+                  "value": "fr",
+                  "disabled": true,
+                  "description": "pt, en, es ou fr"
+                },
                 {
-                  "key": "idioma",
-                  "value": "fr"
+                  "key": "q",
+                  "value": "visto",
+                  "disabled": true,
+                  "description": "palavra no nome, na bio ou nos serviços"
                 },
                 {
                   "key": "disponivel",
-                  "value": "semana"
+                  "value": "semana",
+                  "disabled": true,
+                  "description": "só quem tem horário livre nos próximos 7 dias"
                 }
               ]
-            }
-          }
+            },
+            "description": "Marque os filtros na aba Params para usar."
+          },
+          "response": []
         },
         {
-          "name": "Perfil publico com servicos e horarios livres",
+          "name": "Ver um voluntário",
           "request": {
             "method": "GET",
             "header": [],
@@ -981,68 +521,288 @@
                 "voluntarios",
                 "1"
               ]
+            },
+            "description": "Perfil público com os serviços e os horários livres."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar conta de voluntário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/auth/cadastro",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "auth",
+                "cadastro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Voluntário de Teste\",\n  \"email\": \"{{emailNovo}}\",\n  \"senha\": \"senha123\",\n  \"perfil\": \"voluntario\",\n  \"aceite_lgpd\": true,\n  \"voluntario\": {\n    \"area_id\": 2\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "No cadastro só a área é obrigatória. Idiomas e bio entram no PUT."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"tokenNovoVoluntario\", String(pm.response.json().token));"
+                ]
+              }
             }
-          }
+          ]
+        },
+        {
+          "name": "Editar meu perfil de voluntário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenNovoVoluntario}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/me",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voluntario\": {\n    \"bio\": \"Advogado com experiência em regularização migratória.\",\n    \"idiomas\": [\"pt\", \"es\"],\n    \"registro_profissional\": \"OAB/SP 123456\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir minha conta de voluntário",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenNovoVoluntario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/me",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"tokenNovoVoluntario\");"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Meus servicos (voluntario)",
+      "name": "Áreas",
+      "description": "Ler é público. Criar, editar e excluir é com o voluntário.",
       "item": [
         {
-          "name": "Meus servicos",
+          "name": "Listar áreas",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{api}}/meus-servicos",
+              "raw": "{{api}}/areas",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "meus-servicos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "areas"
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Meus servicos como usuario (403)",
+          "name": "Ver uma área",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{api}}/meus-servicos",
+              "raw": "{{api}}/areas/1",
               "host": [
                 "{{api}}"
               ],
               "path": [
-                "meus-servicos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
+                "areas",
+                "1"
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Servicos ativos de um voluntario (publico)",
+          "name": "Criar área",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/areas",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "areas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Área de teste {{sufixo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"areaId\", String(pm.response.json().id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar área",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/areas/{{areaId}}",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "areas",
+                "{{areaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Área editada {{sufixo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir área",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/areas/{{areaId}}",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "areas",
+                "{{areaId}}"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"areaId\");"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Serviços",
+      "description": "Ler é público. Criar, editar e excluir é com o voluntário dono do serviço.",
+      "item": [
+        {
+          "name": "Listar serviços de um voluntário",
           "request": {
             "method": "GET",
             "header": [],
@@ -1057,17 +817,63 @@
               "query": [
                 {
                   "key": "voluntario_id",
-                  "value": "1"
+                  "value": "1",
+                  "description": "id do voluntário"
                 }
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Criar servico",
+          "name": "Ver um serviço",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api}}/servicos/1",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "servicos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Meus serviços (voluntário)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/meus-servicos",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "meus-servicos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar serviço",
           "request": {
             "method": "POST",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -1082,16 +888,6 @@
                 "servicos"
               ]
             },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Direitos trabalhistas\",\n  \"descricao\": \"Orientação sobre carteira de trabalho, salário e direitos do trabalhador.\",\n  \"duracao_min\": 30\n}",
@@ -1101,182 +897,108 @@
                 }
               }
             }
-          }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"servicoId\", String(pm.response.json().id));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "Editar meu servico",
+          "name": "Editar serviço",
           "request": {
             "method": "PUT",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "url": {
-              "raw": "{{api}}/servicos/1",
+              "raw": "{{api}}/servicos/{{servicoId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "servicos",
-                "1"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "{{servicoId}}"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"duracao_min\": 60\n}",
+              "raw": "{\n  \"duracao_min\": 45\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Editar servico de outro voluntario (403)",
+          "name": "Excluir serviço",
           "request": {
-            "method": "PUT",
+            "method": "DELETE",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
               }
             ],
             "url": {
-              "raw": "{{api}}/servicos/3",
+              "raw": "{{api}}/servicos/{{servicoId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "servicos",
-                "3"
+                "{{servicoId}}"
               ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"duracao_min\": 15\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"servicoId\");"
+                ]
               }
             }
-          }
-        },
-        {
-          "name": "Excluir servico sem agendamentos (o criado acima)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/servicos/121",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "servicos",
-                "121"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Excluir servico com agendamentos (so desativa)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/servicos/1",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "servicos",
-                "1"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+          ]
         }
       ]
     },
     {
-      "name": "Minha agenda (voluntario)",
+      "name": "Horários",
+      "description": "A agenda do voluntário. A data e a hora do POST e do PUT são sorteadas a cada envio para não bater com outro horário.",
       "item": [
         {
-          "name": "Minha agenda (os reservados vem com o agendamento e a descricao do caso)",
+          "name": "Minha agenda (voluntário)",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              }
+            ],
             "url": {
               "raw": "{{api}}/meus-horarios",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "meus-horarios"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "So os reservados",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/meus-horarios?status=reservado",
               "host": [
                 "{{api}}"
               ],
@@ -1286,53 +1008,24 @@
               "query": [
                 {
                   "key": "status",
-                  "value": "reservado"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
+                  "value": "reservado",
+                  "disabled": true,
+                  "description": "livre ou reservado"
                 }
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Agenda como usuario (403)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/meus-horarios",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "meus-horarios"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Criar horario",
+          "name": "Criar horário",
           "request": {
             "method": "POST",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -1347,144 +1040,116 @@
                 "horarios"
               ]
             },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"data\": \"{{daquiTresDias}}\",\n  \"hora_inicio\": \"14:00\",\n  \"hora_fim\": \"14:45\"\n}",
+              "raw": "{\n  \"data\": \"{{dataLivre}}\",\n  \"hora_inicio\": \"{{horaInicio}}\",\n  \"hora_fim\": \"{{horaFim}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             }
-          }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"horarioId\", String(pm.response.json().id));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "Horario sobreposto (409)",
+          "name": "Editar horário",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "url": {
-              "raw": "{{api}}/horarios",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "horarios"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"data\": \"{{daquiTresDias}}\",\n  \"hora_inicio\": \"14:30\",\n  \"hora_fim\": \"15:00\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Hora de fim antes do inicio (400)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/horarios",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "horarios"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"data\": \"{{amanha}}\",\n  \"hora_inicio\": \"15:00\",\n  \"hora_fim\": \"14:00\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Excluir horario de outro voluntario (403)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/horarios/21",
+              "raw": "{{api}}/horarios/{{horarioId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "horarios",
-                "21"
+                "{{horarioId}}"
               ]
             },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"{{dataLivre}}\",\n  \"hora_inicio\": \"{{horaInicio}}\",\n  \"hora_fim\": \"{{horaFim}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
+              }
+            },
+            "description": "Muda o horário para outro dia e hora."
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir horário",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenVoluntario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{api}}/horarios/{{horarioId}}",
+              "host": [
+                "{{api}}"
+              ],
+              "path": [
+                "horarios",
+                "{{horarioId}}"
               ]
             }
-          }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"horarioId\");"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
       "name": "Agendamentos",
+      "description": "O usuário marca um horário livre do Rafael (voluntário 1). Cancelar é o DELETE e devolve o horário para a agenda.",
       "item": [
         {
-          "name": "Meus agendamentos (usuario)",
+          "name": "Meus agendamentos (usuário)",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUsuario}}"
+              }
+            ],
             "url": {
               "raw": "{{api}}/meus-agendamentos",
               "host": [
@@ -1492,89 +1157,28 @@
               ],
               "path": [
                 "meus-agendamentos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Proximos atendimentos (voluntario)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/meus-agendamentos?status=confirmado",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "meus-agendamentos"
               ],
               "query": [
                 {
                   "key": "status",
-                  "value": "confirmado"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
+                  "value": "confirmado",
+                  "disabled": true,
+                  "description": "confirmado, realizado ou cancelado"
                 }
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Atendimentos realizados (voluntario)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/meus-agendamentos?status=realizado",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "meus-agendamentos"
-              ],
-              "query": [
-                {
-                  "key": "status",
-                  "value": "realizado"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Marcar atendimento (usuario)",
+          "name": "Marcar atendimento",
           "request": {
             "method": "POST",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUsuario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -1589,589 +1193,122 @@
                 "agendamentos"
               ]
             },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"horario_id\": 2,\n  \"servico_id\": 2,\n  \"descricao\": \"Preciso entender como renovar meu protocolo de refúgio.\"\n}",
+              "raw": "{\n  \"horario_id\": {{horarioLivreId}},\n  \"servico_id\": {{servicoLivreId}},\n  \"descricao\": \"Teste pelo Postman: preciso entender como renovar meu protocolo de refúgio.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
+            },
+            "description": "O horário livre e o serviço são lidos do perfil do Rafael antes do envio. O usuário pode ter até 3 agendamentos confirmados: se passar disso, cancele um."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.set(\"agendamentoId\", String(pm.response.json().id));"
+                ]
+              }
             }
-          }
+          ]
         },
         {
-          "name": "Outro usuario no mesmo horario (409, ja reservado)",
+          "name": "Ver um agendamento",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{tokenUsuario}}"
               }
             ],
             "url": {
-              "raw": "{{api}}/agendamentos",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenOutroUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"horario_id\": 2,\n  \"servico_id\": 2,\n  \"descricao\": \"Também preciso de ajuda com o meu protocolo de refúgio.\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Voluntario tentando marcar (403)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/agendamentos",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"horario_id\": 3,\n  \"servico_id\": 2,\n  \"descricao\": \"Voluntário não pode marcar atendimento.\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Descricao curta (400)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/agendamentos",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"horario_id\": 3,\n  \"servico_id\": 2,\n  \"descricao\": \"ajuda\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Ver o agendamento marcado (id 11)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
+              "raw": "{{api}}/agendamentos/{{agendamentoId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
+                "{{agendamentoId}}"
               ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "O voluntario do horario tambem ve",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Outro usuario nao ve (403)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenOutroUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Outro voluntario nao ve (403)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenOutroVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Remarcar para outro horario do mesmo voluntario",
+          "name": "Editar a descrição do agendamento",
           "request": {
             "method": "PUT",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"horario_id\": 4\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Voluntario tentando remarcar (403)",
-          "request": {
-            "method": "PUT",
-            "header": [
+                "key": "Authorization",
+                "value": "Bearer {{tokenUsuario}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "url": {
-              "raw": "{{api}}/agendamentos/11",
+              "raw": "{{api}}/agendamentos/{{agendamentoId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
+                "{{agendamentoId}}"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"horario_id\": 5\n}",
+              "raw": "{\n  \"descricao\": \"Teste pelo Postman: preciso renovar o protocolo de refúgio e entender os prazos.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Usuario tentando marcar como realizado (403)",
+          "name": "Cancelar agendamento",
           "request": {
-            "method": "PUT",
+            "method": "DELETE",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{tokenUsuario}}"
               }
             ],
             "url": {
-              "raw": "{{api}}/agendamentos/11",
+              "raw": "{{api}}/agendamentos/{{agendamentoId}}",
               "host": [
                 "{{api}}"
               ],
               "path": [
                 "agendamentos",
-                "11"
+                "{{agendamentoId}}"
               ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"realizado\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) pm.collectionVariables.unset(\"agendamentoId\");"
+                ]
               }
             }
-          }
-        },
-        {
-          "name": "Voluntario marcando realizado antes do horario (400)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"realizado\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Outro usuario tentando cancelar (403)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenOutroUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Cancelar (o horario volta a ficar livre)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/agendamentos/11",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "agendamentos",
-                "11"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Exclusoes",
-      "item": [
-        {
-          "name": "Excluir horario reservado sem confirmar (409 com precisaConfirmar)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/horarios/1",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "horarios",
-                "1"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Excluir horario reservado confirmando",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/horarios/1?confirmar=true",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "horarios",
-                "1"
-              ],
-              "query": [
-                {
-                  "key": "confirmar",
-                  "value": "true"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenVoluntario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Excluir minha conta (a da Mariam, criada no cadastro)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenNovoUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Depois de excluir, o token nao serve mais (404)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api}}/me",
-              "host": [
-                "{{api}}"
-              ],
-              "path": [
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenNovoUsuario}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+          ]
         }
       ]
     }
