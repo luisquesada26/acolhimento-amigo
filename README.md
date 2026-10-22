@@ -9,7 +9,7 @@ Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 | Como um | eu posso... | |
 | --- | --- | --- |
 | Visitante | eu posso... | Conhecer o Acolhimento Amigo e as áreas de atendimento |
-| Visitante | eu posso... | Criar uma conta como usuário para pedir ajuda |
+| Visitante | eu posso... | Criar uma conta como usuário para pedir atendimento |
 | Visitante | eu posso... | Criar uma conta como voluntário informando minha área de atuação |
 | Visitante | eu posso... | Entrar com meu e-mail e senha |
 | Usuário (logado) | eu posso... | Buscar voluntários por palavra-chave |
