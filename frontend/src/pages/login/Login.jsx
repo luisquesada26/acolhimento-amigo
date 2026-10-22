@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FormCadastro, FormEntrar, Logo } from "./Campos";
+import SeletorIdioma from "../../components/SeletorIdioma";
 import { useCadastro, useEntrar } from "./useFormularios";
 import "./login.css";
 
@@ -15,6 +16,9 @@ export default function Login() {
 
   return (
     <main className="login">
+      <div className="login-idioma">
+        <SeletorIdioma claro />
+      </div>
       <Logo claro />
       <section className={ehEntrar ? "cartao" : "cartao cartao-cadastro"} aria-labelledby="login-titulo">
         <header className="cabecalho-form">

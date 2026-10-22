@@ -15,22 +15,26 @@ function formatar(a) {
     id: a.id,
     status: a.status,
     descricao: a.descricao,
+    anotacao: a.anotacao,
     criado_em: a.criado_em,
     horario: { id: a.horario_id, data: a.data, hora_inicio: a.hora_inicio, hora_fim: a.hora_fim },
     voluntario: { id: a.voluntario_id, nome: a.voluntario_nome },
     servico: { id: a.servico_id, titulo: a.servico_titulo },
-    usuario: { id: a.usuario_id, nome: a.usuario_nome },
+    usuario: {
+      id: a.usuario_id,
+      nome: a.usuario_nome,
+      email: a.usuario_email,
+      telefone: a.usuario_telefone,
+      foto: a.usuario_foto,
+      pais_origem: a.usuario_pais,
+      idioma: a.usuario_idioma,
+    },
   };
 }
 
 function jaComecou(horario) {
   const { hoje, hora } = agora();
   return horario.data < hoje || (horario.data === hoje && horario.hora_inicio <= hora);
-}
-
-function jaTerminou(horario) {
-  const { hoje, hora } = agora();
-  return horario.data < hoje || (horario.data === hoje && horario.hora_fim <= hora);
 }
 
 function horarioDisponivel(horarioId) {
@@ -103,8 +107,13 @@ const atualizar = db.transaction((usuario, id, dados) => {
   if (dados.status === "realizado" && usuario.perfil !== "voluntario") {
     throw new ErroApp(403, "Só o voluntário pode marcar o atendimento como realizado");
   }
+  if (dados.anotacao !== undefined && usuario.perfil !== "voluntario") {
+    throw new ErroApp(403, "Só o voluntário escreve a anotação do atendimento");
+  }
 
-  if (atual.status !== "confirmado") {
+  // a anotação pode ser escrita depois de concluído; o resto só com o atendimento confirmado
+  const soAnotacao = Object.keys(dados).every((campo) => campo === "anotacao");
+  if (atual.status === "cancelado" || (atual.status !== "confirmado" && !soAnotacao)) {
     throw new ErroApp(409, "Só é possível alterar agendamentos confirmados");
   }
 
@@ -119,16 +128,17 @@ const atualizar = db.transaction((usuario, id, dados) => {
     repo.atualizar(id, { horario_id: novo.id });
   }
 
+  // o voluntário conclui quando a chamada acaba, sem esperar o fim do horário marcado
   if (dados.status === "realizado") {
-    const horario = horariosRepo.buscarPorId(dados.horario_id ?? atual.horario.id);
-    if (!jaTerminou(horario)) {
-      throw new ErroApp(400, "Só é possível marcar como realizado depois do horário do atendimento");
-    }
     repo.atualizar(id, { status: "realizado" });
   }
 
   if (dados.descricao) {
     repo.atualizar(id, { descricao: dados.descricao });
+  }
+
+  if (dados.anotacao !== undefined) {
+    repo.atualizar(id, { anotacao: dados.anotacao || null });
   }
 
   return buscar(id);

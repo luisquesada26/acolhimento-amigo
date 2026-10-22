@@ -4,6 +4,37 @@ Plataforma web gratuita que conecta migrantes e refugiados a profissionais volun
 
 Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 
+## User stories
+
+| Como um | eu posso... | |
+| --- | --- | --- |
+| Visitante | eu posso... | Conhecer o Acolhimento Amigo e as áreas de atendimento |
+| Visitante | eu posso... | Criar uma conta como usuário para pedir atendimento |
+| Visitante | eu posso... | Criar uma conta como voluntário informando minha área de atuação |
+| Visitante | eu posso... | Entrar com meu e-mail e senha |
+| Usuário (logado) | eu posso... | Buscar voluntários por palavra-chave |
+| Usuário (logado) | eu posso... | Filtrar voluntários por área, idioma e disponibilidade |
+| Usuário (logado) | eu posso... | Ver o perfil do voluntário com os serviços e os horários livres |
+| Usuário (logado) | eu posso... | Marcar um horário livre escolhendo o serviço e contando o que preciso |
+| Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram |
+| Usuário (logado) | eu posso... | Remarcar um atendimento para outro horário do mesmo voluntário |
+| Usuário (logado) | eu posso... | Cancelar um atendimento |
+| Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento |
+| Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto |
+| Usuário (logado) | eu posso... | Excluir minha conta |
+| Voluntário (logado) | eu posso... | Ver no painel meu próximo atendimento e os números do mês |
+| Voluntário (logado) | eu posso... | Cadastrar, editar e excluir os serviços que ofereço |
+| Voluntário (logado) | eu posso... | Abrir os dias e horários em que posso atender |
+| Voluntário (logado) | eu posso... | Ver minha agenda em calendário por mês, semana e dia |
+| Voluntário (logado) | eu posso... | Ver o caso e o contato de quem marcou comigo |
+| Voluntário (logado) | eu posso... | Concluir um atendimento escrevendo o que foi feito e o próximo passo |
+| Voluntário (logado) | eu posso... | Cancelar um atendimento |
+| Voluntário (logado) | eu posso... | Ver meu histórico filtrando realizados e cancelados |
+| Voluntário (logado) | eu posso... | Buscar nos relatórios quem atendi por nome, data, serviço e nacionalidade |
+| Voluntário (logado) | eu posso... | Escolher se apareço ou não na busca |
+| Voluntário (logado) | eu posso... | Editar meus dados, foto, idiomas e apresentação |
+| Voluntário (logado) | eu posso... | Excluir minha conta |
+
 ## Tecnologias
 
 - Backend: Node.js, Express, Zod, bcrypt e JWT

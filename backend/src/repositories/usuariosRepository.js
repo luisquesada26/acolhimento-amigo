@@ -1,7 +1,7 @@
 const db = require("../database/conexao");
 
 // senha_hash fica de fora de proposito
-const COLUNAS = "id, nome, email, telefone, perfil, pais_origem, idioma, aceite_lgpd, criado_em";
+const COLUNAS = "id, nome, email, telefone, perfil, pais_origem, idioma, foto, aceite_lgpd, criado_em";
 
 function buscarPorId(id) {
   return db.prepare(`SELECT ${COLUNAS} FROM usuarios WHERE id = ?`).get(id);

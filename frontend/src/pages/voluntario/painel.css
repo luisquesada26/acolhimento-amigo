@@ -1,0 +1,362 @@
+.painel-estado {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  color: var(--texto-2);
+}
+
+.painel {
+  min-height: 100vh;
+  display: flex;
+  background: var(--fundo);
+}
+
+.painel-menu {
+  position: sticky;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 26px 16px;
+  background: var(--marinho);
+  color: #fff;
+}
+
+.painel-menu .logo {
+  padding: 0 6px;
+}
+
+.painel-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.painel-item {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #c3d2ec;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.painel-item:disabled {
+  cursor: not-allowed;
+}
+
+.painel-item-atual {
+  background: var(--verde-escuro);
+  color: #fff;
+  font-weight: 700;
+}
+
+.painel-usuario {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.painel-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--marinho);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.painel-usuario-nome {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.painel-usuario-nome strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-usuario-nome small {
+  color: #c3d2ec;
+  font-size: 12.5px;
+}
+
+.painel-sair {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #c3d2ec;
+  cursor: pointer;
+}
+
+.painel-sair:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.painel-conteudo {
+  flex: 1;
+  min-width: 0;
+  max-width: 1480px;
+  margin-inline: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 32px clamp(16px, 3vw, 40px) 32px;
+}
+
+.painel-cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-cabecalho h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.painel-cabecalho p {
+  color: var(--texto-2);
+}
+
+.painel-cabecalho p::first-letter {
+  text-transform: uppercase;
+}
+
+.painel-colunas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  align-items: start;
+  gap: 22px;
+}
+
+.painel-principal,
+.painel-lateral {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.painel-cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--sombra);
+}
+
+.painel-titulo {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.painel-servicos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.painel-servicos li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-servicos li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.painel-servicos span {
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+/* histórico em tabela */
+
+.historico-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.historico-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.historico-filtros button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.historico-filtros button[aria-pressed="true"] {
+  border-color: var(--verde-escuro);
+  background: var(--verde-escuro);
+  color: #fff;
+}
+
+.historico-rolagem {
+  overflow-x: auto;
+}
+
+.historico-tabela {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+
+.historico-tabela th {
+  padding: 0 12px 10px 0;
+  border-bottom: 1px solid var(--borda);
+  color: var(--texto-3);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.historico-tabela td {
+  padding: 14px 12px 14px 0;
+  border-bottom: 1px solid var(--borda);
+  vertical-align: middle;
+}
+
+.historico-tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+.historico-tabela td strong {
+  display: block;
+}
+
+.historico-tabela td small {
+  color: var(--texto-2);
+  font-size: 13px;
+}
+
+.historico-tabela time {
+  display: block;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.historico-tabela time small {
+  display: block;
+  font-weight: 600;
+}
+
+@media (max-width: 1080px) {
+  .painel-colunas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* no celular o menu vira uma barra no topo */
+@media (max-width: 760px) {
+  .painel {
+    flex-direction: column;
+  }
+
+  .painel-menu {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .painel-menu nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .painel-menu ul {
+    flex-direction: row;
+  }
+
+  .painel-item {
+    white-space: nowrap;
+  }
+
+  .painel-usuario-nome {
+    display: none;
+  }
+
+  .painel-usuario {
+    margin: 0 0 0 auto;
+    padding: 0;
+    background: transparent;
+  }
+
+  .painel-conteudo {
+    padding-top: 22px;
+  }
+}

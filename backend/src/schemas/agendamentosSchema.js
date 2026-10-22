@@ -19,6 +19,8 @@ const atualizarAgendamentoSchema = z
     horario_id: z.number().int().positive("Horário inválido"),
     status: z.literal("realizado", { error: "Para cancelar use DELETE. Aqui o status só pode ser realizado" }),
     descricao,
+    // o que foi feito, o que o voluntário recomendou e o próximo passo
+    anotacao: z.string().trim().max(1000, "A anotação pode ter até 1000 caracteres"),
   })
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "Nenhum campo para atualizar" });

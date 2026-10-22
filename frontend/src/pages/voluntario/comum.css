@@ -1,0 +1,715 @@
+/* peças comuns do painel do voluntário */
+
+.vol-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.botao.vol-botao-pequeno {
+  height: 44px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+.vol-botao-perigo,
+.vol-botao-secundario {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--erro);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.vol-botao-perigo:hover:not(:disabled) {
+  border-color: #f0b4ae;
+  background: var(--erro-claro);
+}
+
+.vol-botao-cheio {
+  border-color: var(--erro);
+  background: var(--erro);
+  color: #fff;
+}
+
+.vol-botao-cheio:hover:not(:disabled) {
+  background: #9a1d14;
+}
+
+.vol-botao-secundario {
+  color: var(--texto);
+}
+
+.vol-botao-secundario:hover:not(:disabled) {
+  background: var(--fundo);
+}
+
+.vol-botao-perigo:disabled,
+.vol-botao-secundario:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.vol-confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--erro-claro);
+  color: #7a1a12;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vol-erro {
+  color: var(--erro);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* situação do atendimento: palavra e ícone, nunca só a cor */
+.vol-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.vol-status-realizado {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.vol-status-cancelado {
+  background: var(--erro-claro);
+  color: var(--erro);
+}
+
+.vol-status-livre {
+  background: #fff4dc;
+  color: #8a5a00;
+}
+
+.vol-status-confirmado {
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+}
+
+.vol-pessoa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.vol-pessoa strong {
+  font-size: 17px;
+}
+
+.vol-contato {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.vol-contato li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.vol-contato svg {
+  flex-shrink: 0;
+  color: var(--texto-3);
+}
+
+.vol-contato a {
+  font-weight: 600;
+}
+
+/* números do painel */
+.vol-numeros {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vol-numeros li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vol-numeros strong {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.vol-numeros li > span:last-child {
+  color: var(--texto-2);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.vol-numero-icone {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.vol-numeros-cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 14px;
+}
+
+.vol-numeros-cartoes li {
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--borda);
+  border-radius: 18px;
+  background: #fff;
+}
+
+/* precisa da confirmação do voluntário */
+.vol-aguardando {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid #f3d9a4;
+  border-radius: 18px;
+  background: #fff8e8;
+}
+
+.vol-aguardando h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #7a4b00;
+}
+
+.vol-aguardando ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vol-aguardando li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #4a3a17;
+  line-height: 1.5;
+}
+
+/* próximo atendimento */
+.vol-proximo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--sombra);
+}
+
+.vol-proximo h2 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vol-proximo-vazio p {
+  color: var(--texto-2);
+  line-height: 1.5;
+}
+
+.vol-proximo-cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vol-proximo-info {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* o "quando" e a videochamada ficam juntos no canto */
+.vol-proximo-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.botao.vol-botao-video {
+  height: 40px;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(23, 87, 216, 0.22);
+}
+
+@media (max-width: 640px) {
+  .vol-proximo-lado {
+    align-items: flex-start;
+  }
+}
+
+/* azul, como o "marcado" do calendário */
+.vol-quando {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--azul);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.vol-quando-verde {
+  background: var(--verde-escuro);
+}
+
+.vol-proximo-hora {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.vol-proximo-hora::first-letter {
+  text-transform: uppercase;
+}
+
+.vol-servico {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.vol-caso {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--fundo);
+  color: #2a3a57;
+  line-height: 1.55;
+}
+
+.vol-caso p::before {
+  content: "“";
+}
+
+.vol-caso p::after {
+  content: "”";
+}
+
+.vol-proximo-acoes > .vol-confirmar {
+  flex-basis: 100%;
+}
+
+.vol-botao-concluir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--verde-escuro);
+}
+
+.vol-confirmar-concluir {
+  background: var(--verde-claro);
+  color: #0d4f29;
+}
+
+.vol-proximo-acoes .botao {
+  gap: 8px;
+}
+
+/* listas de atendimentos */
+.vol-lista {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vol-lista li {
+  border-bottom: 1px solid var(--borda);
+}
+
+.vol-lista-linha {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+/* linha que abre o atendimento */
+.vol-lista-botao {
+  width: 100%;
+  margin: 2px 0;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vol-lista-botao:hover {
+  background: var(--fundo);
+}
+
+.vol-lista li:last-child {
+  border-bottom: 0;
+}
+
+.vol-lista-data {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--fundo);
+  line-height: 1.1;
+}
+
+.vol-lista-data strong {
+  font-size: 19px;
+}
+
+.vol-lista-data span {
+  color: var(--texto-2);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.vol-lista-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vol-lista-texto span {
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.vol-vazio {
+  padding: 18px 0;
+  color: var(--texto-2);
+  line-height: 1.5;
+}
+
+/* perfil incompleto */
+.vol-pendencias {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 20px 22px;
+  border: 1px solid #b9d7c5;
+  border-radius: 20px;
+  background: var(--verde-claro);
+}
+
+.vol-pendencias > div {
+  flex: 1 1 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vol-pendencias h2 {
+  font-size: 17px;
+  color: #0d4f29;
+}
+
+.vol-pendencias p {
+  color: #2f5a41;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.vol-pendencias ul {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vol-pendencias li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.vol-pendencias li small {
+  margin-left: auto;
+  color: #8a5a00;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.vol-pendencias li.vol-pendencia-feita {
+  color: var(--verde-escuro);
+}
+
+.vol-pendencias li.vol-pendencia-feita small {
+  color: var(--verde-escuro);
+}
+
+/* horários livres */
+.vol-horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vol-horarios li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px dashed #e8b04b;
+  border-radius: 12px;
+  background: #fffaf0;
+  font-size: 14px;
+}
+
+.vol-horarios time {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.vol-horarios span {
+  color: #8a5a00;
+  font-weight: 700;
+}
+
+.vol-pendencias li a {
+  margin-left: auto;
+  color: var(--verde-escuro);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* interruptor de ligar e desligar */
+.vol-interruptor {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vol-interruptor-trilho {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #c4cfdf;
+  transition: background 0.15s;
+}
+
+.vol-interruptor-trilho span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(10, 42, 94, 0.3);
+  transition: transform 0.15s;
+}
+
+.vol-interruptor[aria-checked="true"] .vol-interruptor-trilho {
+  background: var(--verde-escuro);
+}
+
+.vol-interruptor[aria-checked="true"] .vol-interruptor-trilho span {
+  transform: translateX(18px);
+}
+
+.vol-interruptor:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* cabeçalho de tabela que ordena pela data */
+.vol-ordenar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.vol-ordenar:hover {
+  color: var(--texto);
+}
+
+/* janela (modal) */
+.vol-janela {
+  width: min(560px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  color: var(--texto);
+  box-shadow: 0 30px 70px rgba(3, 14, 38, 0.35);
+}
+
+.vol-janela::backdrop {
+  background: rgba(8, 33, 82, 0.45);
+}
+
+.vol-janela-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px 24px;
+}
+
+.vol-janela-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vol-janela-topo h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* foto (ou iniciais) */
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vol-pessoa-nome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vol-pessoa-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* concluir com anotação */
+.vol-confirmar-concluir label {
+  font-weight: 800;
+}
+
+.vol-confirmar-concluir textarea,
+.detalhe-anotacao textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14.5px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.vol-confirmar-concluir textarea:focus,
+.detalhe-anotacao textarea:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(23, 87, 216, 0.15);
+}

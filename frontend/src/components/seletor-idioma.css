@@ -1,0 +1,87 @@
+.idioma {
+  position: relative;
+}
+
+.idioma-botao {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.idioma-botao:hover {
+  border-color: #b9c9e2;
+}
+
+/* sobre a foto do login */
+.idioma-claro .idioma-botao {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.idioma-claro .idioma-botao:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bandeira {
+  flex-shrink: 0;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(10, 42, 94, 0.12);
+}
+
+.idioma-lista {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 190px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(10, 42, 94, 0.18);
+}
+
+.idioma-lista button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.idioma-lista button:hover {
+  background: var(--fundo);
+}
+
+.idioma-lista button[aria-current="true"] {
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-weight: 800;
+}
+
+.idioma-check {
+  margin-left: auto;
+}

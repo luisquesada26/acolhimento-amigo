@@ -6,7 +6,8 @@ const { rotaNaoEncontrada, tratarErros } = require("./middlewares/erros");
 const app = express();
 
 app.use(cors);
-app.use(express.json());
+// a foto do perfil vem no corpo, já reduzida pelo navegador
+app.use(express.json({ limit: "1mb" }));
 
 app.use("/api", rotas);
 

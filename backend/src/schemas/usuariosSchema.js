@@ -1,6 +1,6 @@
 const { z } = require("zod");
 
-// idiomas em que o voluntário atende
+// idiomas da plataforma: o voluntário atende neles e o usuário escolhe o seu
 const IDIOMAS = ["pt", "en", "es", "fr"];
 
 const idiomas = z
@@ -21,7 +21,13 @@ const camposUsuario = {
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres").max(72),
   telefone: z.string().trim().max(20).nullish(),
   pais_origem: z.string().trim().max(60).nullish(),
-  idioma: z.string().trim().min(2).max(5),
+  idioma: z.enum(IDIOMAS, { error: "Idioma deve ser pt, en, es ou fr" }),
+  // a foto chega como imagem em base64, já reduzida no navegador
+  foto: z
+    .string()
+    .max(500000, "A foto é grande demais")
+    .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Foto inválida")
+    .nullish(),
 };
 
 const criarUsuarioSchema = z

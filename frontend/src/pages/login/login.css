@@ -237,9 +237,23 @@
   color: #dce6f7;
 }
 
+/* idioma no canto de cima, por cima da foto */
+.login-idioma {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 @media (max-width: 640px) {
   .login {
     justify-content: flex-start;
+  }
+
+  /* no celular entra no fluxo, para não cobrir o logo */
+  .login-idioma {
+    position: static;
+    align-self: flex-end;
   }
 
   .cartao {
