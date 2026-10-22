@@ -232,7 +232,7 @@
       "description": "Opcional: a coleção já entra sozinha. Serve para ver o que o login devolve.",
       "item": [
         {
-          "name": "Entrar como usuário (Carlos)",
+          "name": "Entrar como usuário (Luis)",
           "request": {
             "method": "POST",
             "header": [

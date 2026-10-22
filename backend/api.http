@@ -12,7 +12,7 @@ GET {{api}}/saude
 
 #################### LOGIN ####################
 
-### Login do usuario de teste (Carlos)
+### Login do usuario de teste (Luis)
 # @name loginUsuario
 POST {{api}}/auth/login
 Content-Type: application/json
@@ -450,7 +450,7 @@ Content-Type: application/json
   "status": "realizado"
 }
 
-### Voluntario conclui o atendimento dele (o 1 e do Rafael com o Carlos; vai para realizado)
+### Voluntario conclui o atendimento dele (o 1 e do Rafael com o Luis; vai para realizado)
 PUT {{api}}/agendamentos/1
 Authorization: Bearer {{loginVoluntario.response.body.$.token}}
 Content-Type: application/json
