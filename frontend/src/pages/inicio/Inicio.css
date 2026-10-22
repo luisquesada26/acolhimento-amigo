@@ -137,7 +137,6 @@
 
 .secao-servicos {
   padding: 65px 8%;
-  background: #eef4ff;
 }
 
 .titulo-secao {
@@ -179,10 +178,10 @@
   gap: 16px;
   min-width: 0;
   padding: 22px 18px;
-  border-top: 5px solid var(--cor);
+  border: 1px solid var(--borda);
   border-radius: var(--raio);
   background: #ffffff;
-  box-shadow: 0 10px 30px rgba(10, 42, 94, 0.08);
+  box-shadow: 0 8px 24px rgba(10, 42, 94, 0.04);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -201,8 +200,8 @@
   width: 54px;
   height: 54px;
   border-radius: 15px;
-  background: var(--cor);
-  color: #ffffff;
+  background: var(--azul-claro);
+  color: var(--azul);
   font-size: 1.8rem;
 }
 
@@ -579,22 +578,46 @@
   overflow-wrap: anywhere;
 }
 
-/* Cores das áreas: a faixa de cima e o ícone do card */
+/* Cores das áreas */
 
 .cartao-azul {
-  --cor: #1757d8;
+  background: #f4f8ff;
+  border-color: #dce8ff;
 }
 
-.cartao-verde {
-  --cor: #16924b;
-}
-
-.cartao-laranja {
-  --cor: #d97706;
+.cartao-azul .icone-servico {
+  background: #dceaff;
+  color: #1757d8;
 }
 
 .cartao-roxo {
-  --cor: #8b35bf;
+  background: #fbf5ff;
+  border-color: #efdefc;
+}
+
+.cartao-roxo .icone-servico {
+  background: #f0dcff;
+  color: #8b35bf;
+}
+
+.cartao-verde {
+  background: #f1fcf6;
+  border-color: #d4f2e0;
+}
+
+.cartao-verde .icone-servico {
+  background: #d7f7e5;
+  color: #16924b;
+}
+
+.cartao-laranja {
+  background: #fff8ed;
+  border-color: #f9e8cc;
+}
+
+.cartao-laranja .icone-servico {
+  background: #ffebc9;
+  color: #d97706;
 }
 
 
