@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Cabecalho from "../../components/Cabecalho";
+import { useIdioma } from "../../context/IdiomaContext";
 import "./Inicio.css";
 import {
   Users,
@@ -16,6 +17,9 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { traducoes } from "./traducoes";
+
+// o lang da página acompanha o idioma, para o leitor de tela ler com a pronúncia certa
+const LANG = { pt: "pt-BR", en: "en", es: "es", fr: "fr" };
 
 
 const servicos = [
@@ -151,12 +155,12 @@ const etapas = [
 
 export default function Inicio() {
   const [areaExpandida, setAreaExpandida] = useState(null);
-  const [idioma, setIdioma] = useState("pt");
+  const { idioma } = useIdioma();
 
-  const t = traducoes[idioma];
+  const t = traducoes[idioma] ?? traducoes.pt;
 
   return (
-    <div className="pagina-inicio">
+    <div className="pagina-inicio" lang={LANG[idioma] ?? "pt-BR"}>
       <Cabecalho t={t} />
 
       <main>
@@ -187,32 +191,6 @@ export default function Inicio() {
               alt="Grupo de pessoas reunidas em um ambiente acolhedor"
             />
           </div>
-        </section>
-
-        {/* Idiomas apresentados na referência */}
-        
-        <section className="faixa-idiomas" aria-label={t.idiomasLabel}>
-          <button
-            type="button"
-            className={`idioma-opcao ${idioma === "pt" ? "ativo" : ""}`}
-            aria-pressed={idioma === "pt"}
-            onClick={() => setIdioma("pt")}
-          >
-            <span className="idioma-codigo">PT</span> 
-            {t.portugues}
-        
-          </button>
-
-          <button
-            type="button"
-            className={`idioma-opcao ${idioma === "es" ? "ativo" : ""}`}
-            aria-pressed={idioma === "es"}
-            onClick={() => setIdioma("es")}
-          >
-            <span className="idioma-codigo">ES</span>
-            {t.espanhol}
-            
-          </button>
         </section>
 
         {/* Serviços */}

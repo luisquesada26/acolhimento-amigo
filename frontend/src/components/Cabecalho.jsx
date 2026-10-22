@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { APP_NAME } from "../config";
+import SeletorIdioma from "./SeletorIdioma";
 import "./Cabecalho.css";
 
 export default function Cabecalho({ t }) {
@@ -32,9 +33,13 @@ export default function Cabecalho({ t }) {
         <a href="#sobre">{t.navSobre}</a>
       </nav>
 
-      <Link to="/login" className="cabecalho-botao">
-        {t.entrar}
-      </Link>
+      <div className="cabecalho-acoes">
+        <SeletorIdioma />
+
+        <Link to="/login" className="cabecalho-botao">
+          {t.entrar}
+        </Link>
+      </div>
     </header>
   );
 }

@@ -13,9 +13,6 @@ export const traducoes = {
       "Somos uma rede de apoio para imigrantes. Oferecemos atendimento gratuito e online com profissionais especializados, além de aulas de português e muito mais.",
     heroBotao: "Agende seu atendimento",
 
-    idiomasLabel: "Escolha o idioma",
-    portugues: "Português",
-    espanhol: "Español",
 
     servicosEtiqueta: "Nossos serviços",
     servicosTitulo: "Como podemos ajudar?",
@@ -128,6 +125,157 @@ export const traducoes = {
     },
   },
 
+  en: {
+    navInicio: "Home",
+    navServicos: "Services",
+    navVoluntario: "Volunteer",
+    navSobre: "About us",
+    entrar: "Sign in",
+
+    heroEtiqueta: "Support and guidance for immigrants",
+    heroTitulo1: "You are not",
+    heroTitulo2: "alone!",
+    heroDescricao:
+      "We are a support network for immigrants. We offer free online sessions with specialized professionals, Portuguese classes and much more.",
+    heroBotao: "Book your session",
+
+    servicosEtiqueta: "Our services",
+    servicosTitulo: "How can we help?",
+    servicosDescricao:
+      "We offer free, safe and online support in different areas.",
+    servicosContagem: "{n} services available",
+    verServicos: "See services ↓",
+    ocultarServicos: "Hide services ↑",
+
+    comoEtiqueta: "Quick and simple",
+    comoTitulo: "How does it work?",
+    comoDescricao:
+      "See how easy it is to find the support you need.",
+    etapas: [
+      {
+        titulo: "Choose a service",
+        descricao: "Browse the available services and pick the one you need.",
+      },
+      {
+        titulo: "Create your account",
+        descricao: "Sign up, or sign in if you already have an account.",
+      },
+      {
+        titulo: "Book your session",
+        descricao: "Pick the day and time that work best for you.",
+      },
+      {
+        titulo: "Get support",
+        descricao: "Talk to the professional and ask your questions.",
+      },
+    ],
+    cadastroBotao: "Create my account",
+
+    sobreEtiqueta: "Our purpose",
+    sobreTitulo: "Together we build a better future!",
+    sobreDescricao:
+      "Acolhimento Amigo brings people together and makes it easier to reach information, services and opportunities, building a more caring and welcoming community.",
+
+    rodapeDescricao: "Support and guidance for immigrants.",
+    voltarTopo: "Back to top ↑",
+    direitos: "All rights reserved.",
+
+    areas: {
+      "assistencia-social": {
+        titulo: "Social assistance",
+        itens: [
+          "Enrollment in social programs",
+          "Guidance on the public service network",
+        ],
+      },
+      "aulas-portugues": {
+        titulo: "Portuguese classes",
+        itens: [
+          "Conversation",
+          "Portuguese for beginners",
+        ],
+      },
+      "educacao-financeira": {
+        titulo: "Financial education",
+        itens: [
+          "Bank account, Pix and cards",
+          "Family budget",
+        ],
+      },
+      empreendedorismo: {
+        titulo: "Entrepreneurship",
+        itens: [
+          "Opening an MEI (small business)",
+          "Selling more",
+        ],
+      },
+      "informatica-basica": {
+        titulo: "Basic computer skills",
+        itens: [
+          "First steps on the phone and computer",
+          "Government services online",
+        ],
+      },
+      juridico: {
+        titulo: "Legal",
+        itens: [
+          "Refugee protocol",
+          "Visa and residence",
+        ],
+      },
+      "mentoria-carreira": {
+        titulo: "Career mentoring",
+        itens: [
+          "Courses and training",
+          "Career planning",
+        ],
+      },
+      moradia: {
+        titulo: "Housing",
+        itens: [
+          "Shelters and rent assistance",
+          "Renting a home",
+        ],
+      },
+      "orientacao-saude": {
+        titulo: "Health guidance",
+        itens: [
+          "How to use SUS, the public health system",
+          "Vaccines and health documents",
+        ],
+      },
+      psicologia: {
+        titulo: "Psychology",
+        itens: [
+          "Psychological support",
+          "Help adapting",
+        ],
+      },
+      "recolocacao-profissional": {
+        titulo: "Job placement",
+        itens: [
+          "Cover letter",
+          "How the hiring process works",
+          "Résumé for tech jobs",
+          "Technical interview",
+          "Networking on LinkedIn",
+          "Where to find jobs",
+          "LinkedIn profile",
+          "Job search plan",
+          "Résumé review",
+          "Mock interview",
+        ],
+      },
+      "revalidacao-diplomas": {
+        titulo: "Diploma recognition",
+        itens: [
+          "Documents and translations",
+          "Diploma recognition",
+        ],
+      },
+    },
+  },
+
   es: {
     navInicio: "Inicio",
     navServicos: "Servicios",
@@ -136,15 +284,12 @@ export const traducoes = {
     entrar: "Iniciar sesión",
 
     heroEtiqueta: "Apoyo y orientación para personas inmigrantes",
-    heroTitulo1: "No estás",
+    heroTitulo1: "¡No estás",
     heroTitulo2: "solo/a!",
     heroDescricao:
       "Somos una red de apoyo para inmigrantes. Ofrecemos atención gratuita y en línea con profesionales especializados, además de clases de portugués y mucho más.",
     heroBotao: "Solicita atención",
 
-    idiomasLabel: "Elige el idioma",
-    portugues: "Português",
-    espanhol: "Español",
 
     servicosEtiqueta: "Nuestros servicios",
     servicosTitulo: "¿Cómo podemos ayudarte?",
@@ -253,6 +398,157 @@ export const traducoes = {
       "revalidacao-diplomas": {
         titulo: "Convalidación de títulos",
         itens: ["Documentos y traducciones", "Convalidación de títulos"],
+      },
+    },
+  },
+
+  fr: {
+    navInicio: "Accueil",
+    navServicos: "Services",
+    navVoluntario: "Devenir bénévole",
+    navSobre: "À propos",
+    entrar: "Se connecter",
+
+    heroEtiqueta: "Soutien et orientation pour les personnes immigrées",
+    heroTitulo1: "Vous n'êtes pas",
+    heroTitulo2: "seul(e) !",
+    heroDescricao:
+      "Nous sommes un réseau de soutien pour les personnes immigrées. Nous proposons des consultations gratuites en ligne avec des professionnels spécialisés, des cours de portugais et bien plus encore.",
+    heroBotao: "Prendre rendez-vous",
+
+    servicosEtiqueta: "Nos services",
+    servicosTitulo: "Comment pouvons-nous vous aider ?",
+    servicosDescricao:
+      "Nous proposons un accompagnement gratuit, sûr et en ligne dans différents domaines.",
+    servicosContagem: "{n} services disponibles",
+    verServicos: "Voir les services ↓",
+    ocultarServicos: "Masquer les services ↑",
+
+    comoEtiqueta: "Simple et rapide",
+    comoTitulo: "Comment ça marche ?",
+    comoDescricao:
+      "Découvrez à quel point il est simple de trouver le soutien dont vous avez besoin.",
+    etapas: [
+      {
+        titulo: "Choisissez un service",
+        descricao: "Parcourez les services disponibles et choisissez celui qu'il vous faut.",
+      },
+      {
+        titulo: "Créez votre compte",
+        descricao: "Inscrivez-vous, ou connectez-vous si vous avez déjà un compte.",
+      },
+      {
+        titulo: "Prenez rendez-vous",
+        descricao: "Choisissez le jour et l'heure qui vous conviennent le mieux.",
+      },
+      {
+        titulo: "Recevez du soutien",
+        descricao: "Échangez avec le professionnel et posez vos questions.",
+      },
+    ],
+    cadastroBotao: "Je crée mon compte",
+
+    sobreEtiqueta: "Notre mission",
+    sobreTitulo: "Ensemble, construisons un avenir meilleur !",
+    sobreDescricao:
+      "Acolhimento Amigo rapproche les personnes et facilite l'accès à l'information, aux services et aux opportunités, pour une communauté plus solidaire et accueillante.",
+
+    rodapeDescricao: "Soutien et orientation pour les personnes immigrées.",
+    voltarTopo: "Retour en haut ↑",
+    direitos: "Tous droits réservés.",
+
+    areas: {
+      "assistencia-social": {
+        titulo: "Aide sociale",
+        itens: [
+          "Inscription aux programmes sociaux",
+          "Orientation dans le réseau de services",
+        ],
+      },
+      "aulas-portugues": {
+        titulo: "Cours de portugais",
+        itens: [
+          "Conversation",
+          "Portugais pour débutants",
+        ],
+      },
+      "educacao-financeira": {
+        titulo: "Éducation financière",
+        itens: [
+          "Compte, Pix et carte bancaire",
+          "Budget familial",
+        ],
+      },
+      empreendedorismo: {
+        titulo: "Entrepreneuriat",
+        itens: [
+          "Créer une micro-entreprise (MEI)",
+          "Vendre plus",
+        ],
+      },
+      "informatica-basica": {
+        titulo: "Informatique de base",
+        itens: [
+          "Premiers pas sur le téléphone et l'ordinateur",
+          "Services publics en ligne",
+        ],
+      },
+      juridico: {
+        titulo: "Juridique",
+        itens: [
+          "Protocole de demande d'asile",
+          "Visa et résidence",
+        ],
+      },
+      "mentoria-carreira": {
+        titulo: "Mentorat de carrière",
+        itens: [
+          "Formations et qualifications",
+          "Plan de carrière",
+        ],
+      },
+      moradia: {
+        titulo: "Logement",
+        itens: [
+          "Hébergement d'urgence et aide au loyer",
+          "Louer un logement",
+        ],
+      },
+      "orientacao-saude": {
+        titulo: "Orientation santé",
+        itens: [
+          "Comment utiliser le SUS",
+          "Vaccins et documents de santé",
+        ],
+      },
+      psicologia: {
+        titulo: "Psychologie",
+        itens: [
+          "Soutien psychologique",
+          "Aide à l'adaptation",
+        ],
+      },
+      "recolocacao-profissional": {
+        titulo: "Insertion professionnelle",
+        itens: [
+          "Lettre de motivation",
+          "Comment se passe un recrutement",
+          "CV pour les métiers de la tech",
+          "Entretien technique",
+          "Réseautage sur LinkedIn",
+          "Où trouver des offres d'emploi",
+          "Profil LinkedIn",
+          "Plan de recherche d'emploi",
+          "Relecture de CV",
+          "Simulation d'entretien",
+        ],
+      },
+      "revalidacao-diplomas": {
+        titulo: "Reconnaissance des diplômes",
+        itens: [
+          "Documents et traductions",
+          "Reconnaissance de diplôme",
+        ],
       },
     },
   },
