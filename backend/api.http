@@ -92,6 +92,19 @@ Content-Type: application/json
   }
 }
 
+### Cadastro com idioma fora da lista (400, só pt, en, es e fr)
+POST {{api}}/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Teste Idioma",
+  "email": "idioma@email.com",
+  "senha": "123456",
+  "perfil": "usuario",
+  "idioma": "ar",
+  "aceite_lgpd": true
+}
+
 ### Cadastro sem aceitar a LGPD (400)
 POST {{api}}/auth/cadastro
 Content-Type: application/json
@@ -350,6 +363,7 @@ GET {{api}}/meus-agendamentos?status=realizado
 Authorization: Bearer {{loginVoluntario.response.body.$.token}}
 
 ### Marcar atendimento (usuario)
+# @name marcarAtendimento
 POST {{api}}/agendamentos
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
 Content-Type: application/json
@@ -393,24 +407,24 @@ Content-Type: application/json
   "descricao": "ajuda"
 }
 
-### Ver o agendamento marcado (id 11)
-GET {{api}}/agendamentos/11
+### Ver o agendamento marcado
+GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
 
 ### O voluntario do horario tambem ve
-GET {{api}}/agendamentos/11
+GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginVoluntario.response.body.$.token}}
 
 ### Outro usuario nao ve (403)
-GET {{api}}/agendamentos/11
+GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginOutroUsuario.response.body.$.token}}
 
 ### Outro voluntario nao ve (403)
-GET {{api}}/agendamentos/11
+GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginOutroVoluntario.response.body.$.token}}
 
 ### Remarcar para outro horario do mesmo voluntario
-PUT {{api}}/agendamentos/11
+PUT {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
 Content-Type: application/json
 
@@ -419,7 +433,7 @@ Content-Type: application/json
 }
 
 ### Voluntario tentando remarcar (403)
-PUT {{api}}/agendamentos/11
+PUT {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginVoluntario.response.body.$.token}}
 Content-Type: application/json
 
@@ -428,7 +442,7 @@ Content-Type: application/json
 }
 
 ### Usuario tentando marcar como realizado (403)
-PUT {{api}}/agendamentos/11
+PUT {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
 Content-Type: application/json
 
@@ -436,8 +450,8 @@ Content-Type: application/json
   "status": "realizado"
 }
 
-### Voluntario marcando realizado antes do horario (400)
-PUT {{api}}/agendamentos/11
+### Voluntario conclui o atendimento dele (o 1 e do Rafael com o Carlos; vai para realizado)
+PUT {{api}}/agendamentos/1
 Authorization: Bearer {{loginVoluntario.response.body.$.token}}
 Content-Type: application/json
 
@@ -445,12 +459,30 @@ Content-Type: application/json
   "status": "realizado"
 }
 
+### Voluntario escreve a anotacao do atendimento concluido (o que fez e o proximo passo)
+PUT {{api}}/agendamentos/1
+Authorization: Bearer {{loginVoluntario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "anotacao": "Expliquei como renovar o protocolo. Proximo passo: agendar na Policia Federal."
+}
+
+### Usuario tentando escrever a anotacao (403, so o voluntario)
+PUT {{api}}/agendamentos/1
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "anotacao": "Quero escrever aqui."
+}
+
 ### Outro usuario tentando cancelar (403)
-DELETE {{api}}/agendamentos/11
+DELETE {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginOutroUsuario.response.body.$.token}}
 
 ### Cancelar (o horario volta a ficar livre)
-DELETE {{api}}/agendamentos/11
+DELETE {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
 
 
