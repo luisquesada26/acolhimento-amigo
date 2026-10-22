@@ -28,17 +28,16 @@ export const traducoes = {
       "Veja como é simples encontrar o apoio de que você precisa.",
     etapas: [
       {
-        titulo: "Escolha o serviço",
-        descricao:
-          "Veja os serviços disponíveis e escolha a opção de que você precisa.",
+        titulo: "Conheça os serviços",
+        descricao: "Navegue pelas áreas e veja como podemos ajudar.",
       },
       {
-        titulo: "Faça seu cadastro",
-        descricao: "Crie sua conta ou entre na sua conta já existente.",
+        titulo: "Crie sua conta ou entre",
+        descricao: "Faça seu cadastro ou entre na conta que você já tem.",
       },
       {
-        titulo: "Agende o atendimento",
-        descricao: "Escolha o dia e o horário mais adequado para você.",
+        titulo: "Escolha e agende",
+        descricao: "Escolha o profissional, o serviço e um horário livre na agenda.",
       },
       {
         titulo: "Receba o apoio",
@@ -153,16 +152,16 @@ export const traducoes = {
       "See how easy it is to find the support you need.",
     etapas: [
       {
-        titulo: "Choose a service",
-        descricao: "Browse the available services and pick the one you need.",
+        titulo: "Explore the services",
+        descricao: "Browse the areas and see how we can help.",
       },
       {
-        titulo: "Create your account",
-        descricao: "Sign up, or sign in if you already have an account.",
+        titulo: "Sign up or sign in",
+        descricao: "Create your account, or sign in if you already have one.",
       },
       {
-        titulo: "Book your session",
-        descricao: "Pick the day and time that work best for you.",
+        titulo: "Choose and book",
+        descricao: "Pick the professional, the service and a free time slot.",
       },
       {
         titulo: "Get support",
@@ -305,17 +304,16 @@ export const traducoes = {
       "Descubre lo fácil que es encontrar el apoyo que necesitas.",
     etapas: [
       {
-        titulo: "Elige un servicio",
-        descricao:
-          "Consulta los servicios disponibles y elige el que necesitas.",
+        titulo: "Conoce los servicios",
+        descricao: "Navega por las áreas y descubre cómo podemos ayudarte.",
       },
       {
-        titulo: "Crea tu cuenta",
-        descricao: "Regístrate o inicia sesión si ya tienes una cuenta.",
+        titulo: "Crea tu cuenta o inicia sesión",
+        descricao: "Regístrate o entra en la cuenta que ya tienes.",
       },
       {
-        titulo: "Reserva la atención",
-        descricao: "Elige el día y el horario que mejor te convengan.",
+        titulo: "Elige y reserva",
+        descricao: "Elige al profesional, el servicio y un horario libre en su agenda.",
       },
       {
         titulo: "Recibe apoyo",
@@ -430,16 +428,16 @@ export const traducoes = {
       "Découvrez à quel point il est simple de trouver le soutien dont vous avez besoin.",
     etapas: [
       {
-        titulo: "Choisissez un service",
-        descricao: "Parcourez les services disponibles et choisissez celui qu'il vous faut.",
+        titulo: "Découvrez les services",
+        descricao: "Parcourez les domaines et voyez comment nous pouvons vous aider.",
       },
       {
-        titulo: "Créez votre compte",
+        titulo: "Créez un compte ou connectez-vous",
         descricao: "Inscrivez-vous, ou connectez-vous si vous avez déjà un compte.",
       },
       {
-        titulo: "Prenez rendez-vous",
-        descricao: "Choisissez le jour et l'heure qui vous conviennent le mieux.",
+        titulo: "Choisissez et réservez",
+        descricao: "Choisissez le professionnel, le service et un créneau libre dans son agenda.",
       },
       {
         titulo: "Recevez du soutien",

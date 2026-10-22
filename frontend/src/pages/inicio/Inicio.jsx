@@ -129,21 +129,21 @@ const servicos = [
 const etapas = [
   {
     numero: "1",
-    titulo: "Escolha o serviço",
+    titulo: "Conheça os serviços",
     descricao:
-      "Veja os serviços disponíveis e escolha a opção de que você precisa.",
+      "Navegue pelas áreas e veja como podemos ajudar.",
   },
   {
     numero: "2",
-    titulo: "Faça seu cadastro",
+    titulo: "Crie sua conta ou entre",
     descricao:
-      "Crie sua conta ou entre na sua conta já existente.",
+      "Faça seu cadastro ou entre na conta que você já tem.",
   },
   {
     numero: "3",
-    titulo: "Agende o atendimento",
+    titulo: "Escolha e agende",
     descricao:
-      "Escolha o dia e o horário mais adequado para você.",
+      "Escolha o profissional, o serviço e um horário livre na agenda.",
   },
   {
     numero: "4",
