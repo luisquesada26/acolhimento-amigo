@@ -414,7 +414,7 @@
 
 /* Rodapé */
 
-.rodape {
+.rodape-inicio {
   padding: 28px 8% 18px;
   background: var(--marinho);
   color: #ffffff;
@@ -573,7 +573,7 @@
     gap: 18px;
   }
 
-  .rodape {
+  .rodape-inicio {
     padding-right: 6%;
     padding-left: 6%;
   }

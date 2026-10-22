@@ -337,7 +337,7 @@ export default function Inicio() {
       </main>
 
       {/* Rodapé */}
-      <footer className="rodape">
+      <footer className="rodape-inicio">
         <div className="conteudo-rodape">
           
           <div className="marca-rodape">
