@@ -225,7 +225,7 @@ const voluntarios = [
 const usuarios = [
   { nome: "Carlos Mendoza", email: "usuario@teste.com", telefone: "11987654321", pais: "Venezuela", idioma: "es" },
   { nome: "Wideline Joseph", email: "wideline.joseph@email.com", telefone: "11976543210", pais: "Haiti", idioma: "fr" },
-  { nome: "Ahmad Khalil", email: "ahmad.khalil@email.com", telefone: "11965432109", pais: "Síria", idioma: "ar" },
+  { nome: "Ahmad Khalil", email: "ahmad.khalil@email.com", telefone: "11965432109", pais: "Síria", idioma: "en" },
   { nome: "María Fernanda Ríos", email: "maria.rios@email.com", telefone: "11954321098", pais: "Colômbia", idioma: "es" },
   { nome: "João Baptista Mbala", email: "joao.mbala@email.com", telefone: "11943210987", pais: "Angola", idioma: "pt" },
 ];
@@ -313,7 +313,36 @@ function seed(db) {
     const passado = vols[0];
     const [inicio, fim] = passado.horas[0];
     const horarioPassado = inserirHorario.run(passado.voluntarioId, formatarData(diaMais(-3)), inicio, fim, "reservado").lastInsertRowid;
-    inserirAgendamento.run(horarioPassado, idsUsuarios[0], passado.servicos[1], "Recebi uma notificação da Polícia Federal e não entendi o que preciso fazer.", "realizado");
+    const anotar = db.prepare("UPDATE agendamentos SET anotacao = ? WHERE id = ?");
+    const realizado = inserirAgendamento.run(horarioPassado, idsUsuarios[0], passado.servicos[1], "Recebi uma notificação da Polícia Federal e não entendi o que preciso fazer.", "realizado");
+    anotar.run("Era uma convocação para atualizar o endereço. Orientei a levar comprovante de residência. Próximo passo: ir à Polícia Federal na data marcada.", realizado.lastInsertRowid);
+
+    // historico do voluntario de teste (Rafael), para o painel dele ter atendimentos passados e futuros
+    const rafael = vols[0];
+    const diaUtil = (dias) => {
+      const d = diaMais(dias);
+      while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() - 1);
+      return formatarData(d);
+    };
+    const historico = [
+      [-35, 1, 0, "Cheguei do Haiti e preciso entender qual documento pedir primeiro.", "realizado", "Expliquei a ordem dos documentos: primeiro o CPF, depois a carteira de trabalho. Próximo passo: agendar o CPF na Receita Federal."],
+      [-31, 3, 1, "Meu pedido de refúgio foi negado e quero saber se posso recorrer.", "realizado", "Analisamos a negativa juntos. Cabe recurso em até 15 dias. Recomendei juntar os comprovantes. Próximo passo: protocolar o recurso."],
+      [-27, 4, 0, "Quero trazer minha esposa para o Brasil e não sei como pedir o visto.", "realizado", "Orientei sobre o visto de reunião familiar. Recomendei traduzir a certidão de casamento antes de pedir."],
+      [-24, 2, 1, "Perdi o protocolo de refúgio e preciso de uma segunda via.", "cancelado", null],
+      [-20, 1, 1, "Preciso renovar o protocolo de refúgio da minha filha.", "realizado", "Fizemos o pedido de renovação durante a chamada. Próximo passo: levar o protocolo novo à escola."],
+      [-13, 3, 0, "Minha autorização de residência vence em dois meses.", "realizado", "A renovação pode ser pedida 90 dias antes. Próximo passo: agendar na Polícia Federal pelo site."],
+      [-10, 4, 1, "Recebi uma intimação e não sei se preciso de advogado.", "realizado", "Expliquei a intimação: por enquanto não precisa de advogado. Recomendei comparecer com os documentos."],
+    ];
+    historico.forEach(([dias, usuarioIdx, servicoIdx, descricao, status, anotacao], i) => {
+      const [inicio, fim] = rafael.horas[i % 2];
+      const horarioId = inserirHorario.run(rafael.voluntarioId, diaUtil(dias), inicio, fim, status === "cancelado" ? "livre" : "reservado").lastInsertRowid;
+      const { lastInsertRowid } = inserirAgendamento.run(horarioId, idsUsuarios[usuarioIdx], rafael.servicos[servicoIdx], descricao, status);
+      if (anotacao) anotar.run(anotacao, lastInsertRowid);
+    });
+
+    // proximos do Rafael, fora dos horarios 2 a 5 que o api.http usa nos testes
+    agendar(3, 0, 6, "Tenho entrevista na Polícia Federal e quero saber o que levar.");
+    agendar(2, 0, 9, "Minha carteira de trabalho ainda não saiu e o protocolo vence logo.");
   });
 
   popular();
