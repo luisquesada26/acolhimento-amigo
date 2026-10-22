@@ -1,0 +1,1530 @@
+/* menu: botão de recolher */
+.painel-menu {
+  transition: width 0.2s;
+}
+
+.painel-menu-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* botão redondo na borda direita do menu */
+.painel-recolher {
+  position: absolute;
+  top: 38px;
+  right: -14px;
+  z-index: 5;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--marinho);
+  box-shadow: 0 4px 12px rgba(10, 42, 94, 0.18);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+/* área de clique maior que o desenho */
+.painel-recolher::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.painel-recolher:hover {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+a.painel-item {
+  text-decoration: none;
+}
+
+a.painel-item:hover:not(.painel-item-atual) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* recolhido: só os ícones; os textos continuam para o leitor de tela */
+.painel-recolhido .painel-menu {
+  width: 84px;
+  padding-inline: 14px;
+}
+
+.painel-recolhido .painel-menu-topo {
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel-recolhido .painel-menu .logo-texto,
+.painel-recolhido .painel-item-texto,
+.painel-recolhido .painel-usuario-nome {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.painel-recolhido .painel-item {
+  justify-content: center;
+  padding: 0;
+}
+
+.painel-recolhido .painel-usuario {
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.painel-recolhido .painel-sair {
+  margin: 0;
+}
+
+.painel-recolhido .painel-conteudo {
+  max-width: 1640px;
+}
+
+/* peças das páginas */
+.painel-cartao-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.painel-cartao-topo a {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.painel-cabecalho-acao {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.painel-cabecalho-acao > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-conteudo .campo textarea {
+  padding: 12px 16px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: var(--raio);
+  background: #fbfcfe;
+  color: var(--texto);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.painel-conteudo .campo textarea:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(23, 87, 216, 0.15);
+}
+
+.painel-conteudo .campo input:not([type="checkbox"]),
+.painel-conteudo .campo select {
+  height: 46px;
+}
+
+.pagina-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pagina-filtros button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pagina-filtros button[aria-pressed="true"] {
+  border-color: var(--verde-escuro);
+  background: var(--verde-escuro);
+  color: #fff;
+}
+
+.pagina-icone {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--texto-3);
+  cursor: pointer;
+}
+
+.pagina-icone:hover {
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.pagina-ok {
+  color: var(--verde-escuro);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* filtro de mês dos números */
+.painel-numeros {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-periodo {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-periodo select {
+  min-width: 220px;
+}
+
+/* relatórios */
+.relatorio-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  align-items: end;
+  gap: 12px;
+}
+
+.relatorio-busca {
+  grid-column: span 2;
+}
+
+.relatorio-busca-campo {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.relatorio-busca-campo svg {
+  position: absolute;
+  left: 14px;
+  color: var(--texto-3);
+  pointer-events: none;
+}
+
+.relatorio-busca-campo input {
+  width: 100%;
+  padding-left: 42px !important;
+}
+
+/* calendário da agenda */
+.painel-cabecalho-acao a.botao {
+  gap: 8px;
+  text-decoration: none;
+}
+
+/* a agenda ocupa a altura da janela: o calendário cabe sem rolar */
+.agenda-pagina {
+  height: calc(100vh - 64px);
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.agenda-calendario {
+  flex: 1;
+  min-height: 0;
+  gap: 12px;
+}
+
+.agenda-pagina .agenda-rolagem {
+  flex: 1;
+  min-height: 0;
+}
+
+.agenda-pagina .agenda-grade {
+  height: 100%;
+}
+
+/* horário livre no calendário: tracejado em âmbar */
+.agenda-vaga {
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1.5px dashed #e8b04b;
+  border-radius: 8px;
+  background: #fffaf0;
+  color: #8a5a00;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+
+button.agenda-vaga {
+  cursor: pointer;
+}
+
+.agenda-livre-cor {
+  border: 1.5px dashed #e8b04b;
+  background: #fffaf0;
+}
+
+.agenda-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.agenda-navegar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.agenda-titulo {
+  margin-left: 8px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.agenda-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.agenda-legenda li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agenda-cor {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.agenda-cor.agenda-etiqueta-cancelado {
+  box-shadow: inset 0 0 0 1px #f0b4ae;
+}
+
+.agenda-rolagem {
+  overflow-x: auto;
+}
+
+.agenda-grade {
+  min-width: 640px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: 1px solid var(--borda);
+  border-left: 1px solid var(--borda);
+}
+
+.agenda-cabeca {
+  padding: 10px;
+  border-right: 1px solid var(--borda);
+  border-bottom: 1px solid var(--borda);
+  background: var(--fundo);
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.agenda-cabeca-curta {
+  display: none;
+}
+
+.agenda-celula {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border-right: 1px solid var(--borda);
+  border-bottom: 1px solid var(--borda);
+  background: #fff;
+}
+
+.agenda-grade-semana .agenda-celula {
+  overflow-y: auto;
+}
+
+.agenda-celula-topo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.agenda-celula-topo .agenda-vaga,
+.agenda-celula-topo .agenda-mais {
+  min-height: 22px;
+  padding: 1px 6px;
+  font-size: 11.5px;
+}
+
+.agenda-celula-topo .agenda-vaga {
+  margin-left: auto;
+}
+
+.agenda-celula ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-fora {
+  background: #fafbfd;
+}
+
+.agenda-numero {
+  align-self: flex-start;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.agenda-fora .agenda-numero {
+  color: var(--texto-3);
+  font-weight: 500;
+}
+
+.agenda-numero:hover {
+  background: var(--fundo);
+}
+
+.agenda-hoje {
+  box-shadow: inset 0 0 0 2px var(--verde-escuro);
+}
+
+.agenda-hoje .agenda-numero {
+  background: var(--verde-escuro);
+  color: #fff;
+}
+
+.agenda-etiqueta {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.agenda-etiqueta:hover {
+  filter: brightness(0.95);
+}
+
+.agenda-etiqueta-hora {
+  font-weight: 800;
+}
+
+.agenda-etiqueta-nome {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agenda-etiqueta-servico {
+  flex-basis: 100%;
+  font-size: 12px;
+}
+
+/* marcado em azul, realizado em verde, cancelado em vermelho */
+.agenda-etiqueta-confirmado {
+  background: var(--azul);
+  color: #fff;
+}
+
+.agenda-etiqueta-realizado {
+  background: var(--verde-escuro);
+  color: #fff;
+}
+
+.agenda-etiqueta-cancelado {
+  background: var(--erro-claro);
+  color: var(--erro);
+  text-decoration: line-through;
+}
+
+.agenda-mais {
+  min-height: 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--fundo);
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.agenda-dia-unico {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.agenda-dia-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-vaga-cartao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.agenda-vaga-hora {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.agenda-dia-lista .agenda-etiqueta {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+/* janela com os dados da pessoa */
+.agenda-janela {
+  width: min(520px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  color: var(--texto);
+  box-shadow: 0 30px 70px rgba(3, 14, 38, 0.35);
+}
+
+.agenda-janela::backdrop {
+  background: rgba(8, 33, 82, 0.45);
+}
+
+.agenda-janela-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+}
+
+.agenda-janela-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agenda-janela h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.agenda-janela-hora {
+  margin-top: -8px;
+  color: var(--texto-2);
+  font-weight: 700;
+}
+
+/* horários (no perfil) */
+.agenda-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  align-items: end;
+  gap: 12px;
+}
+
+.agenda-form .botao {
+  height: 46px;
+}
+
+.agenda-dias {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.agenda-dia h4 {
+  margin: 0 0 8px;
+  color: var(--texto-2);
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.agenda-dia ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-horario {
+  display: grid;
+  grid-template-columns: 130px auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+  border: 1.5px solid var(--borda);
+  border-radius: 14px;
+}
+
+.agenda-livre {
+  border-style: dashed;
+  border-color: #e8b04b;
+  background: #fffaf0;
+}
+
+.agenda-horario time {
+  font-weight: 800;
+}
+
+.agenda-quem {
+  min-width: 0;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.agenda-horario > .pagina-icone {
+  grid-column: 4;
+}
+
+.agenda-confirmar {
+  grid-column: 1 / -1;
+}
+
+/* atendimentos */
+.atend-lista {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.atend-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.atend-item:last-child {
+  border-bottom: 0;
+}
+
+.atend-resumo {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.3fr) minmax(160px, 1fr) auto auto;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+/* o selo do serviço centralizado na linha (fora daqui ele fica no topo) */
+.atend-resumo .vol-servico {
+  align-self: center;
+}
+
+.atend-quando {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.atend-quando time {
+  font-weight: 800;
+}
+
+.atend-quando time::first-letter {
+  text-transform: uppercase;
+}
+
+.atend-detalhe {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.atend-detalhe .vol-caso {
+  align-self: stretch;
+}
+
+/* serviços */
+.servico-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.servico-cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--sombra);
+}
+
+.servico-cartao > p {
+  color: var(--texto-2);
+  line-height: 1.5;
+}
+
+.servico-inativo {
+  background: #f8fafc;
+}
+
+.servico-inativo h2 {
+  color: var(--texto-2);
+}
+
+.servico-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.servico-topo h2 {
+  padding-top: 10px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.servico-icones {
+  display: flex;
+  gap: 2px;
+}
+
+.servico-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+}
+
+.servico-duracao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-2);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.servico-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* perfil: abas, campos com lápis e agenda */
+.perfil-busca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.perfil-abas {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #e8eef7;
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.perfil-abas button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.perfil-abas button[aria-selected="true"] {
+  background: #fff;
+  color: var(--verde-escuro);
+  box-shadow: 0 2px 8px rgba(10, 42, 94, 0.1);
+}
+
+.perfil-aba {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* cartão de identidade: nome e e-mail, que não mudam por aqui */
+.perfil-identidade {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.perfil-avatar {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--verde-escuro);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.perfil-identidade-texto {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfil-identidade-texto h2 {
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.perfil-identidade-texto p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto-2);
+  font-weight: 600;
+}
+
+/* telefone, nacionalidade e idiomas num bloco só, lado a lado */
+.perfil-bloco {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  padding: 6px;
+}
+
+.perfil-campo-plano {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.perfil-bloco .perfil-campo-plano + .perfil-campo-plano {
+  border-left: 1px solid var(--borda);
+  border-radius: 0 16px 16px 0;
+}
+
+.perfil-campo-plano.perfil-campo-editando {
+  border-radius: 16px;
+  background: #fafdfb;
+  box-shadow: inset 0 0 0 2px var(--verde-escuro);
+}
+
+/* campos editáveis em cartões, com o lápis no canto */
+.perfil-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.perfil-campo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 18px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--sombra);
+}
+
+.perfil-campo-largo {
+  grid-column: 1 / -1;
+}
+
+.perfil-campo-editando {
+  box-shadow: 0 0 0 2px var(--verde-escuro), var(--sombra);
+}
+
+.perfil-campo-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.perfil-campo-topo .pagina-icone {
+  margin-left: auto;
+}
+
+.perfil-campo-icone {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.perfil-campo-rotulo {
+  color: var(--texto-2);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.perfil-campo-valor {
+  min-width: 0;
+  padding-left: 44px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.perfil-campo-valor em {
+  color: var(--texto-3);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.perfil-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.perfil-etiquetas span {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.perfil-campo-editando .vol-acoes,
+.perfil-campo-editando .vol-erro,
+.perfil-campo-editor {
+  padding-left: 44px;
+}
+
+.perfil-campo-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perfil-input {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: var(--raio);
+  background: #fbfcfe;
+  color: var(--texto);
+  font: inherit;
+  font-size: 15px;
+}
+
+textarea.perfil-input {
+  padding: 12px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.perfil-input:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(23, 87, 216, 0.15);
+}
+
+.servicos-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.disponibilidade {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.disponibilidade fieldset legend {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.disponibilidade-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 12px;
+}
+
+.disponibilidade-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.horarios-mes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.horarios-mes h3 {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* perfil */
+.perfil-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.perfil-chips button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.perfil-chips button[aria-pressed="true"] {
+  border-color: var(--verde-escuro);
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.perfil-perigo > p {
+  color: var(--texto-2);
+  line-height: 1.5;
+}
+
+.perfil-perigo .vol-botao-perigo {
+  align-self: flex-start;
+}
+
+@media (max-width: 760px), (max-height: 620px) {
+  .agenda-pagina {
+    height: auto;
+  }
+
+  .agenda-pagina .agenda-grade {
+    height: auto;
+    grid-template-rows: auto !important;
+    grid-auto-rows: minmax(96px, auto);
+  }
+}
+
+@media (max-width: 760px) {
+  .painel-recolher {
+    display: none;
+  }
+
+  /* no celular o menu já é uma barra: ignora o recolhido */
+  .painel-recolhido .painel-menu {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .painel-recolhido .painel-menu-topo {
+    flex-direction: row;
+  }
+
+  .painel-recolhido .painel-item-texto,
+  .painel-recolhido .painel-menu .logo-texto {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+
+  .painel-recolhido .painel-item {
+    padding: 0 14px;
+  }
+
+  .agenda-horario {
+    grid-template-columns: 1fr auto;
+  }
+
+  .agenda-horario > .pagina-icone {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .agenda-quem {
+    grid-column: 1 / -1;
+  }
+
+  .atend-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-campo-valor,
+  .perfil-campo-editor,
+  .perfil-campo-editando .vol-acoes,
+  .perfil-campo-editando .vol-erro {
+    padding-left: 0;
+  }
+
+  .perfil-busca {
+    align-items: flex-start;
+  }
+
+  .perfil-grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .perfil-bloco {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .perfil-bloco .perfil-campo-plano + .perfil-campo-plano {
+    border-left: 0;
+    border-top: 1px solid var(--borda);
+    border-radius: 0;
+  }
+
+  .relatorio-busca {
+    grid-column: auto;
+  }
+}
+
+/* menu com cara própria: grupos, aba ligada ao conteúdo, contador e status */
+.painel-menu nav {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.painel-menu-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-menu-rotulo {
+  padding: 0 14px 4px;
+  color: #8fa6cf;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* item aberto sem caixa: texto branco, ícone verde e um traço fino à esquerda */
+.painel-item.painel-item-atual {
+  position: relative;
+  background: transparent;
+  color: #fff;
+  font-weight: 800;
+}
+
+.painel-item.painel-item-atual svg {
+  color: #5fd38d;
+}
+
+.painel-item.painel-item-atual::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #5fd38d;
+}
+
+a.painel-item:hover:not(.painel-item-atual) {
+  background: transparent;
+  color: #fff;
+}
+
+.painel-contador {
+  min-width: 22px;
+  height: 22px;
+  margin-left: auto;
+  padding: 0 7px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--azul);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.painel-avatar {
+  position: relative;
+}
+
+.painel-status {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--marinho);
+  border-radius: 50%;
+  background: #8a98ae;
+}
+
+.painel-status-ativo {
+  background: #2fbf6b;
+}
+
+/* botão de recolher em azul */
+.painel-recolher {
+  border: 0;
+  background: var(--azul);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--fundo), 0 4px 12px rgba(23, 87, 216, 0.35);
+}
+
+.painel-recolher:hover {
+  background: var(--azul-escuro);
+  color: #fff;
+}
+
+/* recolhido: só ícones, a aba continua encostando no conteúdo */
+.painel-recolhido .painel-menu-rotulo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.painel-recolhido .painel-contador {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0 5px;
+  font-size: 11px;
+}
+
+.painel-recolhido .painel-item {
+  position: relative;
+}
+
+/* no celular o menu é uma barra: sem a aba */
+@media (max-width: 760px) {
+  .painel-menu nav {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .painel-menu-grupo {
+    flex-direction: row;
+  }
+
+  .painel-menu-rotulo {
+    display: none;
+  }
+
+  /* no celular o traço fica embaixo do item */
+  .painel-item.painel-item-atual::before {
+    top: auto;
+    right: 14px;
+    bottom: 2px;
+    left: 14px;
+    width: auto;
+    height: 3px;
+    border-radius: 3px;
+  }
+}
+
+/* seletor de idioma flutuando no canto de cima, sem empurrar o conteúdo */
+.painel-conteudo {
+  position: relative;
+}
+
+.painel-topo {
+  position: absolute;
+  top: 28px;
+  right: clamp(16px, 3vw, 40px);
+  z-index: 10;
+}
+
+/* o título e os botões do cabeçalho não passam por baixo da bandeira */
+.painel-cabecalho {
+  padding-right: 120px;
+}
+
+@media (max-width: 760px) {
+  .painel-topo {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: -10px;
+  }
+
+  .painel-cabecalho {
+    padding-right: 0;
+  }
+}
+
+/* linhas do histórico e dos relatórios que abrem o atendimento */
+.historico-clicavel {
+  cursor: pointer;
+}
+
+.historico-clicavel:hover td {
+  background: #f8fafe;
+}
+
+.historico-abrir {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.historico-abrir:hover {
+  color: var(--azul);
+  text-decoration: underline;
+}
+
+/* janela do atendimento */
+.detalhe-janela {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.detalhe-subtitulo {
+  margin-bottom: -4px;
+  color: var(--texto-2);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detalhe-anotacao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--verde-claro);
+}
+
+.detalhe-anotacao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.detalhe-anotacao h3,
+.detalhe-anotacao label {
+  color: var(--verde-escuro);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detalhe-anotacao p {
+  color: #1d3b2a;
+  line-height: 1.55;
+}
+
+.detalhe-anotacao-vazia {
+  color: #2f5a41 !important;
+}
+
+/* foto do perfil */
+.perfil-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.perfil-foto-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.perfil-foto-botao {
+  position: relative;
+  overflow: hidden;
+  color: var(--azul);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.perfil-foto-botao input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.perfil-foto-botao:focus-within {
+  border-radius: 6px;
+  outline: 3px solid rgba(23, 87, 216, 0.45);
+  outline-offset: 2px;
+}
+
+.perfil-foto-botao:hover {
+  text-decoration: underline;
+}
+
+.perfil-foto-ocupado {
+  color: var(--texto-3);
+  cursor: wait;
+}
+
+.perfil-foto-remover {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--erro);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* título do perfil com o interruptor da busca ao lado */
+.perfil-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+.perfil-titulo .vol-interruptor {
+  min-height: 36px;
+  padding: 0 14px 0 6px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--borda);
+}
