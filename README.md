@@ -88,7 +88,15 @@ As rotas estão em [docs/api.md](docs/api.md).
 
 Para testar pelo VS Code, instale a extensão **REST Client**, rode `npm run dev`, abra o arquivo [backend/api.http](backend/api.http) e clique em **Send Request** em cima de cada requisição. Rode primeiro os logins: o token é usado sozinho nas rotas que precisam dele.
 
-Quem preferir o Postman pode importar a coleção [docs/acolhimento-amigo.postman_collection.json](docs/acolhimento-amigo.postman_collection.json), que tem as mesmas requisições separadas por pasta.
+Para usar pelo Postman, importe a coleção [docs/acolhimento-amigo.postman_collection.json](docs/acolhimento-amigo.postman_collection.json), com `npm run dev` rodando:
+
+- tem GET, POST, PUT e DELETE de cada tabela, uma pasta por tabela
+- não precisa fazer login: antes de cada envio a coleção entra sozinha com os usuários de teste
+- PUT e DELETE trabalham no que o POST da mesma pasta criou (se não tiver, a coleção cria na hora), então os dados do seed não são apagados
+- depois de um `npm run db:reset`, se alguma requisição der 401 ou 404, é só mandar de novo
+- quando a coleção mudar, importe de novo e escolha **Replace** para substituir a antiga
+
+Os casos de erro (403, 409, dados inválidos) ficam no `api.http`.
 
 ## Integrantes
 
