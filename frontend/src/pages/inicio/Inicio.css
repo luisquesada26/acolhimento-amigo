@@ -16,7 +16,7 @@
   gap: 42px;
   padding: 55px 8%;
   overflow: hidden;
-  background: linear-gradient(120deg, var(--fundo), var(--azul-claro));
+  background: linear-gradient(125deg, var(--marinho) 0%, var(--azul) 100%);
 }
 
 .conteudo-principal {
@@ -33,9 +33,13 @@
   letter-spacing: 0.02em;
 }
 
+.secao-principal .etiqueta-principal {
+  color: #ffd27a;
+}
+
 .conteudo-principal h1 {
   margin: 18px 0;
-  color: var(--marinho);
+  color: #ffffff;
   font-size: clamp(2.5rem, 4.5vw, 4rem);
   line-height: 1.08;
   letter-spacing: -0.045em;
@@ -43,12 +47,12 @@
 
 .conteudo-principal h1 span {
   display: block;
-  color: var(--azul);
+  color: #8ec5ff;
 }
 
 .conteudo-principal > p {
   max-width: 510px;
-  color: var(--texto-2);
+  color: #dbe7ff;
   font-size: 1.05rem;
   line-height: 1.8;
 }
@@ -89,6 +93,18 @@
   transform: translateY(-2px);
 }
 
+/* no topo azul o botão é amarelo, para se destacar */
+.secao-principal .botao-principal {
+  border-color: #ffc94d;
+  background: #ffc94d;
+  color: var(--marinho);
+}
+
+.secao-principal .botao-principal:hover {
+  border-color: #ffd978;
+  background: #ffd978;
+}
+
 .botao-secundario {
   border: 1px solid var(--borda-campo);
   background: #ffffff;
@@ -106,7 +122,7 @@
   overflow: hidden;
   border-radius: 28px 28px 28px 90px;
   background: var(--azul-claro);
-  box-shadow: var(--sombra);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
 .imagem-principal img {
@@ -121,6 +137,7 @@
 
 .secao-servicos {
   padding: 65px 8%;
+  background: #eef4ff;
 }
 
 .titulo-secao {
@@ -162,10 +179,10 @@
   gap: 16px;
   min-width: 0;
   padding: 22px 18px;
-  border: 1px solid var(--borda);
+  border-top: 5px solid var(--cor);
   border-radius: var(--raio);
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(10, 42, 94, 0.04);
+  box-shadow: 0 10px 30px rgba(10, 42, 94, 0.08);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -184,49 +201,9 @@
   width: 54px;
   height: 54px;
   border-radius: 15px;
-  background: var(--azul-claro);
-  color: var(--azul);
+  background: var(--cor);
+  color: #ffffff;
   font-size: 1.8rem;
-}
-
-.cartao-advogado {
-  background: #f4f8ff;
-  border-color: #dce8ff;
-}
-
-.cartao-advogado .icone-servico {
-  background: #dceaff;
-  color: #1757d8;
-}
-
-.cartao-psicologo {
-  background: #fbf5ff;
-  border-color: #efdefc;
-}
-
-.cartao-psicologo .icone-servico {
-  background: #f0dcff;
-  color: #8b35bf;
-}
-
-.cartao-assistente-social {
-  background: #f1fcf6;
-  border-color: #d4f2e0;
-}
-
-.cartao-assistente-social .icone-servico {
-  background: #d7f7e5;
-  color: #16924b;
-}
-
-.cartao-portugues {
-  background: #fff8ed;
-  border-color: #f9e8cc;
-}
-
-.cartao-portugues .icone-servico {
-  background: #ffebc9;
-  color: #d97706;
 }
 
 .conteudo-cartao-servico {
@@ -285,10 +262,8 @@
   grid-template-columns: 0.75fr 1.65fr;
   align-items: center;
   gap: 45px;
-  margin: 0 4% 35px;
-  padding: 36px 4%;
-  border-radius: 24px;
-  background: linear-gradient(120deg, var(--fundo), var(--azul-claro));
+  padding: 56px 8%;
+  background: #fff6e3;
 }
 
 .imagem-como-funciona {
@@ -337,6 +312,18 @@
   color: #ffffff;
   font-size: 1rem;
   font-weight: 800;
+}
+
+.item-etapa:nth-child(2) .numero-etapa {
+  background: var(--verde);
+}
+
+.item-etapa:nth-child(3) .numero-etapa {
+  background: #c2410c;
+}
+
+.item-etapa:nth-child(4) .numero-etapa {
+  background: #7e22ce;
 }
 
 .item-etapa h3 {
@@ -512,8 +499,7 @@
   .secao-como-funciona {
     grid-template-columns: 1fr;
     gap: 26px;
-    margin: 0 4% 28px;
-    padding: 24px;
+    padding: 42px 6%;
   }
 
   .imagem-como-funciona {
@@ -593,46 +579,22 @@
   overflow-wrap: anywhere;
 }
 
-/* Cores das áreas */
+/* Cores das áreas: a faixa de cima e o ícone do card */
 
 .cartao-azul {
-  background: #f4f8ff;
-  border-color: #dce8ff;
-}
-
-.cartao-azul .icone-servico {
-  background: #dceaff;
-  color: #1757d8;
-}
-
-.cartao-roxo {
-  background: #fbf5ff;
-  border-color: #efdefc;
-}
-
-.cartao-roxo .icone-servico {
-  background: #f0dcff;
-  color: #8b35bf;
+  --cor: #1757d8;
 }
 
 .cartao-verde {
-  background: #f1fcf6;
-  border-color: #d4f2e0;
-}
-
-.cartao-verde .icone-servico {
-  background: #d7f7e5;
-  color: #16924b;
+  --cor: #16924b;
 }
 
 .cartao-laranja {
-  background: #fff8ed;
-  border-color: #f9e8cc;
+  --cor: #d97706;
 }
 
-.cartao-laranja .icone-servico {
-  background: #ffebc9;
-  color: #d97706;
+.cartao-roxo {
+  --cor: #8b35bf;
 }
 
 
