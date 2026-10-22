@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useIdioma } from "../context/IdiomaContext";
 import "./seletor-idioma.css";
-
-const CHAVE_IDIOMA = "acolhimento:idioma";
 
 // cada idioma com o nome escrito nele mesmo, como a pessoa procura
 const IDIOMAS = [
@@ -49,17 +48,9 @@ function Bandeira({ codigo }) {
   );
 }
 
-function lerIdioma() {
-  try {
-    return localStorage.getItem(CHAVE_IDIOMA) || "pt";
-  } catch {
-    return "pt";
-  }
-}
-
-// por enquanto só troca a bandeira; a tradução do app vem depois
+// a página inicial já muda o texto; no login e no app, por enquanto, só a bandeira
 export default function SeletorIdioma({ claro = false }) {
-  const [codigo, setCodigo] = useState(lerIdioma);
+  const { idioma: codigo, trocarIdioma } = useIdioma();
   const [aberto, setAberto] = useState(false);
   const caixa = useRef(null);
   const atual = IDIOMAS.find((i) => i.codigo === codigo) ?? IDIOMAS[0];
@@ -78,13 +69,8 @@ export default function SeletorIdioma({ claro = false }) {
   }, [aberto]);
 
   function escolher(novo) {
-    setCodigo(novo);
+    trocarIdioma(novo);
     setAberto(false);
-    try {
-      localStorage.setItem(CHAVE_IDIOMA, novo);
-    } catch {
-      // sem localStorage só não lembra a escolha
-    }
   }
 
   return (

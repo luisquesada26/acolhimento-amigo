@@ -9,7 +9,9 @@ export default function Login() {
   const [params] = useSearchParams();
   const [modo, setModo] = useState(params.get("modo") === "cadastro" ? "cadastro" : "entrar");
   const entrar = useEntrar();
-  const cadastro = useCadastro();
+  const cadastro = useCadastro(
+    params.get("perfil") === "voluntario" ? "voluntario" : "usuario"
+  );
   const ehEntrar = modo === "entrar";
 
   return (

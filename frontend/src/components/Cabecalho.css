@@ -1,0 +1,129 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 6%;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--marinho);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.cabecalho-simbolo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: var(--azul-claro);
+  color: var(--azul);
+  font-size: 1.4rem;
+}
+
+.cabecalho-navegacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.cabecalho-navegacao a {
+  color: var(--texto-2);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.cabecalho-navegacao a:hover {
+  color: var(--azul);
+}
+
+.cabecalho-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cabecalho-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 24px;
+  border-radius: 10px;
+  background-color: var(--azul);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.cabecalho-botao:hover {
+  background-color: var(--azul-escuro);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 700px) {
+  .cabecalho {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px 5%;
+  }
+
+  .cabecalho-navegacao {
+    order: 3;
+    width: 100%;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .cabecalho-logo {
+    font-size: 1.05rem;
+  }
+
+  .cabecalho-acoes {
+    gap: 8px;
+  }
+
+  .cabecalho-botao {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cabecalho-navegacao {
+    gap: 12px;
+  }
+
+  .cabecalho-navegacao a {
+    font-size: 0.85rem;
+  }
+}
+
+.cabecalho-logo-imagem {
+  display: block;
+  width: 195px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .cabecalho-logo-imagem {
+    width: 140px;
+  }
+}
