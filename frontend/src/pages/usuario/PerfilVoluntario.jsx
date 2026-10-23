@@ -1,0 +1,255 @@
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import api, { lerErro } from "../../services/api";
+import Avatar from "../../components/Avatar";
+import { visualDaArea } from "../../dados/areas";
+import { nomeDoIdioma } from "../voluntario/usePainel";
+import { Janela, Svg, dataComAno, quando } from "../voluntario/comum";
+
+const MINIMO_DESCRICAO = 20;
+
+function momento(horario) {
+  return new Date(`${horario.data}T${horario.hora_inicio}:00`);
+}
+
+// agrupa os horários livres por dia, para a pessoa escolher o dia primeiro
+function porDia(horarios) {
+  const dias = new Map();
+  for (const horario of horarios) {
+    if (!dias.has(horario.data)) dias.set(horario.data, []);
+    dias.get(horario.data).push(horario);
+  }
+  return [...dias.entries()];
+}
+
+function FormMarcar({ voluntario, horario, aoMarcado }) {
+  const [servicoId, setServicoId] = useState(String(voluntario.servicos[0]?.id ?? ""));
+  const [descricao, setDescricao] = useState("");
+  const [erro, setErro] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  const faltam = MINIMO_DESCRICAO - descricao.trim().length;
+
+  async function enviar(evento) {
+    evento.preventDefault();
+    if (!servicoId) return setErro("Escolha o serviço.");
+    if (faltam > 0) return setErro(`Conte um pouco mais: faltam ${faltam} caracteres.`);
+
+    setEnviando(true);
+    setErro("");
+    try {
+      await api.post("/agendamentos", {
+        horario_id: horario.id,
+        servico_id: Number(servicoId),
+        descricao: descricao.trim(),
+      });
+      aoMarcado();
+    } catch (problema) {
+      setErro(lerErro(problema).mensagem);
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <form className="formulario usu-form-marcar" onSubmit={enviar} noValidate>
+      <p className="usu-marcar-quando">
+        <Svg nome="agenda" tamanho={18} />
+        <span>
+          <strong>{dataComAno(momento(horario))}</strong>
+          <small>
+            {horario.hora_inicio} às {horario.hora_fim} · com {voluntario.nome}
+          </small>
+        </span>
+      </p>
+
+      <div className="campo">
+        <label htmlFor="marcar-servico">Serviço</label>
+        <select id="marcar-servico" value={servicoId} onChange={(e) => setServicoId(e.target.value)}>
+          {voluntario.servicos.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.titulo} ({s.duracao_min} min)
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="campo">
+        <label htmlFor="marcar-descricao">O que você precisa?</label>
+        <textarea
+          id="marcar-descricao"
+          rows={4}
+          maxLength={1000}
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder="Conte seu caso em poucas linhas. Só o voluntário deste horário vai ler."
+        />
+        <span className="dica">
+          {faltam > 0 ? `Faltam ${faltam} caracteres (mínimo de ${MINIMO_DESCRICAO}).` : "Pode enviar."}
+        </span>
+      </div>
+
+      {erro && (
+        <p className="vol-erro" role="alert">
+          {erro}
+        </p>
+      )}
+
+      <div className="vol-acoes">
+        <button type="submit" className="botao botao-primario" disabled={enviando}>
+          {enviando ? "Marcando..." : "Confirmar atendimento"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default function PerfilVoluntario() {
+  const { id } = useParams();
+  const [voluntario, setVoluntario] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+  const [escolhido, setEscolhido] = useState(null);
+  const [marcado, setMarcado] = useState(null);
+
+  const carregar = useCallback(async () => {
+    setCarregando(true);
+    try {
+      const { data } = await api.get(`/voluntarios/${id}`);
+      setVoluntario(data);
+      setErro("");
+    } catch (problema) {
+      setErro(lerErro(problema).mensagem);
+    } finally {
+      setCarregando(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
+
+  if (carregando) {
+    return (
+      <p className="usu-estado" role="status">
+        Carregando o perfil...
+      </p>
+    );
+  }
+
+  if (erro) {
+    return (
+      <div className="usu-estado">
+        <p className="aviso" role="alert">
+          {erro}
+        </p>
+        <Link to="/usuario" className="botao botao-primario">
+          Voltar para a busca
+        </Link>
+      </div>
+    );
+  }
+
+  const { cor, fundo } = visualDaArea(voluntario.area);
+  const dias = porDia(voluntario.horarios);
+
+  // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação
+  function confirmado() {
+    setMarcado(escolhido);
+    setEscolhido(null);
+    carregar();
+  }
+
+  return (
+    <>
+      <Link to="/usuario" className="usu-voltar">
+        <Svg nome="anterior" tamanho={16} /> Voltar para a busca
+      </Link>
+
+      <header className="usu-perfil-topo">
+        <Avatar nome={voluntario.nome} foto={voluntario.foto} className="usu-perfil-avatar" />
+        <div>
+          <h1>{voluntario.nome}</h1>
+          <span className="usu-area" style={{ background: fundo, color: cor }}>
+            {voluntario.area}
+          </span>
+          <ul className="usu-perfil-dados">
+            <li>
+              <Svg nome="idioma" tamanho={15} /> Fala {voluntario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
+            </li>
+            {voluntario.registro_profissional && (
+              <li>
+                <Svg nome="registro" tamanho={15} /> {voluntario.registro_profissional}
+              </li>
+            )}
+          </ul>
+        </div>
+      </header>
+
+      {voluntario.bio && <p className="usu-perfil-bio">{voluntario.bio}</p>}
+
+      {marcado && (
+        <div className="usu-confirmado" role="status">
+          <Svg nome="check" tamanho={20} />
+          <span>
+            <strong>Atendimento marcado!</strong>
+            <small>
+              {dataComAno(momento(marcado))}, às {marcado.hora_inicio}. O voluntário já pode ver seu caso.
+            </small>
+          </span>
+        </div>
+      )}
+
+      <section className="usu-bloco" aria-labelledby="usu-servicos-titulo">
+        <h2 id="usu-servicos-titulo" className="usu-bloco-titulo">
+          O que {voluntario.nome.split(" ")[0]} atende
+        </h2>
+        <ul className="usu-servicos">
+          {voluntario.servicos.map((s) => (
+            <li key={s.id}>
+              <h3>{s.titulo}</h3>
+              <p>{s.descricao}</p>
+              <span className="usu-duracao">
+                <Svg nome="relogio" tamanho={15} /> {s.duracao_min} min
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="usu-bloco" aria-labelledby="usu-horarios-titulo">
+        <h2 id="usu-horarios-titulo" className="usu-bloco-titulo">
+          Horários livres
+        </h2>
+
+        {dias.length ? (
+          <ul className="usu-dias">
+            {dias.map(([data, horarios]) => (
+              <li key={data}>
+                <h3>
+                  {dataComAno(new Date(`${data}T12:00:00`))}
+                  <small>{quando(new Date(`${data}T12:00:00`))}</small>
+                </h3>
+                <ul className="usu-horas">
+                  {horarios.map((h) => (
+                    <li key={h.id}>
+                      <button type="button" className="usu-hora" onClick={() => setEscolhido(h)}>
+                        {h.hora_inicio}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="vol-vazio">Este voluntário não tem horários livres agora. Tente outro ou volte depois.</p>
+        )}
+      </section>
+
+      <Janela aberta={Boolean(escolhido)} titulo="Marcar atendimento" aoFechar={() => setEscolhido(null)}>
+        {escolhido && <FormMarcar voluntario={voluntario} horario={escolhido} aoMarcado={confirmado} />}
+      </Janela>
+    </>
+  );
+}

@@ -10,6 +10,9 @@ import Agenda from "./pages/voluntario/Agenda";
 import Atendimentos from "./pages/voluntario/Atendimentos";
 import Perfil from "./pages/voluntario/Perfil";
 import Relatorios from "./pages/voluntario/Relatorios";
+import LayoutUsuario from "./pages/usuario/LayoutUsuario";
+import Buscar from "./pages/usuario/Buscar";
+import PerfilVoluntario from "./pages/usuario/PerfilVoluntario";
 
 export default function App() {
   return (
@@ -26,6 +29,17 @@ export default function App() {
           </RotaProtegida>
         }
       />
+      <Route
+        path="/usuario"
+        element={
+          <RotaProtegida perfil="usuario">
+            <LayoutUsuario />
+          </RotaProtegida>
+        }
+      >
+        <Route index element={<Buscar />} />
+        <Route path="voluntario/:id" element={<PerfilVoluntario />} />
+      </Route>
       <Route
         path="/voluntario"
         element={

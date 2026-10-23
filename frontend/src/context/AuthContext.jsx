@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
 
 // para onde cada perfil vai depois de entrar
 export function paginaInicial(perfil) {
-  return perfil === "voluntario" ? "/voluntario" : "/bem-vindo";
+  return perfil === "voluntario" ? "/voluntario" : "/usuario";
 }
 
 export function useAuth() {
