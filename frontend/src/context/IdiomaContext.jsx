@@ -3,6 +3,9 @@ import { createContext, useContext, useState } from "react";
 const CHAVE_IDIOMA = "acolhimento:idioma";
 const CODIGOS = ["pt", "en", "es", "fr"];
 
+// o lang da página acompanha o idioma, para o leitor de tela ler com a pronúncia certa
+export const LANG = { pt: "pt-BR", en: "en", es: "es", fr: "fr" };
+
 const IdiomaContext = createContext(null);
 
 function lerIdioma() {
@@ -32,4 +35,10 @@ export function IdiomaProvider({ children }) {
 
 export function useIdioma() {
   return useContext(IdiomaContext);
+}
+
+// os textos de uma tela no idioma da bandeira; se faltar o idioma, fica o português
+export function useTextos(traducoes) {
+  const { idioma } = useIdioma();
+  return traducoes[idioma] ?? traducoes.pt;
 }

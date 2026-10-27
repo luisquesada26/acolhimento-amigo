@@ -1,5 +1,13 @@
 import { useState } from "react";
 import SeletorArea from "../../components/SeletorArea";
+import { useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
+
+// erro de validação vem como chave (emailInvalido...); o que vem da API e não tem tradução aparece como veio
+function useErros() {
+  const t = useTextos(traducoes);
+  return (valor) => (valor ? t.erros[valor] ?? valor : valor);
+}
 
 export function Logo({ claro = false }) {
   const fundo = claro ? "#FFFFFF" : "#1757D8";
@@ -32,6 +40,7 @@ function IconeOlho({ aberto }) {
 }
 
 export function Campo({ id, rotulo, erro, type = "text", ...props }) {
+  const t = useTextos(traducoes);
   const [verSenha, setVerSenha] = useState(false);
   const ehSenha = type === "password";
 
@@ -54,7 +63,7 @@ export function Campo({ id, rotulo, erro, type = "text", ...props }) {
           <button
             type="button"
             className="ver-senha"
-            aria-label={verSenha ? "Ocultar senha" : "Mostrar senha"}
+            aria-label={verSenha ? t.ocultarSenha : t.mostrarSenha}
             aria-pressed={verSenha}
             aria-controls={id}
             onClick={() => setVerSenha((atual) => !atual)}
@@ -87,57 +96,57 @@ export function Aviso({ texto }) {
 }
 
 export function FormEntrar({ form, prefixo = "entrar" }) {
+  const t = useTextos(traducoes);
+  const traduzir = useErros();
   return (
     <form className="formulario" onSubmit={form.enviar} noValidate>
-      <Aviso texto={form.mensagem} />
+      <Aviso texto={traduzir(form.mensagem)} />
       <Campo
         id={`${prefixo}-email`}
-        rotulo="E-mail"
+        rotulo={t.email}
         type="email"
         autoComplete="email"
-        placeholder="voce@email.com"
+        placeholder={t.emailExemplo}
         value={form.email}
         onChange={(e) => form.setEmail(e.target.value)}
-        erro={form.erros.email}
+        erro={traduzir(form.erros.email)}
       />
       <Campo
         id={`${prefixo}-senha`}
-        rotulo="Senha"
+        rotulo={t.senha}
         type="password"
         autoComplete="current-password"
-        placeholder="Sua senha"
+        placeholder={t.suaSenha}
         value={form.senha}
         onChange={(e) => form.setSenha(e.target.value)}
-        erro={form.erros.senha}
+        erro={traduzir(form.erros.senha)}
       />
       <button type="submit" className="botao botao-primario" disabled={form.enviando}>
-        {form.enviando ? "Entrando..." : "Entrar"}
+        {form.enviando ? t.entrando : t.entrar}
       </button>
     </form>
   );
 }
 
-export const PERFIS = [
-  { id: "usuario", titulo: "Preciso de atendimento", texto: "Sou migrante ou refugiado e quero marcar um atendimento." },
-  { id: "voluntario", titulo: "Quero ser voluntário", texto: "Sou profissional e quero atender no meu tempo livre." },
-];
+export const PERFIS = ["usuario", "voluntario"];
 
 export function EscolhaPerfil({ perfil, aoEscolher, prefixo }) {
+  const t = useTextos(traducoes);
   return (
     <fieldset className="escolha-perfil">
-      <legend>Tipo de conta</legend>
+      <legend>{t.tipoDeConta}</legend>
       <div className="perfis">
-        {PERFIS.map((p) => (
-          <label key={p.id} className={`perfil-cartao perfil-${p.id}`}>
+        {PERFIS.map((id) => (
+          <label key={id} className={`perfil-cartao perfil-${id}`}>
             <input
               type="radio"
               name={`${prefixo}-perfil`}
-              value={p.id}
-              checked={perfil === p.id}
-              onChange={() => aoEscolher(p.id)}
+              value={id}
+              checked={perfil === id}
+              onChange={() => aoEscolher(id)}
             />
-            <strong>{p.titulo}</strong>
-            <span>{p.texto}</span>
+            <strong>{t.perfis[id].titulo}</strong>
+            <span>{t.perfis[id].texto}</span>
           </label>
         ))}
       </div>
@@ -146,52 +155,54 @@ export function EscolhaPerfil({ perfil, aoEscolher, prefixo }) {
 }
 
 export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true }) {
+  const t = useTextos(traducoes);
+  const traduzir = useErros();
   const ehVoluntario = form.perfil === "voluntario";
 
   return (
     <form className="formulario" onSubmit={form.enviar} noValidate>
       {mostrarEscolha && <EscolhaPerfil perfil={form.perfil} aoEscolher={form.setPerfil} prefixo={prefixo} />}
-      <Aviso texto={form.mensagem} />
+      <Aviso texto={traduzir(form.mensagem)} />
 
       <div className="grade-campos">
         <Campo
           id={`${prefixo}-nome`}
-          rotulo="Nome completo"
+          rotulo={t.nome}
           autoComplete="name"
-          placeholder="Como você se chama?"
+          placeholder={t.nomeExemplo}
           value={form.dados.nome}
           onChange={(e) => form.mudar("nome", e.target.value)}
-          erro={form.erros.nome}
+          erro={traduzir(form.erros.nome)}
         />
         <Campo
           id={`${prefixo}-email`}
-          rotulo="E-mail"
+          rotulo={t.email}
           type="email"
           autoComplete="email"
-          placeholder="voce@email.com"
+          placeholder={t.emailExemplo}
           value={form.dados.email}
           onChange={(e) => form.mudar("email", e.target.value)}
-          erro={form.erros.email}
+          erro={traduzir(form.erros.email)}
         />
         <Campo
           id={`${prefixo}-senha`}
-          rotulo="Senha"
+          rotulo={t.senha}
           type="password"
           autoComplete="new-password"
-          placeholder="Mínimo de 6 caracteres"
+          placeholder={t.senhaMinima}
           value={form.dados.senha}
           onChange={(e) => form.mudar("senha", e.target.value)}
-          erro={form.erros.senha}
+          erro={traduzir(form.erros.senha)}
         />
         <Campo
           id={`${prefixo}-telefone`}
-          rotulo="Telefone ou WhatsApp (opcional)"
+          rotulo={t.telefone}
           type="tel"
           autoComplete="tel"
           placeholder="(11) 90000-0000"
           value={form.dados.telefone}
           onChange={(e) => form.mudar("telefone", e.target.value)}
-          erro={form.erros.telefone}
+          erro={traduzir(form.erros.telefone)}
         />
       </div>
 
@@ -199,28 +210,27 @@ export function FormCadastro({ form, prefixo = "cadastro", mostrarEscolha = true
         <div className="bloco-voluntario">
           <SeletorArea
             id={`${prefixo}-area`}
-            rotulo="Área de atuação"
+            rotulo={t.area}
+            textoVazio={t.escolhaArea}
             areas={form.areas}
             valor={form.areaId}
             aoEscolher={form.setAreaId}
-            erro={form.erros["voluntario.area_id"]}
+            erro={traduzir(form.erros["voluntario.area_id"])}
           />
-          <p className="dica">Idiomas, serviços e agenda você completa depois de entrar.</p>
+          <p className="dica">{t.dicaVoluntario}</p>
         </div>
       )}
 
       <div className="campo">
         <label className="aceite">
           <input type="checkbox" checked={form.aceite} onChange={(e) => form.setAceite(e.target.checked)} />
-          <span>
-            Li e aceito os termos de privacidade. Meus dados são usados só para o atendimento, de acordo com a LGPD.
-          </span>
+          <span>{t.aceite}</span>
         </label>
-        {form.erros.aceite_lgpd && <span className="campo-erro">{form.erros.aceite_lgpd}</span>}
+        {form.erros.aceite_lgpd && <span className="campo-erro">{traduzir(form.erros.aceite_lgpd)}</span>}
       </div>
 
       <button type="submit" className={`botao botao-primario ${ehVoluntario ? "botao-voluntario" : ""}`} disabled={form.enviando}>
-        {form.enviando ? "Criando conta..." : ehVoluntario ? "Criar conta de voluntário" : "Criar minha conta"}
+        {form.enviando ? t.criandoConta : ehVoluntario ? t.criarContaVoluntario : t.criarMinhaConta}
       </button>
     </form>
   );
