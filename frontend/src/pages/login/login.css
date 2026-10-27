@@ -237,12 +237,52 @@
   color: #dce6f7;
 }
 
-/* idioma no canto de cima, por cima da foto */
-.login-idioma {
+/* "Voltar ao site" à esquerda e o idioma à direita, por cima da foto */
+.login-topo {
   position: absolute;
   top: 16px;
   right: 16px;
+  left: 16px;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.login-voltar {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px 0 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-voltar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* o logo também leva para a página inicial */
+.login-logo {
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.login-logo:hover {
+  opacity: 0.9;
+}
+
+.login-voltar:focus-visible,
+.login-logo:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
 }
 
 @media (max-width: 640px) {
@@ -251,9 +291,9 @@
   }
 
   /* no celular entra no fluxo, para não cobrir o logo */
-  .login-idioma {
+  .login-topo {
     position: static;
-    align-self: flex-end;
+    align-self: stretch;
   }
 
   .cartao {

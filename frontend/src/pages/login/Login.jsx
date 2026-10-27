@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FormCadastro, FormEntrar, Logo } from "./Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
+import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { useCadastro, useEntrar } from "./useFormularios";
+import { traducoes } from "./traducoes";
 import "./login.css";
 
 export default function Login() {
@@ -12,30 +14,40 @@ export default function Login() {
   const cadastro = useCadastro(
     params.get("perfil") === "voluntario" ? "voluntario" : "usuario"
   );
+  const { idioma } = useIdioma();
+  const t = useTextos(traducoes);
   const ehEntrar = modo === "entrar";
 
   return (
-    <main className="login">
-      <div className="login-idioma">
+    <main className="login" lang={LANG[idioma]}>
+      <div className="login-topo">
+        <Link to="/" className="login-voltar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          {t.voltarAoSite}
+        </Link>
         <SeletorIdioma claro />
       </div>
-      <Logo claro />
+      <Link to="/" className="login-logo" aria-label={t.logoInicio}>
+        <Logo claro />
+      </Link>
       <section className={ehEntrar ? "cartao" : "cartao cartao-cadastro"} aria-labelledby="login-titulo">
         <header className="cabecalho-form">
-          <h1 id="login-titulo">{ehEntrar ? "Entre na sua conta" : "Crie sua conta grátis"}</h1>
-          <p>{ehEntrar ? "Que bom te ver de novo." : "Leva menos de um minuto."}</p>
+          <h1 id="login-titulo">{ehEntrar ? t.entrarTitulo : t.cadastroTitulo}</h1>
+          <p>{ehEntrar ? t.entrarSubtitulo : t.cadastroSubtitulo}</p>
         </header>
 
         {ehEntrar ? <FormEntrar form={entrar} /> : <FormCadastro form={cadastro} />}
 
         <p className="trocar">
-          {ehEntrar ? "Ainda não tem conta?" : "Já tem conta?"}{" "}
+          {ehEntrar ? t.semConta : t.temConta}{" "}
           <button type="button" className="link" onClick={() => setModo(ehEntrar ? "cadastro" : "entrar")}>
-            {ehEntrar ? "Criar conta" : "Entrar"}
+            {ehEntrar ? t.criarConta : t.entrar}
           </button>
         </p>
       </section>
-      <p className="rodape">Atendimento gratuito para migrantes e refugiados.</p>
+      <p className="rodape">{t.rodape}</p>
     </main>
   );
 }

@@ -1,3 +1,5 @@
+import { traducoes as textosDoInicio } from "../pages/inicio/traducoes";
+
 // cor e ícone de cada área, pelo nome que vem da API
 const VISUAL = {
   "Jurídico": { cor: "#1e5bd8", fundo: "#eaf1fe", icone: "M12 4v16 M8 20h8 M5 7h14 M5 7l-3 6h6z M19 7l-3 6h6z" },
@@ -18,4 +20,11 @@ const PADRAO = { cor: "#4a5b78", fundo: "#eef3fb", icone: "M12 2a10 10 0 1 0 0 2
 
 export function visualDaArea(nome) {
   return VISUAL[nome] ?? PADRAO;
+}
+
+// a API manda o nome da área em português; a página inicial já tem as 12 áreas nos 4 idiomas
+export function nomeDaArea(nome, idioma) {
+  const areas = textosDoInicio.pt.areas;
+  const id = Object.keys(areas).find((chave) => areas[chave].titulo === nome);
+  return (id && textosDoInicio[idioma]?.areas[id]?.titulo) || nome;
 }
