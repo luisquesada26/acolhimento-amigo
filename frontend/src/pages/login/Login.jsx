@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FormCadastro, FormEntrar, Logo } from "./Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import { useCadastro, useEntrar } from "./useFormularios";
@@ -16,10 +16,18 @@ export default function Login() {
 
   return (
     <main className="login">
-      <div className="login-idioma">
+      <div className="login-topo">
+        <Link to="/" className="login-voltar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Voltar ao site
+        </Link>
         <SeletorIdioma claro />
       </div>
-      <Logo claro />
+      <Link to="/" className="login-logo" aria-label="Acolhimento Amigo, voltar para a página inicial">
+        <Logo claro />
+      </Link>
       <section className={ehEntrar ? "cartao" : "cartao cartao-cadastro"} aria-labelledby="login-titulo">
         <header className="cabecalho-form">
           <h1 id="login-titulo">{ehEntrar ? "Entre na sua conta" : "Crie sua conta grátis"}</h1>
