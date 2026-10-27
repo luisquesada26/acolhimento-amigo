@@ -10,6 +10,14 @@ const IDIOMAS = [
   { codigo: "fr", sigla: "FR", nome: "Français" },
 ];
 
+// o que o leitor de tela fala no botão, no idioma escolhido
+const ROTULO = {
+  pt: (nome) => `Idioma: ${nome}. Trocar idioma`,
+  en: (nome) => `Language: ${nome}. Change language`,
+  es: (nome) => `Idioma: ${nome}. Cambiar idioma`,
+  fr: (nome) => `Langue\u00a0: ${nome}. Changer de langue`,
+};
+
 // bandeiras desenhadas aqui: o Windows não mostra emoji de bandeira
 function Bandeira({ codigo }) {
   return (
@@ -80,7 +88,7 @@ export default function SeletorIdioma({ claro = false }) {
         className="idioma-botao"
         aria-expanded={aberto}
         aria-controls="idioma-lista"
-        aria-label={`Idioma: ${atual.nome}. Trocar idioma`}
+        aria-label={ROTULO[atual.codigo](atual.nome)}
         onClick={() => setAberto(!aberto)}
       >
         <Bandeira codigo={atual.codigo} />

@@ -5,6 +5,19 @@ import api, { lerErro } from "../../services/api";
 
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// a API responde em português; estes a tela mostra no idioma da bandeira (ver erros em traducoes.js)
+const ERROS_DA_API = {
+  "E-mail ou senha incorretos": "loginIncorreto",
+  "Este e-mail já está cadastrado": "emailCadastrado",
+  "Algo deu errado. Tente de novo.": "generico",
+};
+
+function lerErroTraduzivel(erro) {
+  const { mensagem, campos } = lerErro(erro);
+  if (!erro.response) return { mensagem: "semServidor", campos };
+  return { mensagem: ERROS_DA_API[mensagem] ?? mensagem, campos };
+}
+
 export function useEntrar() {
   const { entrar } = useAuth();
   const navigate = useNavigate();
@@ -19,8 +32,8 @@ export function useEntrar() {
     setMensagem("");
 
     const novos = {};
-    if (!EMAIL_VALIDO.test(email.trim())) novos.email = "Digite um e-mail válido";
-    if (!senha) novos.senha = "Digite sua senha";
+    if (!EMAIL_VALIDO.test(email.trim())) novos.email = "emailInvalido";
+    if (!senha) novos.senha = "senhaVazia";
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -29,7 +42,7 @@ export function useEntrar() {
       const usuario = await entrar(email.trim(), senha);
       navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
-      const { mensagem: texto, campos } = lerErro(erro);
+      const { mensagem: texto, campos } = lerErroTraduzivel(erro);
       setMensagem(texto);
       setErros(campos);
     } finally {
@@ -64,12 +77,12 @@ export function useCadastro(perfilInicial = "usuario") {
 
   function validar() {
     const novos = {};
-    if (dados.nome.trim().length < 3) novos.nome = "Digite seu nome completo";
-    if (!EMAIL_VALIDO.test(dados.email.trim())) novos.email = "Digite um e-mail válido";
-    if (dados.senha.length < 6) novos.senha = "A senha precisa ter pelo menos 6 caracteres";
-    if (!aceite) novos.aceite_lgpd = "É preciso aceitar os termos de privacidade";
+    if (dados.nome.trim().length < 3) novos.nome = "nomeCurto";
+    if (!EMAIL_VALIDO.test(dados.email.trim())) novos.email = "emailInvalido";
+    if (dados.senha.length < 6) novos.senha = "senhaCurta";
+    if (!aceite) novos.aceite_lgpd = "aceiteFaltando";
     if (perfil === "voluntario" && !areaId) {
-      novos["voluntario.area_id"] = "Escolha sua área de atuação";
+      novos["voluntario.area_id"] = "areaFaltando";
     }
     return novos;
   }
@@ -99,7 +112,7 @@ export function useCadastro(perfilInicial = "usuario") {
       const usuario = await cadastrar(corpo);
       navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
-      const { mensagem: texto, campos } = lerErro(erro);
+      const { mensagem: texto, campos } = lerErroTraduzivel(erro);
       setMensagem(texto);
       setErros(campos);
     } finally {

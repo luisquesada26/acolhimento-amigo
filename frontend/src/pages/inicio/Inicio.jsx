@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Cabecalho from "../../components/Cabecalho";
-import { useIdioma } from "../../context/IdiomaContext";
+import { LANG, useIdioma } from "../../context/IdiomaContext";
 import "./Inicio.css";
 import {
   Users,
@@ -17,9 +17,6 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { traducoes } from "./traducoes";
-
-// o lang da página acompanha o idioma, para o leitor de tela ler com a pronúncia certa
-const LANG = { pt: "pt-BR", en: "en", es: "es", fr: "fr" };
 
 
 const servicos = [
