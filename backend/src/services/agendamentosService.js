@@ -8,8 +8,6 @@ const { voluntarioLogado } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 const { agora } = require("../utils/datas");
 
-const LIMITE_CONFIRMADOS = 3;
-
 function formatar(a) {
   return {
     id: a.id,
@@ -87,10 +85,6 @@ const criar = db.transaction((logado, dados) => {
   if (!servico || !servico.ativo) throw new ErroApp(404, "Serviço não encontrado");
   if (servico.voluntario_id !== horario.voluntario_id) {
     throw new ErroApp(400, "Este serviço não é oferecido pelo voluntário deste horário");
-  }
-
-  if (repo.contarConfirmados(usuario.id) >= LIMITE_CONFIRMADOS) {
-    throw new ErroApp(409, `Você já tem ${LIMITE_CONFIRMADOS} agendamentos confirmados. Cancele um para marcar outro.`);
   }
 
   const id = repo.criar({ ...dados, usuario_id: usuario.id });

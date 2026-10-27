@@ -81,7 +81,7 @@
           "      criar: (pronto) => enviar(\"POST\", \"/horarios\", \"tokenVoluntario\", { data: variaveis.get(\"dataLivre\"), hora_inicio: variaveis.get(\"horaInicio\"), hora_fim: variaveis.get(\"horaFim\") }, (r) => pronto(r && r.id)),",
           "    },",
           "    horarioLivreId: { sempre: true, criar: buscarLivre },",
-          "    // o usuário só pode ter 3 agendamentos confirmados: reaproveita o que a coleção já criou antes de marcar outro",
+          "    // reaproveita o agendamento que a coleção já criou, para não encher a agenda do Rafael a cada envio",
           "    agendamentoId: {",
           "      precisa: [\"tokenUsuario\"],",
           "      criar: (pronto) => enviar(\"GET\", \"/meus-agendamentos?status=confirmado\", \"tokenUsuario\", null, (lista) => {",
@@ -1202,7 +1202,7 @@
                 }
               }
             },
-            "description": "O horário livre e o serviço são lidos do perfil do Rafael antes do envio. O usuário pode ter até 3 agendamentos confirmados: se passar disso, cancele um."
+            "description": "O horário livre e o serviço são lidos do perfil do Rafael antes do envio."
           },
           "response": [],
           "event": [

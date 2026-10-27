@@ -6,40 +6,81 @@ Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 
 ## User stories
 
-| Como um | eu posso... | |
-| --- | --- | --- |
-| Visitante | eu posso... | Conhecer o Acolhimento Amigo e as áreas de atendimento |
-| Visitante | eu posso... | Criar uma conta como usuário para pedir atendimento |
-| Visitante | eu posso... | Criar uma conta como voluntário informando minha área de atuação |
-| Visitante | eu posso... | Entrar com meu e-mail e senha |
-| Usuário (logado) | eu posso... | Buscar voluntários por palavra-chave |
-| Usuário (logado) | eu posso... | Filtrar voluntários por área, idioma e disponibilidade |
-| Usuário (logado) | eu posso... | Ver o perfil do voluntário com os serviços e os horários livres |
-| Usuário (logado) | eu posso... | Marcar um horário livre escolhendo o serviço e contando o que preciso |
-| Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram |
-| Usuário (logado) | eu posso... | Remarcar um atendimento para outro horário do mesmo voluntário |
-| Usuário (logado) | eu posso... | Cancelar um atendimento |
-| Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento |
-| Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto |
-| Usuário (logado) | eu posso... | Excluir minha conta |
-| Voluntário (logado) | eu posso... | Ver no painel meu próximo atendimento e os números do mês |
-| Voluntário (logado) | eu posso... | Cadastrar, editar e excluir os serviços que ofereço |
-| Voluntário (logado) | eu posso... | Abrir os dias e horários em que posso atender |
-| Voluntário (logado) | eu posso... | Ver minha agenda em calendário por mês, semana e dia |
-| Voluntário (logado) | eu posso... | Ver o caso e o contato de quem marcou comigo |
-| Voluntário (logado) | eu posso... | Concluir um atendimento escrevendo o que foi feito e o próximo passo |
-| Voluntário (logado) | eu posso... | Cancelar um atendimento |
-| Voluntário (logado) | eu posso... | Ver meu histórico filtrando realizados e cancelados |
-| Voluntário (logado) | eu posso... | Buscar nos relatórios quem atendi por nome, data, serviço e nacionalidade |
-| Voluntário (logado) | eu posso... | Escolher se apareço ou não na busca |
-| Voluntário (logado) | eu posso... | Editar meus dados, foto, idiomas e apresentação |
-| Voluntário (logado) | eu posso... | Excluir minha conta |
+Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que pé está:
+
+- **Pronto**: a tela e a API funcionam
+- **Em revisão**: está no pull request aberto, esperando o merge
+- **Só na API**: a rota já funciona, falta a tela
+
+| Como um | eu posso... | | Rota da API | Situação |
+| --- | --- | --- | --- | --- |
+| Visitante | eu posso... | Conhecer o Acolhimento Amigo e as áreas de atendimento | Não usa a API | Pronto |
+| Visitante | eu posso... | Criar uma conta como usuário para pedir atendimento | `POST /auth/cadastro` | Pronto |
+| Visitante | eu posso... | Criar uma conta como voluntário informando minha área de atuação | `GET /areas`, `POST /auth/cadastro` | Pronto |
+| Visitante | eu posso... | Entrar com meu e-mail e senha | `POST /auth/login` | Pronto |
+| Usuário (logado) | eu posso... | Buscar voluntários por palavra-chave | `GET /voluntarios?q=` | Em revisão |
+| Usuário (logado) | eu posso... | Filtrar voluntários por área, idioma e disponibilidade | `GET /voluntarios?area=&idioma=&disponivel=` | Em revisão |
+| Usuário (logado) | eu posso... | Ver o perfil do voluntário com os serviços e os horários livres | `GET /voluntarios/:id` | Em revisão |
+| Usuário (logado) | eu posso... | Marcar um horário livre escolhendo o serviço e contando o que preciso | `POST /agendamentos` | Em revisão |
+| Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram | `GET /meus-agendamentos` | Só na API |
+| Usuário (logado) | eu posso... | Remarcar um atendimento para outro horário do mesmo voluntário | `PUT /agendamentos/:id` | Só na API |
+| Usuário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Só na API |
+| Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento | Não usa a API | Falta a tela |
+| Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto | `GET /me`, `PUT /me` | Só na API |
+| Usuário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Só na API |
+| Voluntário (logado) | eu posso... | Ver no painel meu próximo atendimento e os números do mês | `GET /meus-agendamentos`, `GET /meus-horarios` | Pronto |
+| Voluntário (logado) | eu posso... | Cadastrar, editar e excluir os serviços que ofereço | `GET /meus-servicos`, `POST /servicos`, `PUT /servicos/:id`, `DELETE /servicos/:id` | Pronto |
+| Voluntário (logado) | eu posso... | Abrir os dias e horários em que posso atender | `POST /horarios`, `DELETE /horarios/:id` | Pronto |
+| Voluntário (logado) | eu posso... | Ver minha agenda em calendário por mês, semana e dia | `GET /meus-horarios` | Pronto |
+| Voluntário (logado) | eu posso... | Ver o caso e o contato de quem marcou comigo | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Concluir um atendimento escrevendo o que foi feito e o próximo passo | `PUT /agendamentos/:id` | Pronto |
+| Voluntário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Pronto |
+| Voluntário (logado) | eu posso... | Ver meu histórico filtrando realizados e cancelados | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Buscar nos relatórios quem atendi por nome, data, serviço e nacionalidade | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Escolher se apareço ou não na busca | `PUT /me` | Pronto |
+| Voluntário (logado) | eu posso... | Editar meus dados, foto, idiomas e apresentação | `GET /me`, `PUT /me`, `POST /areas` | Pronto |
+| Voluntário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Pronto |
 
 ## Tecnologias
 
 - Backend: Node.js, Express, Zod, bcrypt e JWT
 - Banco: SQLite com better-sqlite3
 - Frontend: React + Vite, React Router e Axios
+
+## Arquitetura
+
+O frontend em React roda no navegador e conversa com a API só por HTTP, em JSON. A API em Node.js e Express é a única parte que mexe no banco SQLite.
+
+```mermaid
+flowchart TD
+    subgraph front ["Frontend: React + Vite"]
+        telas["Telas<br/>pages/"] --> sessao["AuthContext<br/>faz o login e guarda o token"]
+        telas --> axios["Axios<br/>services/api.js manda o token em toda requisição"]
+    end
+
+    axios -- "HTTP + JSON em /api" --> rotas
+
+    subgraph api ["API: Node.js + Express"]
+        rotas["routes<br/>liga cada URL ao seu controller"] --> mid["middlewares<br/>auth confere o token, perfil confere quem pode<br/>e validar confere os dados com Zod"]
+        mid --> ctrl["controllers<br/>recebem o pedido e devolvem a resposta"]
+        ctrl --> serv["services<br/>regras do negócio"]
+        serv --> repo["repositories<br/>consultas SQL"]
+    end
+
+    repo --> banco[("SQLite<br/>backend/data/acolhimento.db")]
+```
+
+Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` sem token, `403` com o perfil errado, `400` com dados inválidos e `409` quando uma regra não deixa (por exemplo, horário que acabou de ser reservado).
+
+### Fluxo de um atendimento
+
+1. O voluntário cria a conta escolhendo a área, cadastra os serviços que oferece e abre os horários em que pode atender.
+2. O usuário cria a conta e busca voluntários por palavra-chave, área, idioma e disponibilidade.
+3. No perfil do voluntário, escolhe um horário livre e um serviço e conta o que precisa.
+4. A API confere se o horário ainda está livre, e se o serviço é daquele voluntário. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`.
+5. O voluntário vê o atendimento no painel e na agenda, com o caso e o contato da pessoa.
+6. Depois da conversa, o voluntário conclui o atendimento (`realizado`) e escreve a anotação, que o usuário também lê.
+7. Se um dos dois cancelar antes, o agendamento vira `cancelado` e o horário volta a ficar `livre` para outra pessoa.
 
 ## Como rodar
 
@@ -83,6 +124,86 @@ O seed cria 12 áreas, 5 voluntários por área (cada um com 2 serviços e horá
 As senhas são salvas com bcrypt, nunca em texto puro.
 
 Só quem cuida do banco altera o `schema.sql`. Toda mudança vai em um pull request próprio e, depois do merge, todos rodam `npm run db:reset`.
+
+### Tabelas
+
+| Tabela | Colunas principais | Para que serve |
+| --- | --- | --- |
+| `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idioma`, `foto` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário |
+| `areas` | `nome` | As áreas de atendimento: Jurídico, Psicologia, Moradia e as outras |
+| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca |
+| `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `ativo` | O que cada voluntário oferece |
+| `horarios` | `voluntario_id`, `data`, `hora_inicio`, `hora_fim`, `status` | A agenda do voluntário: cada horário está `livre` ou `reservado` |
+| `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |
+
+```mermaid
+erDiagram
+    usuarios ||--o| voluntarios : "pode ser"
+    areas ||--o{ voluntarios : "reúne"
+    voluntarios ||--o{ servicos : "oferece"
+    voluntarios ||--o{ horarios : "abre"
+    usuarios ||--o{ agendamentos : "marca"
+    horarios ||--o{ agendamentos : "recebe"
+    servicos ||--o{ agendamentos : "escolhido em"
+
+    usuarios {
+        int id PK
+        text nome
+        text email UK
+        text senha_hash
+        text telefone
+        text perfil "usuario ou voluntario"
+        text pais_origem
+        text idioma
+        text foto
+        int aceite_lgpd
+        text criado_em
+    }
+
+    areas {
+        int id PK
+        text nome UK
+    }
+
+    voluntarios {
+        int id PK
+        int usuario_id FK
+        int area_id FK
+        text registro_profissional
+        text idiomas
+        text bio
+        int ativo
+    }
+
+    servicos {
+        int id PK
+        int voluntario_id FK
+        text titulo
+        text descricao
+        int duracao_min
+        int ativo
+    }
+
+    horarios {
+        int id PK
+        int voluntario_id FK
+        text data
+        text hora_inicio
+        text hora_fim
+        text status "livre ou reservado"
+    }
+
+    agendamentos {
+        int id PK
+        int horario_id FK
+        int usuario_id FK
+        int servico_id FK
+        text descricao
+        text status "confirmado, realizado ou cancelado"
+        text anotacao
+        text criado_em
+    }
+```
 
 ### Usuários de teste
 

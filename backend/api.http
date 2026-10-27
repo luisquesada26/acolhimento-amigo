@@ -407,6 +407,17 @@ Content-Type: application/json
   "descricao": "ajuda"
 }
 
+### Marcar mais um (nao tem limite de agendamentos por usuario)
+POST {{api}}/agendamentos
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "horario_id": 6,
+  "servico_id": 2,
+  "descricao": "Também quero orientação sobre o visto de residência."
+}
+
 ### Ver o agendamento marcado
 GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
