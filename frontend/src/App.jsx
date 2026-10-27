@@ -2,7 +2,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import RotaProtegida from "./components/RotaProtegida";
 import Login from "./pages/login/Login";
-import BemVindo from "./pages/BemVindo";
 import Inicio from "./pages/inicio/Inicio";
 import LayoutVoluntario from "./pages/voluntario/LayoutVoluntario";
 import PainelVoluntario from "./pages/voluntario/PainelVoluntario";
@@ -21,14 +20,6 @@ export default function App() {
 
       <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/bem-vindo"
-        element={
-          <RotaProtegida>
-            <BemVindo />
-          </RotaProtegida>
-        }
-      />
       <Route
         path="/usuario"
         element={

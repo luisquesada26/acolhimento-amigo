@@ -461,14 +461,3 @@ a {
   border: 1px dashed #b9d7c5;
   background: #f7fcf9;
 }
-
-/* tela depois do login: só a mensagem */
-.bem-vindo {
-  min-height: 100vh;
-  padding: 40px;
-  background: #fff;
-}
-
-.bem-vindo h1 {
-  font-size: 32px;
-}

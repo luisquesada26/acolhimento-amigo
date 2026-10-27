@@ -1,20 +1,11 @@
 import { Link } from "react-router-dom";
 import Avatar from "../../components/Avatar";
-import { visualDaArea } from "../../dados/areas";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
+import { EtiquetaArea, momento } from "./comum";
 import useBusca from "./useBusca";
 
 const IDIOMAS = ["pt", "en", "es", "fr"];
-
-function EtiquetaArea({ nome }) {
-  const { cor, fundo } = visualDaArea(nome);
-  return (
-    <span className="usu-area" style={{ background: fundo, color: cor }}>
-      {nome}
-    </span>
-  );
-}
 
 function CartaoVoluntario({ voluntario }) {
   const { proximo_horario: proximo } = voluntario;
@@ -42,7 +33,7 @@ function CartaoVoluntario({ voluntario }) {
           <Svg nome="agenda" tamanho={15} />{" "}
           {proximo ? (
             <>
-              Próximo horário {quando(new Date(`${proximo.data}T${proximo.hora_inicio}:00`)).toLowerCase()}, às {proximo.hora_inicio}
+              Próximo horário {quando(momento(proximo)).toLowerCase()}, às {proximo.hora_inicio}
             </>
           ) : (
             "Sem horários livres no momento"

@@ -2,15 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
 import Avatar from "../../components/Avatar";
-import { visualDaArea } from "../../dados/areas";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Janela, Svg, dataComAno, quando } from "../voluntario/comum";
+import { EtiquetaArea, momento } from "./comum";
 
 const MINIMO_DESCRICAO = 20;
-
-function momento(horario) {
-  return new Date(`${horario.data}T${horario.hora_inicio}:00`);
-}
 
 // agrupa os horários livres por dia, para a pessoa escolher o dia primeiro
 function porDia(horarios) {
@@ -150,7 +146,6 @@ export default function PerfilVoluntario() {
     );
   }
 
-  const { cor, fundo } = visualDaArea(voluntario.area);
   const dias = porDia(voluntario.horarios);
 
   // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação
@@ -170,9 +165,7 @@ export default function PerfilVoluntario() {
         <Avatar nome={voluntario.nome} foto={voluntario.foto} className="usu-perfil-avatar" />
         <div>
           <h1>{voluntario.nome}</h1>
-          <span className="usu-area" style={{ background: fundo, color: cor }}>
-            {voluntario.area}
-          </span>
+          <EtiquetaArea nome={voluntario.area} />
           <ul className="usu-perfil-dados">
             <li>
               <Svg nome="idioma" tamanho={15} /> Fala {voluntario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
