@@ -77,7 +77,7 @@ Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` 
 1. O voluntário cria a conta escolhendo a área, cadastra os serviços que oferece e abre os horários em que pode atender.
 2. O usuário cria a conta e busca voluntários por palavra-chave, área, idioma e disponibilidade.
 3. No perfil do voluntário, escolhe um horário livre e um serviço e conta o que precisa.
-4. A API confere se o horário ainda está livre, se o serviço é daquele voluntário e se o usuário não passou de 3 atendimentos confirmados. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`.
+4. A API confere se o horário ainda está livre, e se o serviço é daquele voluntário. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`.
 5. O voluntário vê o atendimento no painel e na agenda, com o caso e o contato da pessoa.
 6. Depois da conversa, o voluntário conclui o atendimento (`realizado`) e escreve a anotação, que o usuário também lê.
 7. Se um dos dois cancelar antes, o agendamento vira `cancelado` e o horário volta a ficar `livre` para outra pessoa.

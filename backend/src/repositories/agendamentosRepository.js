@@ -40,10 +40,6 @@ function buscarPorId(id) {
   return db.prepare(`${SELECT_AGENDAMENTO} WHERE a.id = ?`).get(id);
 }
 
-function contarConfirmados(usuarioId) {
-  return db.prepare("SELECT COUNT(*) AS total FROM agendamentos WHERE usuario_id = ? AND status = 'confirmado'").get(usuarioId).total;
-}
-
 function criar(a) {
   const { lastInsertRowid } = db
     .prepare(`
@@ -67,4 +63,4 @@ function liberarHorariosDoUsuario(usuarioId) {
   `).run(usuarioId);
 }
 
-module.exports = { listar, buscarPorId, contarConfirmados, criar, atualizar, liberarHorariosDoUsuario };
+module.exports = { listar, buscarPorId, criar, atualizar, liberarHorariosDoUsuario };

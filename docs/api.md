@@ -123,7 +123,6 @@ A lista de cada um fica em `GET /meus-agendamentos`. Regras:
 - Só perfil `usuario` marca atendimento
 - O horário precisa estar livre e no futuro. Se já foi reservado: `409 "Este horário acabou de ser reservado. Escolha outro."`
 - O serviço precisa ser do mesmo voluntário do horário
-- No máximo 3 agendamentos `confirmado` por usuário
 - Descrição com pelo menos 20 caracteres
 - Só quem marcou remarca (`horario_id`) ou edita a `descricao`, e só para outro horário livre do mesmo voluntário
 - Só o voluntário marca `"status": "realizado"` (ao concluir o atendimento, a qualquer momento)
