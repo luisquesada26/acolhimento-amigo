@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
 import Avatar from "../../components/Avatar";
@@ -107,9 +107,10 @@ export default function PerfilVoluntario() {
   const [erro, setErro] = useState("");
   const [escolhido, setEscolhido] = useState(null);
   const [marcado, setMarcado] = useState(null);
+  const avisoMarcado = useRef(null);
 
+  // recarregar depois de marcar não troca a página por "Carregando", senão ela pisca e volta para o topo
   const carregar = useCallback(async () => {
-    setCarregando(true);
     try {
       const { data } = await api.get(`/voluntarios/${id}`);
       setVoluntario(data);
@@ -122,8 +123,14 @@ export default function PerfilVoluntario() {
   }, [id]);
 
   useEffect(() => {
+    setCarregando(true);
     carregar();
   }, [carregar]);
+
+  // o aviso fica no topo; quem marcou um horário lá embaixo precisa ver que deu certo
+  useEffect(() => {
+    if (marcado) avisoMarcado.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [marcado]);
 
   if (carregando) {
     return (
@@ -182,7 +189,7 @@ export default function PerfilVoluntario() {
       {voluntario.bio && <p className="usu-perfil-bio">{voluntario.bio}</p>}
 
       {marcado && (
-        <div className="usu-confirmado" role="status">
+        <div className="usu-confirmado" role="status" ref={avisoMarcado}>
           <Svg nome="check" tamanho={20} />
           <span>
             <strong>Atendimento marcado!</strong>

@@ -63,6 +63,20 @@
   font-weight: 700;
 }
 
+/* foto ou iniciais num círculo; cada lugar só muda o tamanho */
+.usu-avatar,
+.usu-cartao-avatar,
+.usu-perfil-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-weight: 800;
+}
+
 .usu-avatar {
   width: 36px;
   height: 36px;
