@@ -239,7 +239,14 @@ export default function MeuPerfil() {
   const { usuario, atualizarUsuario } = useAuth();
   const tudo = useTextos(traducoes);
   const t = tudo.perfil;
+  const navigate = useNavigate();
   const [lido, setLido] = useState(false);
+
+  // volta para a tela de onde a pessoa veio; quem abriu o perfil direto vai para a busca
+  function voltar() {
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate("/usuario");
+  }
 
   // a sessão guarda o usuário do dia do login; o perfil mostra o que está no banco agora
   useEffect(() => {
@@ -263,6 +270,10 @@ export default function MeuPerfil() {
 
   return (
     <div className="pf">
+      <button type="button" className="usu-voltar pf-voltar" onClick={voltar}>
+        <Svg nome="anterior" tamanho={16} /> {t.voltar}
+      </button>
+
       <aside className="pf-cartao">
         <div className="pf-cartao-capa" />
         <Avatar nome={usuario.nome} foto={usuario.foto} className="pf-cartao-avatar" />
