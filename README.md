@@ -129,7 +129,7 @@ Só quem cuida do banco altera o `schema.sql`. Toda mudança vai em um pull requ
 
 | Tabela | Colunas principais | Para que serve |
 | --- | --- | --- |
-| `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idiomas`, `foto` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário |
+| `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idiomas`, `foto`, `cep`, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário. O endereço é opcional e só a própria pessoa vê |
 | `areas` | `nome` | As áreas de atendimento: Jurídico, Psicologia, Moradia e as outras |
 | `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca |
 | `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `ativo` | O que cada voluntário oferece |
@@ -156,6 +156,13 @@ erDiagram
         text pais_origem
         text idiomas
         text foto
+        text cep
+        text rua
+        text numero
+        text complemento
+        text bairro
+        text cidade
+        text estado
         int aceite_lgpd
         text criado_em
     }

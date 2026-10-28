@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CancelarAtendimento, ConcluirAtendimento, Pessoa, Status, Svg, diaExtenso } from "./comum";
+import { useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 
 const maiuscula = (texto) => texto[0].toUpperCase() + texto.slice(1);
 
@@ -9,6 +11,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
   const [texto, setTexto] = useState(atendimento.anotacao ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+  const t = useTextos(traducoes);
 
   async function salvar(evento) {
     evento.preventDefault();
@@ -24,12 +27,12 @@ function Anotacao({ atendimento, salvarAnotacao }) {
     return (
       <section className="detalhe-anotacao" aria-labelledby="detalhe-anotacao-titulo">
         <div className="detalhe-anotacao-topo">
-          <h3 id="detalhe-anotacao-titulo">Sua anotação</h3>
+          <h3 id="detalhe-anotacao-titulo">{t.suaAnotacao}</h3>
           <button
             type="button"
             className="pagina-icone"
-            aria-label="Editar anotação"
-            title="Editar"
+            aria-label={t.editarAnotacao}
+            title={t.editar}
             onClick={() => {
               setTexto(atendimento.anotacao ?? "");
               setEditando(true);
@@ -41,7 +44,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
         {atendimento.anotacao ? (
           <p>{atendimento.anotacao}</p>
         ) : (
-          <p className="detalhe-anotacao-vazia">Sem anotação. Escreva o que foi feito, o que você recomendou e o próximo passo.</p>
+          <p className="detalhe-anotacao-vazia">{t.semAnotacao}</p>
         )}
       </section>
     );
@@ -49,21 +52,21 @@ function Anotacao({ atendimento, salvarAnotacao }) {
 
   return (
     <form className="detalhe-anotacao" onSubmit={salvar} noValidate>
-      <label htmlFor="detalhe-anotacao-texto">Sua anotação</label>
+      <label htmlFor="detalhe-anotacao-texto">{t.suaAnotacao}</label>
       <textarea
         id="detalhe-anotacao-texto"
         rows={4}
         maxLength={1000}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        placeholder="O que foi feito, o que você recomendou e qual o próximo passo."
+        placeholder={t.anotacaoPlaceholder}
       />
       <div className="vol-acoes">
         <button type="submit" className="botao botao-primario botao-voluntario vol-botao-pequeno" disabled={salvando}>
-          {salvando ? "Salvando..." : "Salvar anotação"}
+          {salvando ? t.salvando : t.salvarAnotacao}
         </button>
         <button type="button" className="vol-botao-secundario" onClick={() => setEditando(false)} disabled={salvando}>
-          Cancelar
+          {t.cancelar}
         </button>
       </div>
       {erro && (
@@ -78,6 +81,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
 // janela com tudo do atendimento; o <dialog> já cuida do Esc e do foco
 export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
   const janela = useRef(null);
+  const t = useTextos(traducoes);
 
   useEffect(() => {
     const dialogo = janela.current;
@@ -97,18 +101,18 @@ export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
         <div className="agenda-janela-conteudo">
           <div className="agenda-janela-topo">
             <Status status={atendimento.status} />
-            <button type="button" className="pagina-icone" onClick={aoFechar} aria-label="Fechar">
+            <button type="button" className="pagina-icone" onClick={aoFechar} aria-label={t.fechar}>
               <Svg nome="x" />
             </button>
           </div>
           <h2 id="detalhe-titulo">{maiuscula(diaExtenso(atendimento.inicio))}</h2>
           <p className="agenda-janela-hora">
-            das {atendimento.horario.hora_inicio} às {atendimento.horario.hora_fim}
+            {t.das(atendimento.horario.hora_inicio, atendimento.horario.hora_fim)}
           </p>
           <Pessoa usuario={atendimento.usuario} />
           <p className="vol-servico">{atendimento.servico.titulo}</p>
 
-          <h3 className="detalhe-subtitulo">O que a pessoa contou</h3>
+          <h3 className="detalhe-subtitulo">{t.oQueContou}</h3>
           <blockquote className="vol-caso">
             <p>{atendimento.descricao}</p>
           </blockquote>
@@ -122,7 +126,7 @@ export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
             </div>
           )}
 
-          {atendimento.status === "cancelado" && <p className="dica">Este atendimento foi cancelado.</p>}
+          {atendimento.status === "cancelado" && <p className="dica">{t.foiCancelado}</p>}
         </div>
       )}
     </dialog>

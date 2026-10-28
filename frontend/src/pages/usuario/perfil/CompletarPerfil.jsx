@@ -2,21 +2,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { lerErro } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
+import { useTextos } from "../../../context/IdiomaContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
+import { traducoes } from "../traducoes";
 import { EscolhaIdiomas, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
-
-const PASSOS = [
-  { titulo: "Complete seu perfil", texto: "Contato, nacionalidade e idiomas" },
-  { titulo: "Escolha um voluntário", texto: "Pela área de que você precisa" },
-  { titulo: "Marque o horário", texto: "E conte o seu caso" },
-];
 
 // primeiro acesso: antes de buscar, a pessoa deixa o contato para o voluntário
 export default function CompletarPerfil() {
   const { usuario, atualizarUsuario } = useAuth();
   const navigate = useNavigate();
+  const tudo = useTextos(traducoes);
+  const t = tudo.primeiro;
+  const tp = tudo.perfil;
   const [dados, setDados] = useState({
     telefone: usuario.telefone ?? "",
     pais_origem: usuario.pais_origem ?? "",
@@ -34,7 +33,7 @@ export default function CompletarPerfil() {
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem("");
-    const novos = validarPerfil(dados);
+    const novos = validarPerfil(dados, tudo.erros);
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -60,13 +59,13 @@ export default function CompletarPerfil() {
   return (
     <div className="pf-primeiro">
       <aside className="pf-boas-vindas">
-        <span className="pf-selo">Primeiro acesso</span>
+        <span className="pf-selo">{t.selo}</span>
         <h1>
-          Bem-vindo, {usuario.nome.split(" ")[0]}!
-          <span>Falta pouco para o seu primeiro atendimento.</span>
+          {t.bemVindo(usuario.nome.split(" ")[0])}
+          <span>{t.faltaPouco}</span>
         </h1>
         <ol className="pf-passos">
-          {PASSOS.map((p, i) => (
+          {t.passos.map((p, i) => (
             <li key={p.titulo} className={i === 0 ? "pf-passo-atual" : ""}>
               <span className="pf-passo-numero">{i + 1}</span>
               <span>
@@ -78,15 +77,15 @@ export default function CompletarPerfil() {
         </ol>
         <p className="pf-privacidade">
           <Svg nome="alerta" tamanho={18} />
-          Seu telefone só aparece para o voluntário com quem você marcar um atendimento.
+          {t.privacidade}
         </p>
       </aside>
 
       <form className="pf-formulario" onSubmit={enviar} noValidate>
         <header>
-          <span className="pf-etapa">Passo 1 de 3</span>
-          <h2>Complete seu perfil</h2>
-          <p>O voluntário usa esses dados para falar com você e se preparar para o atendimento.</p>
+          <span className="pf-etapa">{t.etapa}</span>
+          <h2>{t.titulo}</h2>
+          <p>{t.texto}</p>
         </header>
 
         <FotoPerfil nome={usuario.nome} foto={dados.foto} aoMudar={(foto) => mudar("foto", foto)} />
@@ -94,7 +93,7 @@ export default function CompletarPerfil() {
         <div className="pf-linha">
           <Campo
             id="pf-telefone"
-            rotulo="Telefone ou WhatsApp"
+            rotulo={tp.telefone}
             type="tel"
             inputMode="tel"
             autoComplete="tel"
@@ -106,10 +105,10 @@ export default function CompletarPerfil() {
           />
           <Campo
             id="pf-pais"
-            rotulo="Nacionalidade (país de origem)"
+            rotulo={tp.nacionalidade}
             list="pf-lista-paises"
             autoComplete="country-name"
-            placeholder="Comece a escrever"
+            placeholder={tp.comeceEscrever}
             maxLength={60}
             value={dados.pais_origem}
             onChange={(e) => mudar("pais_origem", e.target.value)}
@@ -123,7 +122,7 @@ export default function CompletarPerfil() {
         <Aviso texto={mensagem} />
 
         <button type="submit" className="botao botao-primario pf-enviar" disabled={enviando}>
-          {enviando ? "Salvando..." : "Salvar e encontrar um voluntário"}
+          {enviando ? tp.salvando : t.enviar}
           {!enviando && <Svg nome="proximo" tamanho={18} />}
         </button>
       </form>

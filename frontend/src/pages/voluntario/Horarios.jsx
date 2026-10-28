@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Svg, diaExtenso, useAcao } from "./comum";
+import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 
 const dois = (n) => String(n).padStart(2, "0");
 const paraIso = (d) => `${d.getFullYear()}-${dois(d.getMonth() + 1)}-${dois(d.getDate())}`;
@@ -7,21 +9,11 @@ const paraMinutos = (hora) => Number(hora.slice(0, 2)) * 60 + Number(hora.slice(
 const paraHora = (minutos) => `${dois(Math.floor(minutos / 60))}:${dois(minutos % 60)}`;
 const maiuscula = (texto) => texto[0].toUpperCase() + texto.slice(1);
 
-const DIAS = [
-  { numero: 1, nome: "Seg" },
-  { numero: 2, nome: "Ter" },
-  { numero: 3, nome: "Qua" },
-  { numero: 4, nome: "Qui" },
-  { numero: 5, nome: "Sex" },
-  { numero: 6, nome: "Sáb" },
-  { numero: 0, nome: "Dom" },
-];
+// de segunda a domingo, pelo número do getDay(); o nome abreviado são as 3 primeiras letras de diasSemana
+const DIAS = [1, 2, 3, 4, 5, 6, 0];
 
-const FILTROS = [
-  { chave: "todos", nome: "Todos" },
-  { chave: "livre", nome: "Livres" },
-  { chave: "reservado", nome: "Reservados" },
-];
+// o nome de cada filtro vem das traduções (filtrosHorarios)
+const FILTROS = ["todos", "livre", "reservado"];
 
 // monta os horários dos dias escolhidos, um atrás do outro, sem nada no passado e sem bater com os que já existem
 function montarHorarios({ dias, inicio, fim, duracao, desde, semanas, existentes }) {
@@ -55,6 +47,7 @@ function Disponibilidade({ criarHorarios, existentes }) {
   const [semanas, setSemanas] = useState("4");
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const t = useTextos(traducoes);
 
   const horarios = montarHorarios({ dias, inicio, fim, duracao: Number(duracao), desde, semanas: Number(semanas), existentes });
 
@@ -64,72 +57,72 @@ function Disponibilidade({ criarHorarios, existentes }) {
 
   async function enviar(evento) {
     evento.preventDefault();
-    if (!dias.length) return setResultado({ erro: true, texto: "Escolha pelo menos um dia da semana." });
-    if (paraMinutos(fim) <= paraMinutos(inicio)) return setResultado({ erro: true, texto: "O fim precisa ser depois do início." });
-    if (!horarios.length) return setResultado({ erro: true, texto: "Nesse período não sobra nenhum horário novo." });
+    if (!dias.length) return setResultado({ erro: true, texto: t.erroDia });
+    if (paraMinutos(fim) <= paraMinutos(inicio)) return setResultado({ erro: true, texto: t.erroFim });
+    if (!horarios.length) return setResultado({ erro: true, texto: t.erroSemHorario });
 
     setEnviando(true);
     setResultado(null);
     const { criados, erros } = await criarHorarios(horarios);
     setEnviando(false);
-    const texto = `${criados} ${criados === 1 ? "horário aberto" : "horários abertos"}.`;
-    setResultado(erros.length ? { erro: true, texto: `${texto} ${erros.length} não ${erros.length === 1 ? "entrou porque bate" : "entraram porque batem"} com horários que você já tinha.` } : { erro: false, texto });
+    const texto = t.abertos(criados);
+    setResultado(erros.length ? { erro: true, texto: `${texto} ${t.naoEntraram(erros.length)}` } : { erro: false, texto });
   }
 
   return (
     <section className="painel-cartao" aria-labelledby="disponibilidade-titulo">
       <h2 id="disponibilidade-titulo" className="painel-titulo">
-        Quando você atende
+        {t.quandoAtende}
       </h2>
       <form className="disponibilidade" onSubmit={enviar} noValidate>
         <fieldset className="campo">
-          <legend>Dias da semana</legend>
+          <legend>{t.diasDaSemana}</legend>
           <div className="perfil-chips">
-            {DIAS.map((d) => (
-              <button key={d.numero} type="button" aria-pressed={dias.includes(d.numero)} onClick={() => alternarDia(d.numero)}>
-                {dias.includes(d.numero) && <Svg nome="check" tamanho={16} />}
-                {d.nome}
+            {DIAS.map((numero) => (
+              <button key={numero} type="button" aria-pressed={dias.includes(numero)} onClick={() => alternarDia(numero)}>
+                {dias.includes(numero) && <Svg nome="check" tamanho={16} />}
+                {t.diasSemana[numero].slice(0, 3)}
               </button>
             ))}
           </div>
         </fieldset>
         <div className="disponibilidade-campos">
           <div className="campo">
-            <label htmlFor="disp-inicio">Das</label>
+            <label htmlFor="disp-inicio">{t.dasCampo}</label>
             <input id="disp-inicio" type="time" value={inicio} onChange={(e) => setInicio(e.target.value)} />
           </div>
           <div className="campo">
-            <label htmlFor="disp-fim">Até</label>
+            <label htmlFor="disp-fim">{t.ateCampo}</label>
             <input id="disp-fim" type="time" value={fim} onChange={(e) => setFim(e.target.value)} />
           </div>
           <div className="campo">
-            <label htmlFor="disp-duracao">Cada atendimento</label>
+            <label htmlFor="disp-duracao">{t.cadaAtendimento}</label>
             <select id="disp-duracao" value={duracao} onChange={(e) => setDuracao(e.target.value)}>
-              <option value="30">30 minutos</option>
-              <option value="45">45 minutos</option>
-              <option value="60">1 hora</option>
+              <option value="30">{t.minutos(30)}</option>
+              <option value="45">{t.minutos(45)}</option>
+              <option value="60">{t.umaHora}</option>
             </select>
           </div>
           <div className="campo">
-            <label htmlFor="disp-desde">A partir de</label>
+            <label htmlFor="disp-desde">{t.aPartirDe}</label>
             <input id="disp-desde" type="date" min={paraIso(new Date())} value={desde} onChange={(e) => setDesde(e.target.value)} />
           </div>
           <div className="campo">
-            <label htmlFor="disp-semanas">Por</label>
+            <label htmlFor="disp-semanas">{t.por}</label>
             <select id="disp-semanas" value={semanas} onChange={(e) => setSemanas(e.target.value)}>
-              <option value="1">1 semana</option>
-              <option value="2">2 semanas</option>
-              <option value="4">4 semanas</option>
-              <option value="8">8 semanas</option>
+              <option value="1">{t.semanas(1)}</option>
+              <option value="2">{t.semanas(2)}</option>
+              <option value="4">{t.semanas(4)}</option>
+              <option value="8">{t.semanas(8)}</option>
             </select>
           </div>
         </div>
         <div className="disponibilidade-rodape">
           <p className="dica" aria-live="polite">
-            Isso abre <strong>{horarios.length}</strong> {horarios.length === 1 ? "horário" : "horários"}. Os que batem com horários que você já tem ficam de fora.
+            {t.issoAbre} <strong>{horarios.length}</strong> {t.unidadeHorario(horarios.length)}. {t.ficamDeFora}
           </p>
           <button type="submit" className="botao botao-primario botao-voluntario vol-botao-pequeno" disabled={enviando}>
-            {enviando ? "Abrindo..." : "Abrir horários"}
+            {enviando ? t.abrindo : t.abrirHorarios}
           </button>
         </div>
         {resultado && (
@@ -146,10 +139,11 @@ function ExcluirHorario({ horario, excluirHorario }) {
   const [confirmando, setConfirmando] = useState(false);
   const reservado = horario.status === "reservado";
   const { executar, ocupado, erro } = useAcao(() => excluirHorario(horario.id, reservado));
+  const t = useTextos(traducoes);
 
   if (!confirmando) {
     return (
-      <button type="button" className="pagina-icone" onClick={() => setConfirmando(true)} aria-label={`Excluir o horário das ${horario.hora_inicio}`} title="Excluir">
+      <button type="button" className="pagina-icone" onClick={() => setConfirmando(true)} aria-label={t.excluirHorarioDas(horario.hora_inicio)} title={t.excluir}>
         <Svg nome="lixo" tamanho={18} />
       </button>
     );
@@ -157,13 +151,13 @@ function ExcluirHorario({ horario, excluirHorario }) {
 
   return (
     <div className="vol-confirmar agenda-confirmar">
-      <span>{reservado ? `Isso cancela o atendimento com ${horario.agendamento?.usuario ?? "a pessoa que marcou"}. Excluir mesmo?` : "Excluir este horário?"}</span>
+      <span>{reservado ? t.cancelaCom(horario.agendamento?.usuario) : t.excluirEsteHorario}</span>
       <div className="vol-acoes">
         <button type="button" className="vol-botao-perigo vol-botao-cheio" onClick={executar} disabled={ocupado}>
-          {ocupado ? "Excluindo..." : "Sim, excluir"}
+          {ocupado ? t.excluindo : t.simExcluir}
         </button>
         <button type="button" className="vol-botao-secundario" onClick={() => setConfirmando(false)} disabled={ocupado}>
-          Não
+          {t.nao}
         </button>
       </div>
       {erro && <p className="vol-erro" role="alert">{erro}</p>}
@@ -174,6 +168,7 @@ function ExcluirHorario({ horario, excluirHorario }) {
 // aba Agenda do Meu perfil: abrir horários e ver os cadastrados por mês
 export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
   const [filtro, setFiltro] = useState("todos");
+  const t = useTextos(traducoes);
   const hoje = paraIso(new Date());
 
   // só de hoje em diante; o que já passou fica no histórico
@@ -191,12 +186,12 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
       <section className="painel-cartao" aria-labelledby="horarios-titulo">
         <div className="painel-cartao-topo">
           <h2 id="horarios-titulo" className="painel-titulo">
-            Seus dias cadastrados
+            {t.diasCadastrados}
           </h2>
-          <div className="pagina-filtros" role="group" aria-label="Filtrar os horários">
-            {FILTROS.map((f) => (
-              <button key={f.chave} type="button" aria-pressed={filtro === f.chave} onClick={() => setFiltro(f.chave)}>
-                {f.nome} ({contar(f.chave)})
+          <div className="pagina-filtros" role="group" aria-label={t.filtrarHorarios}>
+            {FILTROS.map((chave) => (
+              <button key={chave} type="button" aria-pressed={filtro === chave} onClick={() => setFiltro(chave)}>
+                {t.filtrosHorarios[chave]} ({contar(chave)})
               </button>
             ))}
           </div>
@@ -208,7 +203,7 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
             const dias = [...new Set(doMes.map((h) => h.data))];
             return (
               <section key={mes} className="horarios-mes" aria-label={mes}>
-                <h3>{maiuscula(new Date(`${mes}-01T00:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }))}</h3>
+                <h3>{maiuscula(new Date(`${mes}-01T00:00:00`).toLocaleDateString(localeAtual(), { month: "long", year: "numeric" }))}</h3>
                 <div className="agenda-dias">
                   {dias.map((dia) => (
                     <div key={dia} className="agenda-dia">
@@ -219,12 +214,12 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
                           .map((h) => (
                             <li key={h.id} className={`agenda-horario agenda-${h.status}`}>
                               <time dateTime={`${h.data}T${h.hora_inicio}`}>
-                                {h.hora_inicio} às {h.hora_fim}
+                                {t.intervalo(h.hora_inicio, h.hora_fim)}
                               </time>
                               {h.status === "reservado" ? (
                                 <>
                                   <span className="vol-status vol-status-confirmado">
-                                    <Svg nome="pessoas" tamanho={14} /> Reservado
+                                    <Svg nome="pessoas" tamanho={14} /> {t.reservado}
                                   </span>
                                   <span className="agenda-quem">
                                     {h.agendamento?.usuario} · {h.agendamento?.servico}
@@ -232,7 +227,7 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
                                 </>
                               ) : (
                                 <span className="vol-status vol-status-livre">
-                                  <Svg nome="relogio" tamanho={14} /> Livre
+                                  <Svg nome="relogio" tamanho={14} /> {t.livre}
                                 </span>
                               )}
                               <ExcluirHorario horario={h} excluirHorario={excluirHorario} />
@@ -247,7 +242,7 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
           })
         ) : (
           <p className="vol-vazio">
-            {filtro === "todos" ? "Você ainda não tem horários abertos. Escolha os dias e o horário acima." : "Nenhum horário com esse filtro."}
+            {filtro === "todos" ? t.semHorariosAbertos : t.semHorarioNoFiltro}
           </p>
         )}
       </section>

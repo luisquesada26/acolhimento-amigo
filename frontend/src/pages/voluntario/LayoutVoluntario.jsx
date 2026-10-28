@@ -3,8 +3,10 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
+import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import usePainel from "./usePainel";
 import { NAVEGACAO, Svg } from "./comum";
+import { traducoes } from "./traducoes";
 import "./painel.css";
 import "./paginas.css";
 
@@ -22,6 +24,8 @@ function lerMenuRecolhido() {
 export default function LayoutVoluntario() {
   const painel = usePainel();
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido);
+  const { idioma } = useIdioma();
+  const t = useTextos(traducoes);
 
   function alternarMenu() {
     const novo = !recolhido;
@@ -35,20 +39,20 @@ export default function LayoutVoluntario() {
 
   if (painel.carregando) {
     return (
-      <main className="painel-estado">
-        <p>Carregando seu painel...</p>
+      <main className="painel-estado" lang={LANG[idioma]}>
+        <p>{t.carregando}</p>
       </main>
     );
   }
 
   if (painel.erro) {
     return (
-      <main className="painel-estado">
+      <main className="painel-estado" lang={LANG[idioma]}>
         <p className="aviso" role="alert">
           {painel.erro}
         </p>
         <button type="button" className="botao botao-primario" onClick={painel.recarregar}>
-          Tentar de novo
+          {t.tentarDeNovo}
         </button>
       </main>
     );
@@ -59,7 +63,7 @@ export default function LayoutVoluntario() {
   const naBusca = perfil.voluntario.ativo;
 
   return (
-    <div className={recolhido ? "painel painel-recolhido" : "painel"}>
+    <div className={recolhido ? "painel painel-recolhido" : "painel"} lang={LANG[idioma]}>
       <aside className="painel-menu">
         <div className="painel-menu-topo">
           <Logo claro />
@@ -70,16 +74,16 @@ export default function LayoutVoluntario() {
           className="painel-recolher"
           onClick={alternarMenu}
           aria-expanded={!recolhido}
-          aria-label={recolhido ? "Abrir o menu" : "Recolher o menu"}
-          title={recolhido ? "Abrir o menu" : "Recolher o menu"}
+          aria-label={recolhido ? t.abrirMenu : t.recolherMenu}
+          title={recolhido ? t.abrirMenu : t.recolherMenu}
         >
           <Svg nome={recolhido ? "proximo" : "anterior"} tamanho={16} />
         </button>
 
-        <nav aria-label="Área do voluntário">
+        <nav aria-label={t.areaDoVoluntario}>
           {grupos.map((grupo) => (
             <div key={grupo} className="painel-menu-grupo">
-              <span className="painel-menu-rotulo">{grupo}</span>
+              <span className="painel-menu-rotulo">{t.grupos[grupo] ?? grupo}</span>
               <ul>
                 {NAVEGACAO.filter((item) => item.grupo === grupo).map((item) => (
                   <li key={item.caminho}>
@@ -87,12 +91,12 @@ export default function LayoutVoluntario() {
                       to={item.caminho}
                       end={item.caminho === "/voluntario"}
                       className={({ isActive }) => (isActive ? "painel-item painel-item-atual" : "painel-item")}
-                      title={recolhido ? item.nome : undefined}
+                      title={recolhido ? (t.menu[item.icone] ?? item.nome) : undefined}
                     >
                       <Svg nome={item.icone} />
-                      <span className="painel-item-texto">{item.nome}</span>
+                      <span className="painel-item-texto">{t.menu[item.icone] ?? item.nome}</span>
                       {item.icone === "atendimentos" && painel.futuros.length > 0 && (
-                        <span className="painel-contador" aria-label={`${painel.futuros.length} próximos`}>
+                        <span className="painel-contador" aria-label={t.proximosAria(painel.futuros.length)}>
                           {painel.futuros.length}
                         </span>
                       )}
@@ -111,9 +115,9 @@ export default function LayoutVoluntario() {
           </Avatar>
           <span className="painel-usuario-nome">
             <strong>{perfil.nome}</strong>
-            <small>{naBusca ? "Na busca" : "Pausado"}</small>
+            <small>{naBusca ? t.naBusca : t.pausado}</small>
           </span>
-          <button type="button" className="painel-sair" onClick={painel.sair} aria-label="Sair" title="Sair">
+          <button type="button" className="painel-sair" onClick={painel.sair} aria-label={t.sair} title={t.sair}>
             <Svg nome="sair" />
           </button>
         </div>

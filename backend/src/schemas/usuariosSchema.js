@@ -28,6 +28,19 @@ const camposUsuario = {
     .max(500000, "A foto é grande demais")
     .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Foto inválida")
     .nullish(),
+  // endereço, todo opcional: o campo vazio chega como null
+  cep: z.string().regex(/^\d{8}$/, "CEP deve ter 8 números").nullish(),
+  rua: z.string().trim().max(120).nullish(),
+  numero: z.string().trim().max(10).nullish(),
+  complemento: z.string().trim().max(60).nullish(),
+  bairro: z.string().trim().max(60).nullish(),
+  cidade: z.string().trim().max(60).nullish(),
+  estado: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{2}$/, "Estado deve ser a sigla com 2 letras")
+    .nullish(),
 };
 
 const criarUsuarioSchema = z

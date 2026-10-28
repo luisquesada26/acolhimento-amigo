@@ -4,15 +4,19 @@ import api, { lerErro } from "../../../services/api";
 import Avatar from "../../../components/Avatar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { useAuth } from "../../../context/AuthContext";
+import { localeAtual, useTextos } from "../../../context/IdiomaContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg, formatarTelefone } from "../../voluntario/comum";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, nomesDosIdiomas, validarPerfil } from "./pecasPerfil";
+import { nomeDoIdioma } from "../../voluntario/usePainel";
+import { traducoes } from "../traducoes";
+import Endereco, { linhasDoEndereco } from "./Endereco";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 function desde(criadoEm) {
   if (!criadoEm) return "";
   const d = new Date(criadoEm.replace(" ", "T"));
-  return d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  return d.toLocaleDateString(localeAtual(), { month: "long", year: "numeric" });
 }
 
 function dadosDe(usuario) {
@@ -27,6 +31,8 @@ function dadosDe(usuario) {
 }
 
 function DadosPessoais({ usuario, aoSalvar }) {
+  const tudo = useTextos(traducoes);
+  const t = tudo.perfil;
   const [dados, setDados] = useState(() => dadosDe(usuario));
   const [erros, setErros] = useState({});
   const [mensagem, setMensagem] = useState("");
@@ -42,7 +48,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem("");
-    const novos = validarPerfil(dados);
+    const novos = validarPerfil(dados, tudo.erros);
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -72,27 +78,19 @@ function DadosPessoais({ usuario, aoSalvar }) {
     <form className="pf-secao" onSubmit={enviar} noValidate aria-labelledby="pf-dados-titulo">
       <header className="pf-secao-topo">
         <div>
-          <h2 id="pf-dados-titulo">Dados pessoais</h2>
-          <p>O voluntário vê esses dados quando você marca um atendimento.</p>
+          <h2 id="pf-dados-titulo">{t.dadosTitulo}</h2>
+          <p>{t.dadosTexto}</p>
         </div>
       </header>
 
       <FotoPerfil nome={dados.nome || usuario.nome} foto={dados.foto} aoMudar={(foto) => mudar("foto", foto)} />
 
       <div className="pf-linha pf-linha-dupla">
-        <Campo id="pf-nome" rotulo="Nome completo" autoComplete="name" maxLength={100} value={dados.nome} onChange={(e) => mudar("nome", e.target.value)} erro={erros.nome} />
-        <Campo
-          id="pf-email"
-          rotulo="E-mail (usado para entrar)"
-          type="email"
-          autoComplete="email"
-          value={dados.email}
-          onChange={(e) => mudar("email", e.target.value)}
-          erro={erros.email}
-        />
+        <Campo id="pf-nome" rotulo={t.nome} autoComplete="name" maxLength={100} value={dados.nome} onChange={(e) => mudar("nome", e.target.value)} erro={erros.nome} />
+        <Campo id="pf-email" rotulo={t.email} type="email" autoComplete="email" value={dados.email} onChange={(e) => mudar("email", e.target.value)} erro={erros.email} />
         <Campo
           id="pf-telefone"
-          rotulo="Telefone ou WhatsApp"
+          rotulo={t.telefone}
           type="tel"
           inputMode="tel"
           autoComplete="tel"
@@ -103,7 +101,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
         />
         <Campo
           id="pf-pais"
-          rotulo="Nacionalidade (país de origem)"
+          rotulo={t.nacionalidade}
           list="pf-lista-paises"
           autoComplete="country-name"
           maxLength={60}
@@ -121,14 +119,14 @@ function DadosPessoais({ usuario, aoSalvar }) {
       <div className="pf-acoes">
         {salvo && !mudou && (
           <span className="pf-salvo" role="status">
-            <Svg nome="check" tamanho={16} /> Alterações salvas
+            <Svg nome="check" tamanho={16} /> {t.salvas}
           </span>
         )}
         <button type="button" className="pf-botao-contorno" disabled={!mudou || enviando} onClick={() => setDados(dadosDe(usuario))}>
-          Desfazer
+          {t.desfazer}
         </button>
         <button type="submit" className="botao botao-primario pf-salvar" disabled={!mudou || enviando}>
-          {enviando ? "Salvando..." : "Salvar alterações"}
+          {enviando ? t.salvando : t.salvar}
         </button>
       </div>
     </form>
@@ -136,6 +134,8 @@ function DadosPessoais({ usuario, aoSalvar }) {
 }
 
 function Senha() {
+  const tudo = useTextos(traducoes);
+  const t = tudo.perfil;
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [salvo, setSalvo] = useState(false);
@@ -144,7 +144,7 @@ function Senha() {
   async function enviar(evento) {
     evento.preventDefault();
     setSalvo(false);
-    if (senha.length < 6) return setErro("A senha precisa ter pelo menos 6 caracteres");
+    if (senha.length < 6) return setErro(tudo.erros.senhaCurta);
     setEnviando(true);
     setErro("");
     try {
@@ -162,19 +162,19 @@ function Senha() {
     <form className="pf-secao" onSubmit={enviar} noValidate aria-labelledby="pf-senha-titulo">
       <header className="pf-secao-topo">
         <div>
-          <h2 id="pf-senha-titulo">Senha</h2>
-          <p>Use pelo menos 6 caracteres.</p>
+          <h2 id="pf-senha-titulo">{t.senhaTitulo}</h2>
+          <p>{t.senhaTexto}</p>
         </div>
       </header>
       <div className="pf-linha pf-linha-senha">
-        <Campo id="pf-senha" rotulo="Nova senha" type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} erro={erro} />
+        <Campo id="pf-senha" rotulo={t.novaSenha} type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} erro={erro} />
         <button type="submit" className="pf-botao-contorno pf-senha-botao" disabled={!senha || enviando}>
-          {enviando ? "Salvando..." : "Trocar senha"}
+          {enviando ? t.salvando : t.trocarSenha}
         </button>
       </div>
       {salvo && (
         <span className="pf-salvo" role="status">
-          <Svg nome="check" tamanho={16} /> Senha trocada
+          <Svg nome="check" tamanho={16} /> {t.senhaTrocada}
         </span>
       )}
     </form>
@@ -182,6 +182,7 @@ function Senha() {
 }
 
 function ExcluirConta() {
+  const t = useTextos(traducoes).perfil;
   const { sair } = useAuth();
   const navigate = useNavigate();
   const [confirmando, setConfirmando] = useState(false);
@@ -205,27 +206,27 @@ function ExcluirConta() {
     <section className="pf-secao pf-perigo" aria-labelledby="pf-excluir-titulo">
       <header className="pf-secao-topo">
         <div>
-          <h2 id="pf-excluir-titulo">Excluir conta</h2>
-          <p>Apaga seus dados e cancela os atendimentos marcados. Não dá para desfazer.</p>
+          <h2 id="pf-excluir-titulo">{t.excluirTitulo}</h2>
+          <p>{t.excluirTexto}</p>
         </div>
         {!confirmando && (
           <button type="button" className="pf-botao-perigo" onClick={() => setConfirmando(true)}>
-            Excluir minha conta
+            {t.excluirBotao}
           </button>
         )}
       </header>
       {confirmando && (
         <div className="pf-confirmar" role="alertdialog" aria-labelledby="pf-confirmar-texto">
           <p id="pf-confirmar-texto">
-            <Svg nome="alerta" tamanho={18} /> Tem certeza? Os voluntários com quem você marcou vão ver o atendimento cancelado.
+            <Svg nome="alerta" tamanho={18} /> {t.excluirConfirmar}
           </p>
           {erro && <span className="campo-erro">{erro}</span>}
           <div className="pf-acoes">
             <button type="button" className="pf-botao-contorno" onClick={() => setConfirmando(false)} disabled={enviando}>
-              Manter minha conta
+              {t.manter}
             </button>
             <button type="button" className="pf-botao-perigo pf-botao-perigo-cheio" onClick={excluir} disabled={enviando}>
-              {enviando ? "Excluindo..." : "Sim, excluir"}
+              {enviando ? t.excluindo : t.simExcluir}
             </button>
           </div>
         </div>
@@ -236,6 +237,8 @@ function ExcluirConta() {
 
 export default function MeuPerfil() {
   const { usuario, atualizarUsuario } = useAuth();
+  const tudo = useTextos(traducoes);
+  const t = tudo.perfil;
   const [lido, setLido] = useState(false);
 
   // a sessão guarda o usuário do dia do login; o perfil mostra o que está no banco agora
@@ -250,12 +253,13 @@ export default function MeuPerfil() {
   if (!lido) {
     return (
       <p className="usu-estado" role="status">
-        Carregando o perfil...
+        {t.carregando}
       </p>
     );
   }
 
   const idiomas = usuario.idiomas ?? [];
+  const endereco = linhasDoEndereco(usuario);
 
   return (
     <div className="pf">
@@ -267,11 +271,11 @@ export default function MeuPerfil() {
         <ul className="pf-cartao-dados">
           <li>
             <Svg nome="telefone" tamanho={16} />
-            {usuario.telefone ? formatarTelefone(usuario.telefone) : "Telefone não informado"}
+            {usuario.telefone ? formatarTelefone(usuario.telefone) : t.telefoneNaoInformado}
           </li>
           <li>
             <Svg nome="globo" tamanho={16} />
-            {usuario.pais_origem || "Nacionalidade não informada"}
+            {usuario.pais_origem || t.nacionalidadeNaoInformada}
           </li>
           {idiomas.length > 0 && (
             <li>
@@ -280,19 +284,29 @@ export default function MeuPerfil() {
                   <Bandeira key={codigo} codigo={codigo} />
                 ))}
               </span>
-              Fala {nomesDosIdiomas(idiomas)}
+              {tudo.fala(idiomas.map(nomeDoIdioma))}
+            </li>
+          )}
+          {endereco.length > 0 && (
+            <li className="pf-cartao-endereco">
+              <Svg nome="local" tamanho={16} />
+              <span>
+                {endereco.map((linha) => (
+                  <span key={linha}>{linha}</span>
+                ))}
+              </span>
             </li>
           )}
           {usuario.aceite_lgpd && (
             <li>
               <Svg nome="check" tamanho={16} />
-              Termos de privacidade (LGPD) aceitos
+              {t.lgpd}
             </li>
           )}
           {usuario.criado_em && (
             <li>
               <Svg nome="agenda" tamanho={16} />
-              No Acolhimento Amigo desde {desde(usuario.criado_em)}
+              {t.desde(desde(usuario.criado_em))}
             </li>
           )}
         </ul>
@@ -300,10 +314,11 @@ export default function MeuPerfil() {
 
       <div className="pf-conteudo">
         <header className="pf-titulo">
-          <h1>Meu perfil</h1>
-          <p>Seus dados, sua senha e sua conta.</p>
+          <h1>{t.titulo}</h1>
+          <p>{t.subtitulo}</p>
         </header>
         <DadosPessoais usuario={usuario} aoSalvar={atualizarUsuario} />
+        <Endereco usuario={usuario} aoSalvar={atualizarUsuario} />
         <Senha />
         <ExcluirConta />
       </div>

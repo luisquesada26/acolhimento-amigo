@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { OrdenarPorData, Status, dataComAno } from "./comum";
+import { useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 
-const FILTROS = [
-  { chave: "todos", nome: "Todos" },
-  { chave: "realizado", nome: "Realizados" },
-  { chave: "cancelado", nome: "Cancelados" },
-];
+// o nome de cada filtro vem das traduções (filtrosHistorico)
+const FILTROS = ["todos", "realizado", "cancelado"];
 
 // atendimentos que já passaram, em tabela, com filtro pela situação
 // com aoAbrir, clicar na linha abre o atendimento
 export default function Historico({ passados, aoAbrir }) {
   const [filtro, setFiltro] = useState("todos");
   const [ordem, setOrdem] = useState("desc");
+  const t = useTextos(traducoes);
   const itens = (filtro === "todos" ? passados : passados.filter((a) => a.status === filtro))
     .slice()
     .sort((a, b) => (ordem === "desc" ? b.inicio - a.inicio : a.inicio - b.inicio));
@@ -21,12 +21,12 @@ export default function Historico({ passados, aoAbrir }) {
     <section className="painel-cartao" aria-labelledby="historico-titulo">
       <div className="historico-topo">
         <h2 id="historico-titulo" className="painel-titulo">
-          Histórico
+          {t.historico}
         </h2>
-        <div className="historico-filtros" role="group" aria-label="Filtrar o histórico">
-          {FILTROS.map((f) => (
-            <button key={f.chave} type="button" aria-pressed={filtro === f.chave} onClick={() => setFiltro(f.chave)}>
-              {f.nome} ({contar(f.chave)})
+        <div className="historico-filtros" role="group" aria-label={t.filtrarHistorico}>
+          {FILTROS.map((chave) => (
+            <button key={chave} type="button" aria-pressed={filtro === chave} onClick={() => setFiltro(chave)}>
+              {t.filtrosHistorico[chave]} ({contar(chave)})
             </button>
           ))}
         </div>
@@ -40,9 +40,9 @@ export default function Historico({ passados, aoAbrir }) {
                 <th scope="col" aria-sort={ordem === "desc" ? "descending" : "ascending"}>
                   <OrdenarPorData ordem={ordem} aoMudar={setOrdem} />
                 </th>
-                <th scope="col">Pessoa</th>
-                <th scope="col">Serviço</th>
-                <th scope="col">Situação</th>
+                <th scope="col">{t.pessoa}</th>
+                <th scope="col">{t.servico}</th>
+                <th scope="col">{t.situacao}</th>
               </tr>
             </thead>
             <tbody>
@@ -51,9 +51,7 @@ export default function Historico({ passados, aoAbrir }) {
                   <td>
                     <time dateTime={`${a.horario.data}T${a.horario.hora_inicio}`}>
                       <strong>{dataComAno(a.inicio)}</strong>
-                      <small>
-                        {a.horario.hora_inicio} às {a.horario.hora_fim}
-                      </small>
+                      <small>{t.intervalo(a.horario.hora_inicio, a.horario.hora_fim)}</small>
                     </time>
                   </td>
                   <td>
@@ -76,7 +74,7 @@ export default function Historico({ passados, aoAbrir }) {
           </table>
         </div>
       ) : (
-        <p className="vol-vazio">Seus atendimentos que já aconteceram aparecem aqui.</p>
+        <p className="vol-vazio">{t.historicoVazio}</p>
       )}
     </section>
   );

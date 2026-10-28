@@ -260,6 +260,13 @@ function seed(db) {
       inserirUsuario.run(u.nome, u.email, hash, u.telefone, "usuario", u.pais, u.idiomas).lastInsertRowid
     );
 
+    // o endereço é opcional; só o usuário de teste já vem com um, para a tela aparecer preenchida
+    db.prepare(`
+      UPDATE usuarios SET cep = '01305100', rua = 'Rua Augusta', numero = '1500', complemento = 'Apto 42',
+        bairro = 'Consolação', cidade = 'São Paulo', estado = 'SP'
+      WHERE email = 'usuario@teste.com'
+    `).run();
+
     // guarda o primeiro servico e os horarios de cada voluntario para montar os agendamentos
     const vols = [];
     let indice = 0;
