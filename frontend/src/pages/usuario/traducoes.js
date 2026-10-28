@@ -9,7 +9,6 @@ export const traducoes = {
     meuPerfil: "Meu perfil",
     sair: "Sair",
     navegacao: "Área do usuário",
-    navBuscar: "Buscar voluntários",
     navAtendimentos: "Meus atendimentos",
     fala: (nomes) => `Fala ${juntar(minusculas(nomes), "e")}`,
 
@@ -202,7 +201,6 @@ export const traducoes = {
     meuPerfil: "My profile",
     sair: "Sign out",
     navegacao: "User area",
-    navBuscar: "Find volunteers",
     navAtendimentos: "My appointments",
     fala: (nomes) => `Speaks ${juntar(nomes, "and")}`,
 
@@ -395,7 +393,6 @@ export const traducoes = {
     meuPerfil: "Mi perfil",
     sair: "Salir",
     navegacao: "Área del usuario",
-    navBuscar: "Buscar voluntarios",
     navAtendimentos: "Mis citas",
     fala: (nomes) => `Habla ${juntar(minusculas(nomes), "y")}`,
 
@@ -588,7 +585,6 @@ export const traducoes = {
     meuPerfil: "Mon profil",
     sair: "Se déconnecter",
     navegacao: "Espace utilisateur",
-    navBuscar: "Trouver un bénévole",
     navAtendimentos: "Mes rendez-vous",
     fala: (nomes) => `Parle ${juntar(minusculas(nomes), "et")}`,
 
