@@ -1,18 +1,23 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
-import { useAuth } from "../../context/AuthContext";
+import { perfilCompleto, useAuth } from "../../context/AuthContext";
 import { Svg } from "../voluntario/comum";
 import "./usuario.css";
 
-// por enquanto só a busca; "Meus atendimentos" e "Meu perfil" entram aqui depois
-const NAVEGACAO = [{ nome: "Buscar voluntários", icone: "busca", caminho: "/usuario" }];
+const COMPLETAR = "/usuario/completar";
 
 // barra de cima das telas de quem pede atendimento
 export default function LayoutUsuario() {
   const { usuario, sair } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const completo = perfilCompleto(usuario);
+
+  // primeiro acesso: antes de qualquer tela, completar o perfil
+  if (!completo && pathname !== COMPLETAR) return <Navigate to={COMPLETAR} replace />;
+  if (completo && pathname === COMPLETAR) return <Navigate to="/usuario" replace />;
 
   function deslogar() {
     sair();
@@ -22,28 +27,26 @@ export default function LayoutUsuario() {
   return (
     <div className="usu">
       <header className="usu-topo">
-        <Logo />
-
-        <nav className="usu-navegacao" aria-label="Área de quem pede atendimento">
-          {NAVEGACAO.map((item) => (
-            <NavLink
-              key={item.caminho}
-              to={item.caminho}
-              end
-              className={({ isActive }) => (isActive ? "usu-item usu-item-atual" : "usu-item")}
-            >
-              <Svg nome={item.icone} tamanho={18} />
-              <span>{item.nome}</span>
-            </NavLink>
-          ))}
-        </nav>
+        <Link to="/usuario" className="usu-logo" aria-label="Acolhimento Amigo, ir para a busca">
+          <Logo />
+        </Link>
 
         <div className="usu-acoes">
           <SeletorIdioma />
-          <span className="usu-pessoa">
-            <Avatar nome={usuario.nome} foto={usuario.foto} className="usu-avatar" />
-            <span className="usu-pessoa-nome">{usuario.nome}</span>
-          </span>
+          {completo ? (
+            <NavLink to="/usuario/perfil" className={({ isActive }) => (isActive ? "usu-pessoa usu-pessoa-atual" : "usu-pessoa")} title="Meu perfil">
+              <Avatar nome={usuario.nome} foto={usuario.foto} className="usu-avatar" />
+              <span className="usu-pessoa-texto">
+                <span className="usu-pessoa-nome">{usuario.nome}</span>
+                <small>Meu perfil</small>
+              </span>
+            </NavLink>
+          ) : (
+            <span className="usu-pessoa">
+              <Avatar nome={usuario.nome} foto={usuario.foto} className="usu-avatar" />
+              <span className="usu-pessoa-nome">{usuario.nome}</span>
+            </span>
+          )}
           <button type="button" className="usu-sair" onClick={deslogar} aria-label="Sair" title="Sair">
             <Svg nome="sair" tamanho={18} />
           </button>

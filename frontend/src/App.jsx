@@ -12,6 +12,8 @@ import Relatorios from "./pages/voluntario/Relatorios";
 import LayoutUsuario from "./pages/usuario/LayoutUsuario";
 import Buscar from "./pages/usuario/Buscar";
 import PerfilVoluntario from "./pages/usuario/PerfilVoluntario";
+import CompletarPerfil from "./pages/usuario/perfil/CompletarPerfil";
+import MeuPerfil from "./pages/usuario/perfil/MeuPerfil";
 
 export default function App() {
   return (
@@ -30,6 +32,8 @@ export default function App() {
       >
         <Route index element={<Buscar />} />
         <Route path="voluntario/:id" element={<PerfilVoluntario />} />
+        <Route path="perfil" element={<MeuPerfil />} />
+        <Route path="completar" element={<CompletarPerfil />} />
       </Route>
       <Route
         path="/voluntario"
