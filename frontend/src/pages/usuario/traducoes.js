@@ -112,6 +112,7 @@ export const traducoes = {
     perfil: {
       carregando: "Carregando o perfil...",
       titulo: "Meu perfil",
+      voltar: "Voltar",
       subtitulo: "Seus dados, seu endereço, sua senha e sua conta.",
       telefoneNaoInformado: "Telefone não informado",
       nacionalidadeNaoInformada: "Nacionalidade não informada",
@@ -304,6 +305,7 @@ export const traducoes = {
     perfil: {
       carregando: "Loading profile...",
       titulo: "My profile",
+      voltar: "Back",
       subtitulo: "Your details, your address, your password and your account.",
       telefoneNaoInformado: "No phone number",
       nacionalidadeNaoInformada: "No nationality",
@@ -496,6 +498,7 @@ export const traducoes = {
     perfil: {
       carregando: "Cargando el perfil...",
       titulo: "Mi perfil",
+      voltar: "Volver",
       subtitulo: "Tus datos, tu dirección, tu contraseña y tu cuenta.",
       telefoneNaoInformado: "Teléfono no informado",
       nacionalidadeNaoInformada: "Nacionalidad no informada",
@@ -688,6 +691,7 @@ export const traducoes = {
     perfil: {
       carregando: "Chargement du profil...",
       titulo: "Mon profil",
+      voltar: "Retour",
       subtitulo: "Vos informations, votre adresse, votre mot de passe et votre compte.",
       telefoneNaoInformado: "Téléphone non renseigné",
       nacionalidadeNaoInformada: "Nationalité non renseignée",

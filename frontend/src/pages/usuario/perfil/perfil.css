@@ -353,6 +353,20 @@
   margin: 0 auto;
 }
 
+/* "Voltar" ocupa a linha de cima inteira; é botão porque volta no histórico */
+.pf-voltar {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-bottom: -12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .pf-cartao {
   position: sticky;
   top: 20px;
