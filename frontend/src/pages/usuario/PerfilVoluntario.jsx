@@ -202,6 +202,9 @@ export default function PerfilVoluntario() {
               {t.marcadoTexto(dataComAno(momento(marcado)), marcado.hora_inicio)}
             </small>
           </span>
+          <Link to="/usuario/atendimentos" className="usu-confirmado-link">
+            {t.verMeus}
+          </Link>
         </div>
       )}
 

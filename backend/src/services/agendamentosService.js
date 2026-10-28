@@ -16,7 +16,7 @@ function formatar(a) {
     anotacao: a.anotacao,
     criado_em: a.criado_em,
     horario: { id: a.horario_id, data: a.data, hora_inicio: a.hora_inicio, hora_fim: a.hora_fim },
-    voluntario: { id: a.voluntario_id, nome: a.voluntario_nome },
+    voluntario: { id: a.voluntario_id, nome: a.voluntario_nome, foto: a.voluntario_foto, area: a.voluntario_area },
     servico: { id: a.servico_id, titulo: a.servico_titulo },
     usuario: {
       id: a.usuario_id,

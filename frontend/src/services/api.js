@@ -6,6 +6,19 @@ export const CHAVE_SESSAO = "acolhimento:sessao";
 
 const api = axios.create({ baseURL: API_URL });
 
+// um GET igual a outro que ainda não voltou reaproveita a mesma resposta em vez de sair de novo.
+// Acontece quando duas telas pedem a mesma lista ao mesmo tempo e, em desenvolvimento,
+// porque o StrictMode do React monta cada tela duas vezes
+const emAndamento = new Map();
+const getDaApi = api.get.bind(api);
+api.get = (url, config = {}) => {
+  const chave = `${url}?${new URLSearchParams(config.params ?? {})}`;
+  if (!emAndamento.has(chave)) {
+    emAndamento.set(chave, getDaApi(url, config).finally(() => emAndamento.delete(chave)));
+  }
+  return emAndamento.get(chave);
+};
+
 // manda o token em toda requisição, se a pessoa estiver logada
 api.interceptors.request.use((config) => {
   const sessao = JSON.parse(localStorage.getItem(CHAVE_SESSAO) || "null");

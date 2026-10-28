@@ -3,7 +3,7 @@ const db = require("../database/conexao");
 const SELECT_AGENDAMENTO = `
   SELECT a.id, a.status, a.descricao, a.anotacao, a.criado_em,
          h.id AS horario_id, h.data, h.hora_inicio, h.hora_fim,
-         v.id AS voluntario_id, uv.nome AS voluntario_nome,
+         v.id AS voluntario_id, uv.nome AS voluntario_nome, uv.foto AS voluntario_foto, ar.nome AS voluntario_area,
          s.id AS servico_id, s.titulo AS servico_titulo,
          u.id AS usuario_id, u.nome AS usuario_nome, u.pais_origem AS usuario_pais, u.idiomas AS usuario_idiomas,
          u.email AS usuario_email, u.telefone AS usuario_telefone, u.foto AS usuario_foto
@@ -11,6 +11,7 @@ const SELECT_AGENDAMENTO = `
   JOIN horarios h ON h.id = a.horario_id
   JOIN voluntarios v ON v.id = h.voluntario_id
   JOIN usuarios uv ON uv.id = v.usuario_id
+  JOIN areas ar ON ar.id = v.area_id
   JOIN servicos s ON s.id = a.servico_id
   JOIN usuarios u ON u.id = a.usuario_id
 `;

@@ -22,12 +22,12 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 | Usuário (logado) | eu posso... | Filtrar voluntários por área, idioma e disponibilidade | `GET /voluntarios?area=&idioma=&disponivel=` | Em revisão |
 | Usuário (logado) | eu posso... | Ver o perfil do voluntário com os serviços e os horários livres | `GET /voluntarios/:id` | Em revisão |
 | Usuário (logado) | eu posso... | Marcar um horário livre escolhendo o serviço e contando o que preciso | `POST /agendamentos` | Em revisão |
-| Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram | `GET /meus-agendamentos` | Só na API |
+| Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram | `GET /meus-agendamentos` | Em revisão |
 | Usuário (logado) | eu posso... | Remarcar um atendimento para outro horário do mesmo voluntário | `PUT /agendamentos/:id` | Só na API |
-| Usuário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Só na API |
+| Usuário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Em revisão |
 | Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento | Não usa a API | Falta a tela |
-| Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto | `GET /me`, `PUT /me` | Só na API |
-| Usuário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Só na API |
+| Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto | `GET /me`, `PUT /me` | Em revisão |
+| Usuário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Em revisão |
 | Voluntário (logado) | eu posso... | Ver no painel meu próximo atendimento e os números do mês | `GET /meus-agendamentos`, `GET /meus-horarios` | Pronto |
 | Voluntário (logado) | eu posso... | Cadastrar, editar e excluir os serviços que ofereço | `GET /meus-servicos`, `POST /servicos`, `PUT /servicos/:id`, `DELETE /servicos/:id` | Pronto |
 | Voluntário (logado) | eu posso... | Abrir os dias e horários em que posso atender | `POST /horarios`, `DELETE /horarios/:id` | Pronto |
