@@ -4,11 +4,11 @@ import api, { lerErro } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
-import { EscolhaIdioma, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 const PASSOS = [
-  { titulo: "Complete seu perfil", texto: "Contato, país e idioma" },
+  { titulo: "Complete seu perfil", texto: "Contato, nacionalidade e idiomas" },
   { titulo: "Escolha um voluntário", texto: "Pela área de que você precisa" },
   { titulo: "Marque o horário", texto: "E conte o seu caso" },
 ];
@@ -20,7 +20,7 @@ export default function CompletarPerfil() {
   const [dados, setDados] = useState({
     telefone: usuario.telefone ?? "",
     pais_origem: usuario.pais_origem ?? "",
-    idioma: usuario.idioma ?? "pt",
+    idiomas: usuario.idiomas ?? ["pt"],
     foto: usuario.foto ?? null,
   });
   const [erros, setErros] = useState({});
@@ -43,7 +43,7 @@ export default function CompletarPerfil() {
       const { data } = await api.put("/me", {
         telefone: dados.telefone.trim(),
         pais_origem: dados.pais_origem.trim(),
-        idioma: dados.idioma,
+        idiomas: dados.idiomas,
         foto: dados.foto,
       });
       atualizarUsuario(data);
@@ -106,7 +106,7 @@ export default function CompletarPerfil() {
           />
           <Campo
             id="pf-pais"
-            rotulo="País de origem"
+            rotulo="Nacionalidade (país de origem)"
             list="pf-lista-paises"
             autoComplete="country-name"
             placeholder="Comece a escrever"
@@ -118,7 +118,7 @@ export default function CompletarPerfil() {
           <ListaPaises id="pf-lista-paises" />
         </div>
 
-        <EscolhaIdioma valor={dados.idioma} aoMudar={(idioma) => mudar("idioma", idioma)} />
+        <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={erros.idiomas} />
 
         <Aviso texto={mensagem} />
 

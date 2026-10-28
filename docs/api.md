@@ -42,7 +42,7 @@ Cadastro de voluntário:
   "senha": "senha123",
   "telefone": "11999990000",
   "perfil": "voluntario",
-  "idioma": "pt",
+  "idiomas": ["pt"],
   "aceite_lgpd": true,
   "voluntario": {
     "area_id": 1
@@ -52,7 +52,7 @@ Cadastro de voluntário:
 
 `voluntario` só é obrigatório quando `perfil` é `voluntario`, e no cadastro basta a `area_id`. Registro profissional, idiomas e bio o voluntário completa depois pelo `PUT /me`. Sem `"aceite_lgpd": true` o cadastro não passa.
 
-Os idiomas aceitos são `pt`, `en`, `es` e `fr`, tanto nos idiomas do voluntário quanto no `idioma` do usuário. Qualquer outro responde `400`.
+Os idiomas aceitos são `pt`, `en`, `es` e `fr`, tanto nos `idiomas` do voluntário quanto nos `idiomas` do usuário, que é uma lista com pelo menos um (no cadastro, sem a lista, fica `["pt"]`). Qualquer outro responde `400`.
 
 ## Minhas coisas
 
@@ -141,6 +141,6 @@ Resposta de `POST /agendamentos`:
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
   "voluntario": { "id": 1, "nome": "Rafael Almeida" },
   "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
-  "usuario": { "id": 1, "nome": "Luis Quesada", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idioma": "es" }
+  "usuario": { "id": 1, "nome": "Luis Quesada", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idiomas": ["es", "pt"] }
 }
 ```

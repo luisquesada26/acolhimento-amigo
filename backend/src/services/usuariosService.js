@@ -7,7 +7,7 @@ const agendamentosRepo = require("../repositories/agendamentosRepository");
 const { ErroApp } = require("../middlewares/erros");
 
 function montar(usuario) {
-  const resultado = { ...usuario, aceite_lgpd: Boolean(usuario.aceite_lgpd) };
+  const resultado = { ...usuario, idiomas: usuario.idiomas.split(","), aceite_lgpd: Boolean(usuario.aceite_lgpd) };
 
   if (usuario.perfil === "voluntario") {
     const v = voluntariosRepo.buscarPorUsuarioId(usuario.id);
@@ -49,7 +49,7 @@ async function criar(dados) {
       telefone: dados.telefone ?? null,
       perfil: dados.perfil,
       pais_origem: dados.pais_origem ?? null,
-      idioma: dados.idioma,
+      idiomas: dados.idiomas.join(","),
       aceite_lgpd: 1,
     });
 
@@ -86,6 +86,7 @@ async function atualizar(id, dados) {
   }
 
   if (senha) campos.senha_hash = await bcrypt.hash(senha, 10);
+  if (campos.idiomas) campos.idiomas = campos.idiomas.join(",");
 
   const camposVoluntario = { ...voluntario };
   if (camposVoluntario.idiomas) camposVoluntario.idiomas = camposVoluntario.idiomas.join(",");

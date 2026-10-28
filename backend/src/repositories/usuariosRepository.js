@@ -1,7 +1,7 @@
 const db = require("../database/conexao");
 
 // senha_hash fica de fora de proposito
-const COLUNAS = "id, nome, email, telefone, perfil, pais_origem, idioma, foto, aceite_lgpd, criado_em";
+const COLUNAS = "id, nome, email, telefone, perfil, pais_origem, idiomas, foto, aceite_lgpd, criado_em";
 
 function buscarPorId(id) {
   return db.prepare(`SELECT ${COLUNAS} FROM usuarios WHERE id = ?`).get(id);
@@ -19,8 +19,8 @@ function buscarSenhaPorEmail(email) {
 function criar(u) {
   const { lastInsertRowid } = db
     .prepare(`
-      INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idioma, aceite_lgpd)
-      VALUES (@nome, @email, @senha_hash, @telefone, @perfil, @pais_origem, @idioma, @aceite_lgpd)
+      INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idiomas, aceite_lgpd)
+      VALUES (@nome, @email, @senha_hash, @telefone, @perfil, @pais_origem, @idiomas, @aceite_lgpd)
     `)
     .run(u);
   return lastInsertRowid;

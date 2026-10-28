@@ -223,11 +223,11 @@ const voluntarios = [
 ];
 
 const usuarios = [
-  { nome: "Luis Quesada", email: "usuario@teste.com", telefone: "11987654321", pais: "Venezuela", idioma: "es" },
-  { nome: "Wideline Joseph", email: "wideline.joseph@email.com", telefone: "11976543210", pais: "Haiti", idioma: "fr" },
-  { nome: "Ahmad Khalil", email: "ahmad.khalil@email.com", telefone: "11965432109", pais: "Síria", idioma: "en" },
-  { nome: "María Fernanda Ríos", email: "maria.rios@email.com", telefone: "11954321098", pais: "Colômbia", idioma: "es" },
-  { nome: "João Baptista Mbala", email: "joao.mbala@email.com", telefone: "11943210987", pais: "Angola", idioma: "pt" },
+  { nome: "Luis Quesada", email: "usuario@teste.com", telefone: "11987654321", pais: "Venezuela", idiomas: "es,pt" },
+  { nome: "Wideline Joseph", email: "wideline.joseph@email.com", telefone: "11976543210", pais: "Haiti", idiomas: "fr" },
+  { nome: "Ahmad Khalil", email: "ahmad.khalil@email.com", telefone: "11965432109", pais: "Síria", idiomas: "en" },
+  { nome: "María Fernanda Ríos", email: "maria.rios@email.com", telefone: "11954321098", pais: "Colômbia", idiomas: "es,en" },
+  { nome: "João Baptista Mbala", email: "joao.mbala@email.com", telefone: "11943210987", pais: "Angola", idiomas: "pt,fr" },
 ];
 
 function seed(db) {
@@ -235,7 +235,7 @@ function seed(db) {
 
   const inserirArea = db.prepare("INSERT INTO areas (nome) VALUES (?)");
   const inserirUsuario = db.prepare(`
-    INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idioma, aceite_lgpd)
+    INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idiomas, aceite_lgpd)
     VALUES (?, ?, ?, ?, ?, ?, ?, 1)
   `);
   const inserirVoluntario = db.prepare(`
@@ -257,7 +257,7 @@ function seed(db) {
     }
 
     const idsUsuarios = usuarios.map((u) =>
-      inserirUsuario.run(u.nome, u.email, hash, u.telefone, "usuario", u.pais, u.idioma).lastInsertRowid
+      inserirUsuario.run(u.nome, u.email, hash, u.telefone, "usuario", u.pais, u.idiomas).lastInsertRowid
     );
 
     // guarda o primeiro servico e os horarios de cada voluntario para montar os agendamentos

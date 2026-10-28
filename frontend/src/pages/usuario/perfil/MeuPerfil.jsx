@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { lerErro } from "../../../services/api";
 import Avatar from "../../../components/Avatar";
@@ -6,7 +6,7 @@ import { Bandeira } from "../../../components/SeletorIdioma";
 import { useAuth } from "../../../context/AuthContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg, formatarTelefone } from "../../voluntario/comum";
-import { EscolhaIdioma, FotoPerfil, IDIOMAS_PERFIL, ListaPaises, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, nomesDosIdiomas, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 function desde(criadoEm) {
@@ -18,9 +18,10 @@ function desde(criadoEm) {
 function dadosDe(usuario) {
   return {
     nome: usuario.nome ?? "",
+    email: usuario.email ?? "",
     telefone: usuario.telefone ?? "",
     pais_origem: usuario.pais_origem ?? "",
-    idioma: usuario.idioma ?? "pt",
+    idiomas: usuario.idiomas ?? ["pt"],
     foto: usuario.foto ?? null,
   };
 }
@@ -49,9 +50,10 @@ function DadosPessoais({ usuario, aoSalvar }) {
     try {
       const { data } = await api.put("/me", {
         nome: dados.nome.trim(),
+        email: dados.email.trim(),
         telefone: dados.telefone.trim(),
         pais_origem: dados.pais_origem.trim(),
-        idioma: dados.idioma,
+        idiomas: dados.idiomas,
         foto: dados.foto,
       });
       aoSalvar(data);
@@ -77,8 +79,17 @@ function DadosPessoais({ usuario, aoSalvar }) {
 
       <FotoPerfil nome={dados.nome || usuario.nome} foto={dados.foto} aoMudar={(foto) => mudar("foto", foto)} />
 
-      <div className="pf-linha">
+      <div className="pf-linha pf-linha-dupla">
         <Campo id="pf-nome" rotulo="Nome completo" autoComplete="name" maxLength={100} value={dados.nome} onChange={(e) => mudar("nome", e.target.value)} erro={erros.nome} />
+        <Campo
+          id="pf-email"
+          rotulo="E-mail (usado para entrar)"
+          type="email"
+          autoComplete="email"
+          value={dados.email}
+          onChange={(e) => mudar("email", e.target.value)}
+          erro={erros.email}
+        />
         <Campo
           id="pf-telefone"
           rotulo="Telefone ou WhatsApp"
@@ -92,7 +103,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
         />
         <Campo
           id="pf-pais"
-          rotulo="País de origem"
+          rotulo="Nacionalidade (país de origem)"
           list="pf-lista-paises"
           autoComplete="country-name"
           maxLength={60}
@@ -103,7 +114,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
         <ListaPaises id="pf-lista-paises" />
       </div>
 
-      <EscolhaIdioma valor={dados.idioma} aoMudar={(idioma) => mudar("idioma", idioma)} />
+      <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={erros.idiomas} />
 
       <Aviso texto={mensagem} />
 
@@ -225,7 +236,26 @@ function ExcluirConta() {
 
 export default function MeuPerfil() {
   const { usuario, atualizarUsuario } = useAuth();
-  const idioma = IDIOMAS_PERFIL.find((i) => i.codigo === usuario.idioma);
+  const [lido, setLido] = useState(false);
+
+  // a sessão guarda o usuário do dia do login; o perfil mostra o que está no banco agora
+  useEffect(() => {
+    api
+      .get("/me")
+      .then(({ data }) => atualizarUsuario(data))
+      .catch(() => {})
+      .finally(() => setLido(true));
+  }, []);
+
+  if (!lido) {
+    return (
+      <p className="usu-estado" role="status">
+        Carregando o perfil...
+      </p>
+    );
+  }
+
+  const idiomas = usuario.idiomas ?? [];
 
   return (
     <div className="pf">
@@ -241,12 +271,22 @@ export default function MeuPerfil() {
           </li>
           <li>
             <Svg nome="globo" tamanho={16} />
-            {usuario.pais_origem || "País não informado"}
+            {usuario.pais_origem || "Nacionalidade não informada"}
           </li>
-          {idioma && (
+          {idiomas.length > 0 && (
             <li>
-              <Bandeira codigo={idioma.codigo} />
-              Atendimento em {idioma.nome}
+              <span className="pf-cartao-bandeiras">
+                {idiomas.map((codigo) => (
+                  <Bandeira key={codigo} codigo={codigo} />
+                ))}
+              </span>
+              Fala {nomesDosIdiomas(idiomas)}
+            </li>
+          )}
+          {usuario.aceite_lgpd && (
+            <li>
+              <Svg nome="check" tamanho={16} />
+              Termos de privacidade (LGPD) aceitos
             </li>
           )}
           {usuario.criado_em && (

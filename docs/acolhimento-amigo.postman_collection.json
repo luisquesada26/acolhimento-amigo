@@ -345,7 +345,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Usuário de Teste\",\n  \"email\": \"{{emailNovo}}\",\n  \"senha\": \"senha123\",\n  \"telefone\": \"11912345678\",\n  \"perfil\": \"usuario\",\n  \"pais_origem\": \"Venezuela\",\n  \"idioma\": \"es\",\n  \"aceite_lgpd\": true\n}",
+              "raw": "{\n  \"nome\": \"Usuário de Teste\",\n  \"email\": \"{{emailNovo}}\",\n  \"senha\": \"senha123\",\n  \"telefone\": \"11912345678\",\n  \"perfil\": \"usuario\",\n  \"pais_origem\": \"Venezuela\",\n  \"idiomas\": [\"es\"],\n  \"aceite_lgpd\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"

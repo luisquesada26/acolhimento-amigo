@@ -45,8 +45,10 @@ export const IDIOMAS_PERFIL = [
 export function validarPerfil(dados) {
   const erros = {};
   if (dados.nome !== undefined && dados.nome.trim().length < 3) erros.nome = "Digite seu nome completo";
+  if (dados.email !== undefined && !/^\S+@\S+\.\S+$/.test(dados.email.trim())) erros.email = "Digite um e-mail válido";
   if (dados.telefone.replace(/\D/g, "").length < 10) erros.telefone = "Digite o telefone com DDD, só números";
-  if (!dados.pais_origem.trim()) erros.pais_origem = "Escreva o seu país de origem";
+  if (!dados.pais_origem.trim()) erros.pais_origem = "Escreva a sua nacionalidade";
+  if (!dados.idiomas.length) erros.idiomas = "Marque pelo menos um idioma";
   return erros;
 }
 
@@ -86,21 +88,42 @@ export function FotoPerfil({ nome, foto, aoMudar }) {
   );
 }
 
-export function EscolhaIdioma({ valor, aoMudar, nome = "idioma" }) {
+// a pessoa marca todos os idiomas que entende; a ordem segue a da lista
+export function EscolhaIdiomas({ valor, aoMudar, erro }) {
+  function alternar(codigo) {
+    const marcados = valor.includes(codigo) ? valor.filter((c) => c !== codigo) : [...valor, codigo];
+    aoMudar(IDIOMAS_PERFIL.map((i) => i.codigo).filter((c) => marcados.includes(c)));
+  }
+
   return (
-    <fieldset className="campo pf-idiomas">
-      <legend>Em que idioma você prefere ser atendido?</legend>
+    <fieldset className="campo pf-idiomas" aria-describedby={erro ? "pf-idiomas-erro" : undefined}>
+      <legend>Em quais idiomas você pode ser atendido?</legend>
+      <span className="dica">Marque todos os que você entende.</span>
       <div className="pf-idiomas-opcoes">
-        {IDIOMAS_PERFIL.map((i) => (
-          <label key={i.codigo} className={valor === i.codigo ? "pf-idioma pf-idioma-ligado" : "pf-idioma"}>
-            <input type="radio" name={nome} value={i.codigo} checked={valor === i.codigo} onChange={() => aoMudar(i.codigo)} />
-            <Bandeira codigo={i.codigo} />
-            {i.nome}
-          </label>
-        ))}
+        {IDIOMAS_PERFIL.map((i) => {
+          const marcado = valor.includes(i.codigo);
+          return (
+            <label key={i.codigo} className={marcado ? "pf-idioma pf-idioma-ligado" : "pf-idioma"}>
+              <input type="checkbox" value={i.codigo} checked={marcado} onChange={() => alternar(i.codigo)} />
+              <Bandeira codigo={i.codigo} />
+              {i.nome}
+            </label>
+          );
+        })}
       </div>
+      {erro && (
+        <span id="pf-idiomas-erro" className="campo-erro">
+          {erro}
+        </span>
+      )}
     </fieldset>
   );
+}
+
+// "Español e Português", para o cartão do perfil
+export function nomesDosIdiomas(codigos = []) {
+  const nomes = IDIOMAS_PERFIL.filter((i) => codigos.includes(i.codigo)).map((i) => i.nome);
+  return nomes.length > 1 ? `${nomes.slice(0, -1).join(", ")} e ${nomes.at(-1)}` : (nomes[0] ?? "");
 }
 
 export function ListaPaises({ id }) {

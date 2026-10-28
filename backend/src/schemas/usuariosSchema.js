@@ -1,6 +1,6 @@
 const { z } = require("zod");
 
-// idiomas da plataforma: o voluntário atende neles e o usuário escolhe o seu
+// idiomas da plataforma: o voluntário atende neles e o usuário diz em quais pode ser atendido
 const IDIOMAS = ["pt", "en", "es", "fr"];
 
 const idiomas = z
@@ -21,7 +21,7 @@ const camposUsuario = {
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres").max(72),
   telefone: z.string().trim().max(20).nullish(),
   pais_origem: z.string().trim().max(60).nullish(),
-  idioma: z.enum(IDIOMAS, { error: "Idioma deve ser pt, en, es ou fr" }),
+  idiomas,
   // a foto chega como imagem em base64, já reduzida no navegador
   foto: z
     .string()
@@ -33,7 +33,7 @@ const camposUsuario = {
 const criarUsuarioSchema = z
   .object({
     ...camposUsuario,
-    idioma: camposUsuario.idioma.default("pt"),
+    idiomas: idiomas.default(["pt"]),
     perfil: z.enum(["usuario", "voluntario"], { error: "Perfil deve ser usuario ou voluntario" }),
     aceite_lgpd: z.literal(true, { error: "É preciso aceitar os termos de privacidade (LGPD)" }),
     voluntario: dadosVoluntario.optional(),

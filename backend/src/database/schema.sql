@@ -8,7 +8,7 @@ CREATE TABLE usuarios (
   telefone      TEXT,
   perfil        TEXT    NOT NULL CHECK (perfil IN ('usuario', 'voluntario')),
   pais_origem   TEXT,
-  idioma        TEXT    NOT NULL DEFAULT 'pt',
+  idiomas       TEXT    NOT NULL DEFAULT 'pt', -- separados por virgula: 'es,pt'
   foto          TEXT,
   aceite_lgpd   INTEGER NOT NULL DEFAULT 0,
   criado_em     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))

@@ -85,6 +85,15 @@
   gap: 18px;
 }
 
+/* nome, e-mail, telefone e nacionalidade em duas colunas */
+.pf-linha-dupla {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+}
+
+.pf-idiomas .dica {
+  margin: -2px 0 10px;
+}
+
 .pf-idiomas-opcoes {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -135,13 +144,20 @@
   color: var(--azul-escuro);
 }
 
-.pf-idioma-ligado::after {
+/* caixinha de marcar: vazia mostra que dá para escolher mais de um */
+.pf-idioma::after {
   content: "";
   position: absolute;
   right: 12px;
   width: 18px;
   height: 18px;
-  border-radius: 50%;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 5px;
+  background: #fff;
+}
+
+.pf-idioma-ligado::after {
+  border-color: var(--azul);
   background: var(--azul) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") no-repeat center;
 }
 
@@ -413,6 +429,12 @@
   width: 18px;
   height: 12px;
   border-radius: 2px;
+}
+
+.pf-cartao-bandeiras {
+  display: inline-flex;
+  flex: none;
+  gap: 3px;
 }
 
 .pf-conteudo {
