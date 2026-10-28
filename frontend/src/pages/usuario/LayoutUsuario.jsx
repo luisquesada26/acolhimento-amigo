@@ -35,11 +35,9 @@ export default function LayoutUsuario() {
           <Logo />
         </Link>
 
+        {/* a busca fica no logo; aqui só o que não tem outro caminho */}
         {completo && (
           <nav className="usu-navegacao" aria-label={t.navegacao}>
-            <NavLink to="/usuario" end className={({ isActive }) => (isActive ? "usu-nav usu-nav-atual" : "usu-nav")}>
-              <Svg nome="busca" tamanho={17} /> {t.navBuscar}
-            </NavLink>
             <NavLink to="/usuario/atendimentos" className={({ isActive }) => (isActive ? "usu-nav usu-nav-atual" : "usu-nav")}>
               <Svg nome="agenda" tamanho={17} /> {t.navAtendimentos}
             </NavLink>

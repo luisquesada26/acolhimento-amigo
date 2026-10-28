@@ -166,8 +166,7 @@ a.usu-pessoa:hover,
   font-weight: 800;
 }
 
-.usu-bloco-titulo + .usu-servicos,
-.usu-bloco-titulo + .usu-dias {
+.usu-bloco-titulo + .usu-servicos {
   margin-top: 18px;
 }
 
@@ -316,59 +315,6 @@ a.usu-pessoa:hover,
   color: var(--texto-3);
   font-size: 13px;
   font-weight: 600;
-}
-
-/* horários livres, agrupados por dia */
-.usu-dias {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.usu-dias h3 {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin: 0 0 10px;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.usu-dias h3 small {
-  color: var(--texto-3);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.usu-horas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.usu-hora {
-  min-width: 78px;
-  height: 42px;
-  padding: 0 14px;
-  border: 1.5px solid var(--borda-campo);
-  border-radius: 10px;
-  background: #fff;
-  color: var(--texto);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.usu-hora:hover {
-  border-color: var(--azul);
-  background: var(--azul-claro);
-  color: var(--azul-escuro);
 }
 
 /* marcar atendimento */

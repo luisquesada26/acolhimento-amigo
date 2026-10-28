@@ -3,22 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
 import Avatar from "../../components/Avatar";
 import { nomeDoIdioma } from "../voluntario/usePainel";
-import { Janela, Svg, dataComAno, quando } from "../voluntario/comum";
+import { Janela, Svg, dataComAno } from "../voluntario/comum";
 import { EtiquetaArea, momento } from "./comum";
 import { useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
+import CalendarioHorarios from "./CalendarioHorarios";
 
 const MINIMO_DESCRICAO = 20;
-
-// agrupa os horários livres por dia, para a pessoa escolher o dia primeiro
-function porDia(horarios) {
-  const dias = new Map();
-  for (const horario of horarios) {
-    if (!dias.has(horario.data)) dias.set(horario.data, []);
-    dias.get(horario.data).push(horario);
-  }
-  return [...dias.entries()];
-}
 
 function FormMarcar({ voluntario, horario, aoMarcado }) {
   const t = useTextos(traducoes).voluntario;
@@ -158,8 +149,6 @@ export default function PerfilVoluntario() {
     );
   }
 
-  const dias = porDia(voluntario.horarios);
-
   // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação
   function confirmado() {
     setMarcado(escolhido);
@@ -230,26 +219,8 @@ export default function PerfilVoluntario() {
           {t.horariosLivres}
         </h2>
 
-        {dias.length ? (
-          <ul className="usu-dias">
-            {dias.map(([data, horarios]) => (
-              <li key={data}>
-                <h3>
-                  {dataComAno(new Date(`${data}T12:00:00`))}
-                  <small>{quando(new Date(`${data}T12:00:00`))}</small>
-                </h3>
-                <ul className="usu-horas">
-                  {horarios.map((h) => (
-                    <li key={h.id}>
-                      <button type="button" className="usu-hora" onClick={() => setEscolhido(h)}>
-                        {h.hora_inicio}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
+        {voluntario.horarios.length ? (
+          <CalendarioHorarios horarios={voluntario.horarios} aoEscolher={setEscolhido} />
         ) : (
           <p className="vol-vazio">{t.semHorarios}</p>
         )}
