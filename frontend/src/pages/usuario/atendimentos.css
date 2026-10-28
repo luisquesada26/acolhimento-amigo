@@ -1,0 +1,378 @@
+/* meus atendimentos: prefixo ma- (o CSS de página no Vite vale para o site inteiro) */
+
+.ma {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.ma-titulo h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ma-titulo p {
+  margin-top: 4px;
+  color: var(--texto-2);
+}
+
+.ma-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--verde);
+  border-radius: 12px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+  font-weight: 700;
+}
+
+/* abas */
+.ma-abas {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: #fff;
+  align-self: flex-start;
+}
+
+.ma-aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ma-aba:hover {
+  color: var(--texto);
+}
+
+.ma-aba-ligada,
+.ma-aba-ligada:hover {
+  background: var(--azul);
+  color: #fff;
+}
+
+.ma-contagem {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--fundo);
+  color: var(--texto-2);
+  font-size: 12px;
+  text-align: center;
+}
+
+.ma-aba-ligada .ma-contagem {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+.ma-painel,
+.ma-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* o próximo atendimento, em destaque */
+.ma-destaque {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ma-destaque-rotulo {
+  color: var(--azul);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* cada atendimento: data, conteúdo e situação */
+.ma-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: #fff;
+}
+
+.ma-item-destaque {
+  border-color: #bcd0f5;
+  box-shadow: var(--sombra);
+}
+
+.ma-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: flex-start;
+  padding: 8px 0;
+  border-radius: 12px;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  line-height: 1.1;
+}
+
+.ma-data strong {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.ma-data small {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ma-item-destaque .ma-data {
+  background: var(--azul);
+  color: #fff;
+}
+
+.ma-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ma-quando {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-2);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ma-relativo {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-size: 12px;
+}
+
+.ma-corpo h3 {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ma-voluntario {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ma-voluntario > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ma-voluntario:hover strong {
+  color: var(--azul);
+  text-decoration: underline;
+}
+
+.ma-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.ma-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ma-caso {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--borda-campo);
+  border-radius: 0 10px 10px 0;
+  background: var(--fundo);
+  color: var(--texto-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ma-caso small {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ma-dica {
+  color: #8a5a00;
+  font-size: 13px;
+}
+
+.ma-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.ma-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ma-status-confirmado {
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+}
+
+.ma-status-realizado {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.ma-status-cancelado {
+  background: var(--erro-claro);
+  color: var(--erro);
+}
+
+.ma-status-aguardando {
+  background: #fff4dc;
+  color: #8a5a00;
+}
+
+.ma-botao,
+.ma-botao-perigo {
+  padding: 8px 14px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ma-botao:hover {
+  border-color: var(--azul);
+  color: var(--azul);
+}
+
+.ma-botao-perigo {
+  border-color: #f0b4ad;
+  color: var(--erro);
+}
+
+.ma-botao-perigo:hover {
+  background: var(--erro-claro);
+}
+
+.ma-botao-perigo-cheio,
+.ma-botao-perigo-cheio:hover {
+  border-color: var(--erro);
+  background: var(--erro);
+  color: #fff;
+}
+
+.ma-botao:disabled,
+.ma-botao-perigo:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ma-confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 280px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--erro-claro);
+}
+
+.ma-confirmar p {
+  color: var(--erro);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ma-confirmar-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ma-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 20px;
+  border: 1px dashed var(--borda-campo);
+  border-radius: var(--raio);
+  color: var(--texto-2);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .ma-abas {
+    align-self: stretch;
+    overflow-x: auto;
+  }
+
+  .ma-item {
+    grid-template-columns: 54px minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .ma-lado {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ma-confirmar {
+    max-width: none;
+    width: 100%;
+  }
+}

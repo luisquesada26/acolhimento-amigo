@@ -139,7 +139,7 @@ Resposta de `POST /agendamentos`:
   "descricao": "Preciso entender como renovar meu protocolo de refúgio.",
   "criado_em": "2026-10-18 16:20:00",
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
-  "voluntario": { "id": 1, "nome": "Rafael Almeida" },
+  "voluntario": { "id": 1, "nome": "Rafael Almeida", "foto": null, "area": "Jurídico" },
   "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
   "usuario": { "id": 1, "nome": "Luis Quesada", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idiomas": ["es", "pt"] }
 }
