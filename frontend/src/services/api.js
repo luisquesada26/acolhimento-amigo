@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_URL } from "../config";
+import { traduzirErroApi } from "./errosApi";
 
 export const CHAVE_SESSAO = "acolhimento:sessao";
 
@@ -61,18 +62,18 @@ function registrar(config, status, recebido) {
   console.groupEnd();
 }
 
-// transforma o erro do axios no formato { mensagem, campos } usado nos formulários
+// transforma o erro do axios no formato { mensagem, campos } usado nos formulários, já no idioma da bandeira
 export function lerErro(erro) {
   if (!erro.response) {
-    return { mensagem: "Não foi possível falar com o servidor. Confira se a API está rodando.", campos: {} };
+    return { mensagem: traduzirErroApi("Não foi possível falar com o servidor. Confira se a API está rodando."), campos: {} };
   }
 
   const { erro: mensagem, detalhes = [] } = erro.response.data || {};
   const campos = {};
   for (const d of detalhes) {
-    if (d.campo && !campos[d.campo]) campos[d.campo] = d.mensagem;
+    if (d.campo && !campos[d.campo]) campos[d.campo] = traduzirErroApi(d.mensagem);
   }
-  return { mensagem: mensagem || "Algo deu errado. Tente de novo.", campos };
+  return { mensagem: traduzirErroApi(mensagem || "Algo deu errado. Tente de novo."), campos };
 }
 
 export default api;

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { nomeDoIdioma } from "./usePainel";
+import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 import Avatar from "../../components/Avatar";
 import "./comum.css";
 
@@ -16,33 +17,34 @@ export function iniciais(nome) {
 }
 
 export function hojeExtenso() {
-  return new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  return new Date().toLocaleDateString(localeAtual(), { weekday: "long", day: "numeric", month: "long" });
 }
 
 export function diaExtenso(data) {
-  return data.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  return data.toLocaleDateString(localeAtual(), { weekday: "long", day: "numeric", month: "long" });
 }
 
 export function diaCurto(data) {
-  return data.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" }).replace(".", "");
+  return data.toLocaleDateString(localeAtual(), { weekday: "short", day: "2-digit", month: "2-digit" }).replace(".", "");
 }
 
 // "Qua, 28/10/2026"
 export function dataComAno(data) {
-  const texto = data.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" }).replace(".", "");
+  const texto = data.toLocaleDateString(localeAtual(), { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" }).replace(".", "");
   return texto[0].toUpperCase() + texto.slice(1);
 }
 
 // cabeçalho "Data" que alterna entre mais recentes e mais antigos primeiro
 export function OrdenarPorData({ ordem, aoMudar }) {
+  const t = useTextos(traducoes);
   return (
     <button
       type="button"
       className="vol-ordenar"
       onClick={() => aoMudar(ordem === "desc" ? "asc" : "desc")}
-      title={ordem === "desc" ? "Mais recentes primeiro" : "Mais antigos primeiro"}
+      title={ordem === "desc" ? t.maisRecentes : t.maisAntigos}
     >
-      Data <Svg nome={ordem === "desc" ? "setaBaixo" : "setaCima"} tamanho={14} />
+      {t.data} <Svg nome={ordem === "desc" ? "setaBaixo" : "setaCima"} tamanho={14} />
     </button>
   );
 }
@@ -54,7 +56,14 @@ export function formatarHoras(minutos) {
   return m ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
 }
 
-// "Hoje", "Amanhã", "Em 3 dias"
+const QUANDO = {
+  pt: { hoje: "Hoje", amanha: "Amanhã", ontem: "Ontem", emDias: (n) => `Em ${n} dias`, emSemanas: (n) => `Em ${n} semanas`, haDias: (n) => `Há ${n} dias` },
+  en: { hoje: "Today", amanha: "Tomorrow", ontem: "Yesterday", emDias: (n) => `In ${n} days`, emSemanas: (n) => `In ${n} weeks`, haDias: (n) => `${n} days ago` },
+  es: { hoje: "Hoy", amanha: "Mañana", ontem: "Ayer", emDias: (n) => `En ${n} días`, emSemanas: (n) => `En ${n} semanas`, haDias: (n) => `Hace ${n} días` },
+  fr: { hoje: "Aujourd’hui", amanha: "Demain", ontem: "Hier", emDias: (n) => `Dans ${n} jours`, emSemanas: (n) => `Dans ${n} semaines`, haDias: (n) => `Il y a ${n} jours` },
+};
+
+// "Hoje", "Amanhã", "Em 3 dias", no idioma da bandeira
 export function quando(data) {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -62,12 +71,13 @@ export function quando(data) {
   dia.setHours(0, 0, 0, 0);
   const dias = Math.round((dia - hoje) / 86400000);
 
-  if (dias === 0) return "Hoje";
-  if (dias === 1) return "Amanhã";
-  if (dias === -1) return "Ontem";
-  if (dias > 1 && dias < 14) return `Em ${dias} dias`;
-  if (dias >= 14) return `Em ${Math.round(dias / 7)} semanas`;
-  return `Há ${-dias} dias`;
+  const t = textosAtuais(QUANDO);
+  if (dias === 0) return t.hoje;
+  if (dias === 1) return t.amanha;
+  if (dias === -1) return t.ontem;
+  if (dias > 1 && dias < 14) return t.emDias(dias);
+  if (dias >= 14) return t.emSemanas(Math.round(dias / 7));
+  return t.haDias(-dias);
 }
 
 function Icone({ d, tamanho = 20 }) {
@@ -116,6 +126,7 @@ export function Svg({ nome, tamanho }) {
   return <Icone d={icones[nome]} tamanho={tamanho} />;
 }
 
+// nome e grupo ficam em português aqui; o menu (LayoutVoluntario) mostra no idioma da bandeira
 export const NAVEGACAO = [
   { nome: "Painel", icone: "painel", caminho: "/voluntario", grupo: "Seu trabalho" },
   { nome: "Agenda", icone: "agenda", caminho: "/voluntario/agenda", grupo: "Seu trabalho" },
@@ -124,11 +135,11 @@ export const NAVEGACAO = [
   { nome: "Meu perfil", icone: "perfil", caminho: "/voluntario/perfil", grupo: "Sua conta" },
 ];
 
-// onde resolver cada pendência do perfil
+// onde resolver cada pendência do perfil; o texto do link fica nas traduções
 const ONDE_RESOLVER = {
-  perfil: { caminho: "/voluntario/perfil", texto: "Completar perfil" },
-  servico: { caminho: "/voluntario/perfil?aba=servicos", texto: "Criar serviço" },
-  horario: { caminho: "/voluntario/perfil?aba=agenda", texto: "Abrir horários" },
+  perfil: "/voluntario/perfil",
+  servico: "/voluntario/perfil?aba=servicos",
+  horario: "/voluntario/perfil?aba=agenda",
 };
 
 // botão que chama a API, mostra o erro ao lado e fica travado enquanto espera
@@ -148,7 +159,8 @@ export function useAcao(acao) {
 }
 
 // concluir marca como realizado: sai dos próximos e vai para o histórico, com a anotação do voluntário
-export function ConcluirAtendimento({ id, marcarRealizado, rotulo = "Concluir atendimento" }) {
+export function ConcluirAtendimento({ id, marcarRealizado, rotulo }) {
+  const t = useTextos(traducoes);
   const [confirmando, setConfirmando] = useState(false);
   const [anotacao, setAnotacao] = useState("");
   const campo = useId();
@@ -157,28 +169,28 @@ export function ConcluirAtendimento({ id, marcarRealizado, rotulo = "Concluir at
   if (!confirmando) {
     return (
       <button type="button" className="vol-botao-secundario vol-botao-concluir" onClick={() => setConfirmando(true)}>
-        <Svg nome="check" tamanho={18} /> {rotulo}
+        <Svg nome="check" tamanho={18} /> {rotulo ?? t.concluirAtendimento}
       </button>
     );
   }
 
   return (
     <div className="vol-confirmar vol-confirmar-concluir">
-      <label htmlFor={campo}>Anotação do atendimento (opcional)</label>
+      <label htmlFor={campo}>{t.anotacaoOpcional}</label>
       <textarea
         id={campo}
         rows={3}
         maxLength={1000}
         value={anotacao}
         onChange={(e) => setAnotacao(e.target.value)}
-        placeholder="O que foi feito, o que você recomendou e qual o próximo passo."
+        placeholder={t.anotacaoPlaceholder}
       />
       <div className="vol-acoes">
         <button type="button" className="botao botao-primario botao-voluntario vol-botao-pequeno" onClick={executar} disabled={ocupado}>
-          {ocupado ? "Concluindo..." : "Concluir atendimento"}
+          {ocupado ? t.concluindo : t.concluirAtendimento}
         </button>
         <button type="button" className="vol-botao-secundario" onClick={() => setConfirmando(false)} disabled={ocupado}>
-          Voltar
+          {t.voltar}
         </button>
       </div>
       {erro && <p className="vol-erro" role="alert">{erro}</p>}
@@ -186,27 +198,28 @@ export function ConcluirAtendimento({ id, marcarRealizado, rotulo = "Concluir at
   );
 }
 
-export function CancelarAtendimento({ id, cancelar, rotulo = "Cancelar atendimento" }) {
+export function CancelarAtendimento({ id, cancelar, rotulo }) {
+  const t = useTextos(traducoes);
   const [confirmando, setConfirmando] = useState(false);
   const { executar, ocupado, erro } = useAcao(() => cancelar(id));
 
   if (!confirmando) {
     return (
       <button type="button" className="vol-botao-perigo" onClick={() => setConfirmando(true)}>
-        {rotulo}
+        {rotulo ?? t.cancelarAtendimento}
       </button>
     );
   }
 
   return (
     <div className="vol-confirmar">
-      <span>Cancelar mesmo? A pessoa recebe o horário de volta para escolher outro.</span>
+      <span>{t.cancelarMesmo}</span>
       <div className="vol-acoes">
         <button type="button" className="vol-botao-perigo vol-botao-cheio" onClick={executar} disabled={ocupado}>
-          {ocupado ? "Cancelando..." : "Sim, cancelar"}
+          {ocupado ? t.cancelando : t.simCancelar}
         </button>
         <button type="button" className="vol-botao-secundario" onClick={() => setConfirmando(false)} disabled={ocupado}>
-          Não
+          {t.nao}
         </button>
       </div>
       {erro && <p className="vol-erro" role="alert">{erro}</p>}
@@ -215,23 +228,24 @@ export function CancelarAtendimento({ id, cancelar, rotulo = "Cancelar atendimen
 }
 
 export function Status({ status }) {
+  const t = useTextos(traducoes);
   if (status === "realizado") {
     return (
       <span className="vol-status vol-status-realizado">
-        <Svg nome="check" tamanho={14} /> Realizado
+        <Svg nome="check" tamanho={14} /> {t.status.realizado}
       </span>
     );
   }
   if (status === "cancelado") {
     return (
       <span className="vol-status vol-status-cancelado">
-        <Svg nome="x" tamanho={14} /> Cancelado
+        <Svg nome="x" tamanho={14} /> {t.status.cancelado}
       </span>
     );
   }
   return (
     <span className="vol-status vol-status-confirmado">
-      <Svg nome="relogio" tamanho={14} /> Confirmado
+      <Svg nome="relogio" tamanho={14} /> {t.status.confirmado}
     </span>
   );
 }
@@ -246,6 +260,8 @@ export function formatarTelefone(numero) {
 
 // quem marcou: nome e os dados para o voluntário entrar em contato
 export function Pessoa({ usuario }) {
+  const t = useTextos(traducoes);
+  const fala = t.fala(usuario.idiomas);
   return (
     <div className="vol-pessoa">
       <span className="vol-pessoa-nome">
@@ -254,14 +270,14 @@ export function Pessoa({ usuario }) {
       </span>
       <ul className="vol-contato">
         <li>
-          <Svg nome="globo" tamanho={15} /> {usuario.pais_origem || "Nacionalidade não informada"}
+          <Svg nome="globo" tamanho={15} /> {usuario.pais_origem || t.semNacionalidade}
         </li>
         <li>
-          <Svg nome="idioma" tamanho={15} /> Fala {usuario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
+          <Svg nome="idioma" tamanho={15} /> {fala[0].toUpperCase() + fala.slice(1)}
         </li>
         <li>
           <Svg nome="telefone" tamanho={15} />{" "}
-          {usuario.telefone ? <a href={`tel:${usuario.telefone}`}>{formatarTelefone(usuario.telefone)}</a> : "Telefone não informado"}
+          {usuario.telefone ? <a href={`tel:${usuario.telefone}`}>{formatarTelefone(usuario.telefone)}</a> : t.semTelefone}
         </li>
         {usuario.email && (
           <li>
@@ -273,15 +289,17 @@ export function Pessoa({ usuario }) {
   );
 }
 
+// o rótulo de cada número vem das traduções, pela chave
 const NUMEROS = [
-  { chave: "realizados", rotulo: "Atendimentos realizados", icone: "check" },
-  { chave: "pessoas", rotulo: "Pessoas atendidas", icone: "pessoas" },
-  { chave: "minutos", rotulo: "Horas de atendimento", icone: "relogio", formato: formatarHoras },
-  { chave: "marcados", rotulo: "Atendimentos marcados", icone: "agenda" },
-  { chave: "livres", rotulo: "Horários livres", icone: "mais" },
+  { chave: "realizados", icone: "check" },
+  { chave: "pessoas", icone: "pessoas" },
+  { chave: "minutos", icone: "relogio", formato: formatarHoras },
+  { chave: "marcados", icone: "agenda" },
+  { chave: "livres", icone: "mais" },
 ];
 
 export function Numeros({ numeros }) {
+  const t = useTextos(traducoes);
   return (
     <ul className="vol-numeros vol-numeros-cartoes">
       {NUMEROS.map((n) => (
@@ -290,7 +308,7 @@ export function Numeros({ numeros }) {
             <Svg nome={n.icone} />
           </span>
           <strong>{n.formato ? n.formato(numeros[n.chave]) : numeros[n.chave]}</strong>
-          <span>{n.rotulo}</span>
+          <span>{t.numeros[n.chave]}</span>
         </li>
       ))}
     </ul>
@@ -298,12 +316,13 @@ export function Numeros({ numeros }) {
 }
 
 export function Aguardando({ itens, marcarRealizado, cancelar }) {
+  const t = useTextos(traducoes);
   if (!itens.length) return null;
 
   return (
     <section className="vol-aguardando" aria-labelledby="vol-aguardando-titulo">
       <h2 id="vol-aguardando-titulo">
-        <Svg nome="alerta" /> Precisa da sua confirmação
+        <Svg nome="alerta" /> {t.precisaConfirmacao}
       </h2>
       <ul>
         {itens.map((a) => (
@@ -315,27 +334,35 @@ export function Aguardando({ itens, marcarRealizado, cancelar }) {
 }
 
 function ItemAguardando({ atendimento, marcarRealizado, cancelar }) {
+  const t = useTextos(traducoes);
 
   return (
     <li>
       <p>
-        O atendimento de <time dateTime={atendimento.horario.data}>{diaExtenso(atendimento.inicio)}</time>, às {atendimento.horario.hora_inicio}, com{" "}
-        <strong>{atendimento.usuario.nome}</strong> já terminou. Ele aconteceu?
+        {t.aguardando(
+          <time key="dia" dateTime={atendimento.horario.data}>
+            {diaExtenso(atendimento.inicio)}
+          </time>,
+          atendimento.horario.hora_inicio,
+          <strong key="nome">{atendimento.usuario.nome}</strong>
+        )}
       </p>
       <div className="vol-acoes">
-        <ConcluirAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} rotulo="Marcar como realizado" />
-        <CancelarAtendimento id={atendimento.id} cancelar={cancelar} rotulo="Não aconteceu" />
+        <ConcluirAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} rotulo={t.marcarRealizado} />
+        <CancelarAtendimento id={atendimento.id} cancelar={cancelar} rotulo={t.naoAconteceu} />
       </div>
     </li>
   );
 }
 
-export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, titulo = "Próximo atendimento" }) {
+export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, titulo: tituloRecebido }) {
+  const t = useTextos(traducoes);
+  const titulo = tituloRecebido ?? t.proximoAtendimento;
   if (!atendimento) {
     return (
       <section className="vol-proximo vol-proximo-vazio" aria-labelledby="vol-proximo-titulo">
         <h2 id="vol-proximo-titulo">{titulo}</h2>
-        <p>Nenhum atendimento marcado por enquanto. Quando alguém escolher um horário seu, ele aparece aqui.</p>
+        <p>{t.nenhumMarcado}</p>
       </section>
     );
   }
@@ -347,7 +374,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, tit
           <h2 id="vol-proximo-titulo">{titulo}</h2>
           <p className="vol-proximo-hora">
             <time dateTime={`${atendimento.horario.data}T${atendimento.horario.hora_inicio}`}>
-              {diaExtenso(atendimento.inicio)}, das {atendimento.horario.hora_inicio} às {atendimento.horario.hora_fim}
+              {diaExtenso(atendimento.inicio)}, {t.das(atendimento.horario.hora_inicio, atendimento.horario.hora_fim)}
             </time>
           </p>
           <Pessoa usuario={atendimento.usuario} />
@@ -358,7 +385,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, tit
           <span className="vol-quando vol-quando-verde">{quando(atendimento.inicio)}</span>
           {/* a videochamada não faz parte do projeto: o botão fica só para mostrar onde ela entraria */}
           <button type="button" className="botao botao-primario vol-botao-video">
-            <Svg nome="video" tamanho={16} /> Entrar na videochamada
+            <Svg nome="video" tamanho={16} /> {t.entrarVideo}
           </button>
         </div>
       </div>
@@ -384,7 +411,7 @@ export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir
           <>
             <time dateTime={a.horario.data} className="vol-lista-data">
               <strong>{a.inicio.getDate()}</strong>
-              <span>{a.inicio.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}</span>
+              <span>{a.inicio.toLocaleDateString(localeAtual(), { month: "short" }).replace(".", "")}</span>
             </time>
             <span className="vol-lista-texto">
               <strong>{a.usuario.nome}</strong>
@@ -412,25 +439,24 @@ export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir
 }
 
 export function Pendencias({ pendencias }) {
+  const t = useTextos(traducoes);
   const feitas = pendencias.filter((p) => p.feito).length;
 
   return (
     <section className="vol-pendencias" aria-labelledby="vol-pendencias-titulo">
       <div>
-        <h2 id="vol-pendencias-titulo">Complete seu perfil para aparecer na busca</h2>
-        <p>
-          {feitas} de {pendencias.length} prontos. Quem procura atendimento só encontra você quando tudo estiver pronto.
-        </p>
+        <h2 id="vol-pendencias-titulo">{t.pendenciasTitulo}</h2>
+        <p>{t.pendenciasProntos(feitas, pendencias.length)}</p>
       </div>
       <ul>
         {pendencias.map((p) => (
           <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : ""}>
             <Svg nome={p.feito ? "check" : "relogio"} tamanho={18} />
-            <span>{p.titulo}</span>
+            <span>{t.pendencias[p.chave] ?? p.titulo}</span>
             {p.feito ? (
-              <small>Pronto</small>
+              <small>{t.pronto}</small>
             ) : (
-              <Link to={ONDE_RESOLVER[p.chave].caminho}>{ONDE_RESOLVER[p.chave].texto}</Link>
+              <Link to={ONDE_RESOLVER[p.chave]}>{t.resolver[p.chave]}</Link>
             )}
           </li>
         ))}
@@ -440,7 +466,8 @@ export function Pendencias({ pendencias }) {
 }
 
 export function HorariosLivres({ horarios, limite = 6 }) {
-  if (!horarios.length) return <p className="vol-vazio">Você ainda não abriu horários na agenda.</p>;
+  const t = useTextos(traducoes);
+  if (!horarios.length) return <p className="vol-vazio">{t.semHorariosLivres}</p>;
 
   return (
     <ul className="vol-horarios">
@@ -449,9 +476,7 @@ export function HorariosLivres({ horarios, limite = 6 }) {
         return (
           <li key={h.id}>
             <time dateTime={`${h.data}T${h.hora_inicio}`}>{diaCurto(dia)}</time>
-            <span>
-              {h.hora_inicio} às {h.hora_fim}
-            </span>
+            <span>{t.intervalo(h.hora_inicio, h.hora_fim)}</span>
           </li>
         );
       })}
@@ -473,6 +498,7 @@ export function Interruptor({ ligado, aoMudar, rotulo, desabilitado = false }) {
 
 // janela por cima da página; o <dialog> já fecha com Esc e prende o foco dentro
 export function Janela({ aberta, titulo, aoFechar, children }) {
+  const t = useTextos(traducoes);
   const janela = useRef(null);
 
   useEffect(() => {
@@ -493,7 +519,7 @@ export function Janela({ aberta, titulo, aoFechar, children }) {
         <div className="vol-janela-conteudo">
           <div className="vol-janela-topo">
             <h2 id="vol-janela-titulo">{titulo}</h2>
-            <button type="button" className="pagina-icone" onClick={aoFechar} aria-label="Fechar">
+            <button type="button" className="pagina-icone" onClick={aoFechar} aria-label={t.fechar}>
               <Svg nome="x" />
             </button>
           </div>

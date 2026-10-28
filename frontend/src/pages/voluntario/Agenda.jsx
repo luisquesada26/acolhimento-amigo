@@ -2,13 +2,11 @@ import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Svg, diaExtenso } from "./comum";
 import DetalheAtendimento from "./DetalheAtendimento";
+import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 
-const DIAS_SEMANA = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-const VISOES = [
-  { chave: "mes", nome: "Mês" },
-  { chave: "semana", nome: "Semana" },
-  { chave: "dia", nome: "Dia" },
-];
+// os nomes dos dias e das visões vêm das traduções (diasSemana e visoes)
+const VISOES = ["mes", "semana", "dia"];
 const MAXIMO_NO_DIA = 2;
 
 function inicioDoDia(data) {
@@ -46,22 +44,24 @@ function diasDaVisao(visao, referencia) {
 }
 
 function tituloDaVisao(visao, referencia, dias) {
-  if (visao === "mes") return maiuscula(referencia.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }));
+  if (visao === "mes") return maiuscula(referencia.toLocaleDateString(localeAtual(), { month: "long", year: "numeric" }));
   if (visao === "dia") return maiuscula(diaExtenso(referencia));
+  const t = textosAtuais(traducoes);
   const [ini, fim] = [dias[0], dias[6]];
-  const mesFim = fim.toLocaleDateString("pt-BR", { month: "long" });
-  if (ini.getMonth() === fim.getMonth()) return `${ini.getDate()} a ${fim.getDate()} de ${mesFim}`;
-  return `${ini.getDate()} de ${ini.toLocaleDateString("pt-BR", { month: "long" })} a ${fim.getDate()} de ${mesFim}`;
+  const mesFim = fim.toLocaleDateString(localeAtual(), { month: "long" });
+  if (ini.getMonth() === fim.getMonth()) return t.semanaMesmoMes(ini.getDate(), fim.getDate(), mesFim);
+  return t.semanaDoisMeses(ini.getDate(), ini.toLocaleDateString(localeAtual(), { month: "long" }), fim.getDate(), mesFim);
 }
 
 function Etiqueta({ atendimento, aoAbrir, completa = false }) {
   const { horario, usuario, servico, status } = atendimento;
+  const t = useTextos(traducoes);
   return (
     <button
       type="button"
       className={`agenda-etiqueta agenda-etiqueta-${status}`}
       onClick={() => aoAbrir(atendimento.id)}
-      aria-label={`${horario.hora_inicio}, ${usuario.nome}, ${servico.titulo}, ${status}`}
+      aria-label={`${horario.hora_inicio}, ${usuario.nome}, ${servico.titulo}, ${t.statusAria[status] ?? status}`}
     >
       <span className="agenda-etiqueta-hora">{horario.hora_inicio}</span>
       <span className="agenda-etiqueta-nome">{completa ? usuario.nome : nomeCurto(usuario.nome)}</span>
@@ -75,6 +75,7 @@ export default function Agenda() {
   const [visao, setVisao] = useState("mes");
   const [referencia, setReferencia] = useState(() => inicioDoDia(new Date()));
   const [abertoId, setAbertoId] = useState(null);
+  const t = useTextos(traducoes);
 
   const hoje = inicioDoDia(new Date());
   const dias = diasDaVisao(visao, referencia);
@@ -105,51 +106,51 @@ export default function Agenda() {
     <div className="agenda-pagina">
       <header className="painel-cabecalho painel-cabecalho-acao">
         <div>
-          <h1>Agenda</h1>
-          <p>Seus atendimentos no calendário. Clique em um para ver a pessoa.</p>
+          <h1>{t.agendaTitulo}</h1>
+          <p>{t.agendaSubtitulo}</p>
         </div>
         <Link to="/voluntario/perfil?aba=agenda" className="botao botao-primario botao-voluntario vol-botao-pequeno">
-          <Svg nome="mais" tamanho={18} /> Abrir horários
+          <Svg nome="mais" tamanho={18} /> {t.abrirHorarios}
         </Link>
       </header>
 
-      <section className="painel-cartao agenda-calendario" aria-label="Calendário">
+      <section className="painel-cartao agenda-calendario" aria-label={t.calendario}>
         <div className="agenda-barra">
           <div className="agenda-navegar">
             <button type="button" className="vol-botao-secundario" onClick={() => setReferencia(hoje)}>
-              Hoje
+              {t.hoje}
             </button>
-            <button type="button" className="pagina-icone" onClick={() => mover(-1)} aria-label="Anterior">
+            <button type="button" className="pagina-icone" onClick={() => mover(-1)} aria-label={t.anterior}>
               <Svg nome="anterior" />
             </button>
-            <button type="button" className="pagina-icone" onClick={() => mover(1)} aria-label="Próximo">
+            <button type="button" className="pagina-icone" onClick={() => mover(1)} aria-label={t.proximo}>
               <Svg nome="proximo" />
             </button>
             <h2 className="agenda-titulo" aria-live="polite">
               {tituloDaVisao(visao, referencia, dias)}
             </h2>
           </div>
-          <div className="pagina-filtros" role="group" aria-label="Visão do calendário">
-            {VISOES.map((v) => (
-              <button key={v.chave} type="button" aria-pressed={visao === v.chave} onClick={() => setVisao(v.chave)}>
-                {v.nome}
+          <div className="pagina-filtros" role="group" aria-label={t.visaoCalendario}>
+            {VISOES.map((chave) => (
+              <button key={chave} type="button" aria-pressed={visao === chave} onClick={() => setVisao(chave)}>
+                {t.visoes[chave]}
               </button>
             ))}
           </div>
         </div>
 
-        <ul className="agenda-legenda" aria-label="Legenda">
+        <ul className="agenda-legenda" aria-label={t.legenda}>
           <li>
-            <span className="agenda-cor agenda-etiqueta-confirmado"></span> Marcado
+            <span className="agenda-cor agenda-etiqueta-confirmado"></span> {t.legendaMarcado}
           </li>
           <li>
-            <span className="agenda-cor agenda-etiqueta-realizado"></span> Realizado
+            <span className="agenda-cor agenda-etiqueta-realizado"></span> {t.status.realizado}
           </li>
           <li>
-            <span className="agenda-cor agenda-etiqueta-cancelado"></span> Cancelado
+            <span className="agenda-cor agenda-etiqueta-cancelado"></span> {t.status.cancelado}
           </li>
           <li>
-            <span className="agenda-cor agenda-livre-cor"></span> Horário livre
+            <span className="agenda-cor agenda-livre-cor"></span> {t.horarioLivre}
           </li>
         </ul>
 
@@ -165,21 +166,21 @@ export default function Agenda() {
                   ) : (
                     <li key={`h${item.livre.id}`} className="agenda-vaga agenda-vaga-cartao">
                       <span className="agenda-vaga-hora">
-                        <Svg nome="relogio" tamanho={16} /> {item.livre.hora_inicio} às {item.livre.hora_fim}
+                        <Svg nome="relogio" tamanho={16} /> {t.intervalo(item.livre.hora_inicio, item.livre.hora_fim)}
                       </span>
-                      <span>Horário livre: ninguém marcou ainda</span>
+                      <span>{t.livreNinguem}</span>
                     </li>
                   )
                 )}
               </ul>
             ) : (
-              <p className="vol-vazio">Nada neste dia: nem atendimentos nem horários livres.</p>
+              <p className="vol-vazio">{t.nadaNoDia}</p>
             )}
           </div>
         ) : (
           <div className="agenda-rolagem">
             <div className={`agenda-grade agenda-grade-${visao}`} style={{ gridTemplateRows: `auto repeat(${semanas}, minmax(0, 1fr))` }}>
-              {DIAS_SEMANA.map((nome) => (
+              {t.diasSemana.map((nome) => (
                 <div key={nome} className="agenda-cabeca" aria-hidden="true">
                   <span className="agenda-cabeca-longa">{nome}</span>
                   <span className="agenda-cabeca-curta">{nome.slice(0, 3)}</span>
@@ -193,19 +194,19 @@ export default function Agenda() {
                 if (visao === "mes" && dia.getMonth() !== referencia.getMonth()) classes.push("agenda-fora");
                 if (mesmoDia(dia, hoje)) classes.push("agenda-hoje");
                 return (
-                  <div key={dia.toISOString()} className={classes.join(" ")} aria-label={`${diaExtenso(dia)}: ${lista.length} atendimento(s)`}>
+                  <div key={dia.toISOString()} className={classes.join(" ")} aria-label={t.celulaAria(diaExtenso(dia), lista.length)}>
                     <div className="agenda-celula-topo">
-                      <button type="button" className="agenda-numero" onClick={() => verDia(dia)} aria-label={`Ver ${diaExtenso(dia)}`}>
-                        {dia.getDate() === 1 && visao === "mes" ? dia.toLocaleDateString("pt-BR", { day: "numeric", month: "short" }).replace(".", "") : dia.getDate()}
+                      <button type="button" className="agenda-numero" onClick={() => verDia(dia)} aria-label={t.verDiaAria(diaExtenso(dia))}>
+                        {dia.getDate() === 1 && visao === "mes" ? dia.toLocaleDateString(localeAtual(), { day: "numeric", month: "short" }).replace(".", "") : dia.getDate()}
                       </button>
                       {lista.length > limite && (
-                        <button type="button" className="agenda-mais" onClick={() => verDia(dia)} aria-label={`Mais ${lista.length - limite} atendimento(s)`}>
+                        <button type="button" className="agenda-mais" onClick={() => verDia(dia)} aria-label={t.maisAria(lista.length - limite)}>
                           +{lista.length - limite}
                         </button>
                       )}
                       {livres.length > 0 && visao === "mes" && (
                         <button type="button" className="agenda-vaga" onClick={() => verDia(dia)}>
-                          {livres.length} {livres.length === 1 ? "livre" : "livres"}
+                          {t.livresN(livres.length)}
                         </button>
                       )}
                     </div>
@@ -218,7 +219,7 @@ export default function Agenda() {
                       {visao === "semana" &&
                         livres.map((h) => (
                           <li key={h.id} className="agenda-vaga">
-                            {h.hora_inicio} livre
+                            {t.livreHora(h.hora_inicio)}
                           </li>
                         ))}
                     </ul>

@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { textosAtuais } from "../../context/IdiomaContext";
 import api, { lerErro } from "../../services/api";
 
-const IDIOMAS = { pt: "Português", en: "Inglês", es: "Espanhol", fr: "Francês" };
+const IDIOMAS = {
+  pt: { pt: "Português", en: "Inglês", es: "Espanhol", fr: "Francês" },
+  en: { pt: "Portuguese", en: "English", es: "Spanish", fr: "French" },
+  es: { pt: "Portugués", en: "Inglés", es: "Español", fr: "Francés" },
+  fr: { pt: "Portugais", en: "Anglais", es: "Espagnol", fr: "Français" },
+};
 
+// nome do idioma escrito no idioma da bandeira
 export function nomeDoIdioma(codigo) {
-  return IDIOMAS[codigo] ?? codigo;
+  return textosAtuais(IDIOMAS)[codigo] ?? codigo;
 }
 
 // a agenda vem como data e hora separadas; junta para comparar com agora
