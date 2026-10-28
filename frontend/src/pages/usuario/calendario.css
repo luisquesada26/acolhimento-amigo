@@ -1,0 +1,335 @@
+/* calendário de horários livres no perfil do voluntário: prefixo cal- */
+
+.cal {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.cal-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cal-navegar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cal-seta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.cal-seta:hover:not(:disabled) {
+  border-color: var(--azul);
+  color: var(--azul);
+}
+
+.cal-seta:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cal-periodo {
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  line-height: 1.25;
+}
+
+.cal-periodo strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.cal-periodo small {
+  color: var(--texto-3);
+  font-size: 13px;
+}
+
+.cal-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.cal-mais-cedo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #bfe3cd;
+  border-radius: 999px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cal-mais-cedo:hover {
+  border-color: var(--verde);
+}
+
+.cal-visao {
+  display: flex;
+  padding: 4px;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background: var(--fundo);
+}
+
+.cal-visao button {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cal-visao .cal-visao-ligada {
+  background: #fff;
+  color: var(--azul-escuro);
+  box-shadow: 0 1px 4px rgba(11, 27, 58, 0.12);
+}
+
+/* semana: um dia por coluna */
+.cal-semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(92px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.cal-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 170px;
+  padding: 12px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background: var(--fundo);
+  scroll-snap-align: start;
+}
+
+.cal-coluna-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+
+.cal-coluna-topo small {
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cal-coluna-topo strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cal-coluna.cal-hoje {
+  border-color: var(--azul);
+  background: var(--azul-claro);
+}
+
+.cal-coluna.cal-hoje .cal-coluna-topo {
+  color: var(--azul-escuro);
+}
+
+.cal-coluna.cal-passou {
+  opacity: 0.5;
+}
+
+.cal-horas {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cal-horas-linha {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.cal-hora {
+  height: 38px;
+  padding: 0 12px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cal-horas-linha .cal-hora {
+  min-width: 78px;
+}
+
+.cal-hora:hover {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #fff;
+}
+
+.cal-vazio {
+  margin: auto 0;
+  color: var(--texto-3);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* mês: grade de 7 colunas; só os dias com horário são clicáveis */
+.cal-mes {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cal-mes-nome {
+  padding-bottom: 4px;
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.cal-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 64px;
+  padding: 6px 4px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: var(--texto-3);
+  font: inherit;
+}
+
+.cal-dia strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cal-dia small {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cal-dia-fora {
+  opacity: 0.45;
+}
+
+.cal-dia.cal-hoje {
+  border-color: var(--borda-campo);
+}
+
+.cal-dia-livre {
+  border-color: #c9d8f5;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  cursor: pointer;
+}
+
+.cal-dia-livre:hover {
+  border-color: var(--azul);
+}
+
+.cal-dia-escolhido,
+.cal-dia-escolhido:hover {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #fff;
+}
+
+.cal-dia-horas {
+  padding: 16px;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background: var(--fundo);
+}
+
+.cal-dia-horas h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cal-dia-horas h3 small {
+  color: var(--texto-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-dia-horas .cal-vazio {
+  margin: 0;
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .cal-barra,
+  .cal-navegar {
+    width: 100%;
+  }
+
+  .cal-periodo {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .cal-opcoes {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cal-semana {
+    grid-template-columns: repeat(7, minmax(110px, 1fr));
+  }
+
+  .cal-dia {
+    min-height: 48px;
+  }
+
+  .cal-dia small {
+    display: none;
+  }
+}

@@ -63,6 +63,23 @@ export const traducoes = {
       verMeus: "Ver meus atendimentos",
     },
 
+    calendario: {
+      visao: "Ver por",
+      semana: "Semana",
+      mes: "Mês",
+      anteriorSemana: "Semana anterior",
+      proximaSemana: "Próxima semana",
+      anteriorMes: "Mês anterior",
+      proximoMes: "Próximo mês",
+      maisCedo: "Mais cedo",
+      livresSemana: (n) => (n ? `${n} ${n === 1 ? "horário livre" : "horários livres"} nesta semana` : "Nenhum horário livre nesta semana"),
+      livresMes: (n) => (n ? `${n} ${n === 1 ? "horário livre" : "horários livres"} neste mês` : "Nenhum horário livre neste mês"),
+      semHorario: "Sem horário",
+      horarios: (n) => `${n} ${n === 1 ? "horário" : "horários"}`,
+      escolhaDia: "Escolha um dia marcado para ver os horários.",
+      marcarAs: (dia, hora) => `Marcar ${dia} às ${hora}`,
+    },
+
     atendimentos: {
       titulo: "Meus atendimentos",
       subtitulo: "Os que vêm por aí, os que já aconteceram e os cancelados.",
@@ -237,6 +254,23 @@ export const traducoes = {
       marcando: "Booking...",
       confirmar: "Confirm appointment",
       verMeus: "See my appointments",
+    },
+
+    calendario: {
+      visao: "View by",
+      semana: "Week",
+      mes: "Month",
+      anteriorSemana: "Previous week",
+      proximaSemana: "Next week",
+      anteriorMes: "Previous month",
+      proximoMes: "Next month",
+      maisCedo: "Soonest",
+      livresSemana: (n) => (n ? `${n} free ${n === 1 ? "time slot" : "time slots"} this week` : "No free time slots this week"),
+      livresMes: (n) => (n ? `${n} free ${n === 1 ? "time slot" : "time slots"} this month` : "No free time slots this month"),
+      semHorario: "No slots",
+      horarios: (n) => `${n} ${n === 1 ? "slot" : "slots"}`,
+      escolhaDia: "Pick a highlighted day to see its time slots.",
+      marcarAs: (dia, hora) => `Book ${dia} at ${hora}`,
     },
 
     atendimentos: {
@@ -415,6 +449,23 @@ export const traducoes = {
       verMeus: "Ver mis citas",
     },
 
+    calendario: {
+      visao: "Ver por",
+      semana: "Semana",
+      mes: "Mes",
+      anteriorSemana: "Semana anterior",
+      proximaSemana: "Próxima semana",
+      anteriorMes: "Mes anterior",
+      proximoMes: "Próximo mes",
+      maisCedo: "Más pronto",
+      livresSemana: (n) => (n ? `${n} ${n === 1 ? "horario libre" : "horarios libres"} esta semana` : "Ningún horario libre esta semana"),
+      livresMes: (n) => (n ? `${n} ${n === 1 ? "horario libre" : "horarios libres"} este mes` : "Ningún horario libre este mes"),
+      semHorario: "Sin horario",
+      horarios: (n) => `${n} ${n === 1 ? "horario" : "horarios"}`,
+      escolhaDia: "Elige un día marcado para ver los horarios.",
+      marcarAs: (dia, hora) => `Reservar ${dia} a las ${hora}`,
+    },
+
     atendimentos: {
       titulo: "Mis citas",
       subtitulo: "Las próximas, las que ya pasaron y las canceladas.",
@@ -589,6 +640,23 @@ export const traducoes = {
       marcando: "Réservation...",
       confirmar: "Confirmer le rendez-vous",
       verMeus: "Voir mes rendez-vous",
+    },
+
+    calendario: {
+      visao: "Afficher par",
+      semana: "Semaine",
+      mes: "Mois",
+      anteriorSemana: "Semaine précédente",
+      proximaSemana: "Semaine suivante",
+      anteriorMes: "Mois précédent",
+      proximoMes: "Mois suivant",
+      maisCedo: "Le plus tôt",
+      livresSemana: (n) => (n ? `${n} ${n === 1 ? "créneau libre" : "créneaux libres"} cette semaine` : "Aucun créneau libre cette semaine"),
+      livresMes: (n) => (n ? `${n} ${n === 1 ? "créneau libre" : "créneaux libres"} ce mois-ci` : "Aucun créneau libre ce mois-ci"),
+      semHorario: "Aucun créneau",
+      horarios: (n) => `${n} ${n === 1 ? "créneau" : "créneaux"}`,
+      escolhaDia: "Choisissez un jour en surbrillance pour voir ses créneaux.",
+      marcarAs: (dia, hora) => `Réserver ${dia} à ${hora}`,
     },
 
     atendimentos: {
