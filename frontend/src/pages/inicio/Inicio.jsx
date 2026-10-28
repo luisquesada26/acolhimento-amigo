@@ -207,7 +207,7 @@ export default function Inicio() {
 
               return (
                 <article
-                  className={`cartao-servico cartao-${servico.cor}`}
+                  className={`cartao-servico cartao-${servico.cor}${expandida ? " cartao-servico-aberto" : ""}`}
                   key={servico.id}
                 >
                   <div className="icone-servico" aria-hidden="true">

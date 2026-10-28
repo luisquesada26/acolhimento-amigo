@@ -210,6 +210,21 @@ a.painel-item:hover:not(.painel-item-atual) {
   min-width: 220px;
 }
 
+/* no celular o filtro ocupa a linha: rótulo à esquerda e o seletor no resto */
+@media (max-width: 640px) {
+  /* .painel-cartao-topo na frente: o ".campo" global põe o rótulo em cima, centralizado */
+  .painel-cartao-topo .painel-periodo {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .painel-cartao-topo .painel-periodo select {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 /* relatórios */
 .relatorio-filtros {
   display: grid;
@@ -690,9 +705,17 @@ button.agenda-vaga {
   gap: 12px 18px;
 }
 
+/* tablet com o menu lateral aberto: 4 colunas não cabem; quando e pessoa lado a lado, serviço e ação embaixo */
+@media (max-width: 1100px) {
+  .atend-resumo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* o selo do serviço centralizado na linha (fora daqui ele fica no topo) */
 .atend-resumo .vol-servico {
   align-self: center;
+  justify-self: start;
 }
 
 .atend-quando {
@@ -1124,6 +1147,73 @@ textarea.perfil-input {
     height: auto;
     grid-template-rows: auto !important;
     grid-auto-rows: minmax(96px, auto);
+  }
+}
+
+/* celular: o mês inteiro cabe na tela. Dias abreviados, atendimentos e horários livres
+   viram bolinhas na cor da legenda, e tocar no número abre a visão Dia com os detalhes */
+@media (max-width: 640px) {
+  .agenda-grade-mes {
+    min-width: 0;
+  }
+
+  .agenda-pagina .agenda-grade-mes {
+    grid-auto-rows: minmax(60px, auto);
+  }
+
+  .agenda-grade-mes .agenda-cabeca {
+    padding: 8px 2px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .agenda-grade-mes .agenda-cabeca-longa {
+    display: none;
+  }
+
+  .agenda-grade-mes .agenda-cabeca-curta {
+    display: inline;
+  }
+
+  .agenda-grade-mes .agenda-celula {
+    align-items: center;
+    padding: 4px 2px;
+  }
+
+  .agenda-grade-mes .agenda-celula-topo {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .agenda-grade-mes .agenda-numero {
+    align-self: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 4px;
+    font-size: 13px;
+  }
+
+  .agenda-grade-mes .agenda-celula ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .agenda-grade-mes .agenda-etiqueta,
+  .agenda-grade-mes .agenda-celula-topo .agenda-vaga {
+    width: 8px;
+    height: 8px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+    overflow: hidden;
+  }
+
+  .agenda-grade-mes .agenda-mais {
+    display: none;
   }
 }
 

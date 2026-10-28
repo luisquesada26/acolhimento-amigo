@@ -332,10 +332,16 @@
     padding: 12px 16px;
   }
 
+  /* desliza com o dedo, sem a barra de rolagem cinza dentro da faixa azul */
   .painel-menu nav {
     order: 3;
     width: 100%;
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .painel-menu nav::-webkit-scrollbar {
+    display: none;
   }
 
   .painel-menu ul {
@@ -356,7 +362,9 @@
     background: transparent;
   }
 
+  /* em coluna, margin-inline: auto desliga o esticar e o conteúdo ficava da largura do texto mais longo */
   .painel-conteudo {
+    width: 100%;
     padding-top: 22px;
   }
 }

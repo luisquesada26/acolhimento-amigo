@@ -293,6 +293,20 @@
   .vol-proximo-lado {
     align-items: flex-start;
   }
+
+  /* no celular, dois números por linha em vez de um card alto embaixo do outro */
+  .vol-numeros-cartoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .vol-numeros-cartoes li {
+    padding: 14px;
+  }
+
+  .vol-numeros-cartoes strong {
+    font-size: 24px;
+  }
 }
 
 /* azul, como o "marcado" do calendário */

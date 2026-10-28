@@ -643,9 +643,10 @@
 /* ============ telas menores ============ */
 
 @media (max-width: 980px) {
+  /* minmax(0, ...): com 1fr a coluna nunca fica mais estreita que o conteúdo e a página vaza para o lado no celular */
   .pf-primeiro,
   .pf {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .pf-privacidade {
@@ -659,7 +660,7 @@
 
 @media (max-width: 640px) {
   .pf-idiomas-opcoes {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .pf-enviar {
@@ -693,5 +694,12 @@
 
   .pf-acoes > button {
     flex: 1;
+  }
+}
+
+/* celular estreito: dois cartões de idioma lado a lado não cabem */
+@media (max-width: 480px) {
+  .pf-idiomas-opcoes {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -290,6 +290,16 @@
     justify-content: flex-start;
   }
 
+  /* a barra fica no topo; logo, cartão e rodapé centralizam no espaço que sobra.
+     Se o formulário for maior que a tela (cadastro), as margens viram zero e nada é cortado */
+  .login-logo {
+    margin-top: auto;
+  }
+
+  .rodape {
+    margin-bottom: auto;
+  }
+
   /* no celular entra no fluxo, para não cobrir o logo */
   .login-topo {
     position: static;
