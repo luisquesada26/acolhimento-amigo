@@ -1,48 +1,59 @@
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../../components/Avatar";
+import { Bandeira } from "../../components/SeletorIdioma";
+import { useAuth } from "../../context/AuthContext";
+import { visualDaArea } from "../../dados/areas";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
-import { EtiquetaArea, momento } from "./comum";
+import { Esqueleto, IconeArea, momento, totalPorArea, useTodos } from "./comum";
 import useBusca from "./useBusca";
+import "./busca.css";
 
-const IDIOMAS = ["pt", "en", "es", "fr"];
-
-function CartaoVoluntario({ voluntario }) {
-  const { proximo_horario: proximo } = voluntario;
+function Cartao({ voluntario, ordem }) {
+  const { cor, fundo } = visualDaArea(voluntario.area);
+  const proximo = voluntario.proximo_horario;
 
   return (
-    <li className="usu-cartao">
-      <div className="usu-cartao-topo">
-        <Avatar nome={voluntario.nome} foto={voluntario.foto} className="usu-cartao-avatar" />
-        <div className="usu-cartao-quem">
-          <h2>{voluntario.nome}</h2>
-          <EtiquetaArea nome={voluntario.area} />
-        </div>
-      </div>
-
-      {voluntario.bio && <p className="usu-cartao-bio">{voluntario.bio}</p>}
-
-      <ul className="usu-cartao-dados">
-        <li>
-          <Svg nome="idioma" tamanho={15} /> Fala {voluntario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
-        </li>
-        <li>
-          <Svg nome="servicos" tamanho={15} /> {voluntario.servicos.map((s) => s.titulo).join(" · ")}
-        </li>
-        <li>
-          <Svg nome="agenda" tamanho={15} />{" "}
-          {proximo ? (
-            <>
-              Próximo horário {quando(momento(proximo)).toLowerCase()}, às {proximo.hora_inicio}
-            </>
-          ) : (
-            "Sem horários livres no momento"
-          )}
-        </li>
-      </ul>
-
-      <Link to={`/usuario/voluntario/${voluntario.id}`} className="botao botao-primario usu-cartao-botao">
-        Ver horários e marcar
+    <li className="bus-cartao" style={{ "--cor": cor, "--fundo": fundo, animationDelay: `${Math.min(ordem, 15) * 30}ms` }}>
+      <Link to={`/usuario/voluntario/${voluntario.id}`} className="bus-cartao-link">
+        <span className="bus-cartao-area">
+          <IconeArea nome={voluntario.area} tamanho={15} /> {voluntario.area}
+        </span>
+        <span className="bus-cartao-pessoa">
+          <Avatar nome={voluntario.nome} foto={voluntario.foto} className="bus-avatar" />
+          <span>
+            <strong>{voluntario.nome}</strong>
+            <span className="bus-bandeiras" aria-label={`Fala ${voluntario.idiomas.map(nomeDoIdioma).join(", ").toLowerCase()}`}>
+              {voluntario.idiomas.map((i) => (
+                <Bandeira key={i} codigo={i} />
+              ))}
+            </span>
+          </span>
+        </span>
+        <span className="bus-bio">{voluntario.bio}</span>
+        <span className="bus-tags">
+          {voluntario.servicos.map((s) => (
+            <span key={s.id}>{s.titulo}</span>
+          ))}
+        </span>
+        <span className="bus-cartao-pe">
+          <span className="bus-quando">
+            {proximo ? (
+              <>
+                <small>Próximo horário</small>
+                <strong>
+                  {quando(momento(proximo))} · {proximo.hora_inicio}
+                </strong>
+              </>
+            ) : (
+              <small>Sem horário livre</small>
+            )}
+          </span>
+          <span className="bus-seta" aria-hidden="true">
+            <Svg nome="proximo" tamanho={18} />
+          </span>
+        </span>
       </Link>
     </li>
   );
@@ -51,79 +62,154 @@ function CartaoVoluntario({ voluntario }) {
 export default function Buscar() {
   const busca = useBusca();
   const { filtros } = busca;
+  const { usuario } = useAuth();
+  const todos = useTodos();
+  const total = totalPorArea(todos);
+  const resultados = useRef(null);
+  const [ordem, setOrdem] = useState("horario");
+
+  const maisCedo = useMemo(
+    () =>
+      todos
+        .map((v) => v.proximo_horario)
+        .filter(Boolean)
+        .sort((a, b) => momento(a) - momento(b))[0],
+    [todos],
+  );
+
+  const lista = useMemo(() => {
+    if (ordem === "nome") return busca.voluntarios;
+    return [...busca.voluntarios].sort((a, b) => {
+      if (!a.proximo_horario) return 1;
+      if (!b.proximo_horario) return -1;
+      return momento(a.proximo_horario) - momento(b.proximo_horario) || a.nome.localeCompare(b.nome, "pt-BR");
+    });
+  }, [busca.voluntarios, ordem]);
+
+  const areaEscolhida = busca.areas.find((a) => String(a.id) === filtros.area);
+
+  function irParaResultados() {
+    resultados.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
-    <>
-      <header className="usu-cabecalho">
-        <h1>Encontre um voluntário</h1>
-        <p>Atendimento online e gratuito. Escolha a área, o idioma e marque o horário que der para você.</p>
-      </header>
-
-      <section className="usu-bloco" aria-labelledby="usu-filtros-titulo">
-        <h2 id="usu-filtros-titulo" className="usu-bloco-titulo">
-          Filtros
-        </h2>
-        <div className="usu-filtros">
-          <div className="campo usu-filtro-busca">
-            <label htmlFor="usu-q">Buscar</label>
-            <div className="usu-busca-campo">
-              <Svg nome="busca" tamanho={18} />
-              <input
-                id="usu-q"
-                type="search"
-                value={filtros.q}
-                onChange={(e) => busca.mudar("q", e.target.value)}
-                placeholder="Ex.: visto, protocolo, currículo"
-              />
-            </div>
-          </div>
-
-          <div className="campo">
-            <label htmlFor="usu-area">Área</label>
-            <select id="usu-area" value={filtros.area} onChange={(e) => busca.mudar("area", e.target.value)}>
-              <option value="">Todas as áreas</option>
-              {busca.areas.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="campo">
-            <label htmlFor="usu-idioma">Idioma</label>
-            <select id="usu-idioma" value={filtros.idioma} onChange={(e) => busca.mudar("idioma", e.target.value)}>
-              <option value="">Qualquer idioma</option>
-              {IDIOMAS.map((i) => (
-                <option key={i} value={i}>
-                  {nomeDoIdioma(i)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="campo">
-            <label htmlFor="usu-disponivel">Disponibilidade</label>
-            <select id="usu-disponivel" value={filtros.disponivel} onChange={(e) => busca.mudar("disponivel", e.target.value)}>
-              <option value="">Qualquer data</option>
-              <option value="semana">Com horário nos próximos 7 dias</option>
-            </select>
-          </div>
+    <div className="bus">
+      <section className="bus-topo">
+        <div className="bus-topo-texto">
+          <span className="bus-selo">
+            <span className="bus-ponto" /> Atendimento online e gratuito
+          </span>
+          <h1>
+            Olá, {usuario.nome.split(" ")[0]}.<br />
+            <span>Quem pode te ajudar hoje?</span>
+          </h1>
+          <form
+            className="bus-busca"
+            onSubmit={(e) => {
+              e.preventDefault();
+              irParaResultados();
+            }}
+          >
+            <Svg nome="busca" tamanho={22} />
+            <label htmlFor="bus-q" className="bus-sr">
+              Buscar
+            </label>
+            <input id="bus-q" type="search" value={filtros.q} onChange={(e) => busca.mudar("q", e.target.value)} placeholder="Visto, currículo, aluguel, SUS..." />
+            <button type="submit">Buscar</button>
+          </form>
         </div>
+
+        <ul className="bus-numeros" aria-label="A plataforma em números">
+          <li>
+            <strong>{todos.length || "–"}</strong>
+            <span>voluntários prontos para atender</span>
+          </li>
+          <li>
+            <strong>{busca.areas.length || "–"}</strong>
+            <span>áreas de atendimento</span>
+          </li>
+          <li>
+            <strong>4</strong>
+            <span>idiomas: português, inglês, espanhol e francês</span>
+          </li>
+          <li className="bus-numero-destaque">
+            <strong>{maisCedo ? `${quando(momento(maisCedo))}, ${maisCedo.hora_inicio}` : "–"}</strong>
+            <span>é o próximo horário livre</span>
+          </li>
+        </ul>
       </section>
 
-      <section className="usu-bloco" aria-labelledby="usu-resultado-titulo">
-        <div className="usu-bloco-topo">
-          <h2 id="usu-resultado-titulo" className="usu-bloco-titulo" aria-live="polite">
-            {busca.carregando
-              ? "Buscando..."
-              : `${busca.voluntarios.length} ${busca.voluntarios.length === 1 ? "voluntário" : "voluntários"}`}
-          </h2>
-          {busca.temFiltro && (
-            <button type="button" className="vol-botao-secundario" onClick={busca.limpar}>
-              Limpar filtros
+      <section aria-labelledby="bus-areas-titulo">
+        <div className="bus-secao-topo">
+          <h2 id="bus-areas-titulo">Escolha pela área</h2>
+          {filtros.area && (
+            <button type="button" className="bus-link" onClick={() => busca.mudar("area", "")}>
+              Ver todas as áreas
             </button>
           )}
+        </div>
+        <ul className="bus-mosaico">
+          {busca.areas.map((a) => {
+            const { cor, fundo } = visualDaArea(a.nome);
+            const ligada = filtros.area === String(a.id);
+            return (
+              <li key={a.id}>
+                <button
+                  type="button"
+                  className={ligada ? "bus-area bus-area-ligada" : "bus-area"}
+                  style={{ "--cor": cor, "--fundo": fundo }}
+                  aria-pressed={ligada}
+                  onClick={() => {
+                    busca.mudar("area", ligada ? "" : String(a.id));
+                    if (!ligada) irParaResultados();
+                  }}
+                >
+                  <span className="bus-area-icone">
+                    <IconeArea nome={a.nome} tamanho={22} />
+                  </span>
+                  <strong>{a.nome}</strong>
+                  <small>{total.get(a.id) ?? "–"} voluntários</small>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section ref={resultados} className="bus-resultados" aria-labelledby="bus-titulo">
+        <div className="bus-secao-topo">
+          <h2 id="bus-titulo" aria-live="polite">
+            {busca.carregando
+              ? "Buscando..."
+              : `${lista.length} ${lista.length === 1 ? "voluntário" : "voluntários"}${areaEscolhida ? ` em ${areaEscolhida.nome}` : ""}`}
+          </h2>
+          <div className="bus-controles">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={Boolean(filtros.disponivel)}
+              className={filtros.disponivel ? "bus-chave bus-chave-ligada" : "bus-chave"}
+              onClick={() => busca.mudar("disponivel", filtros.disponivel ? "" : "semana")}
+            >
+              <span className="bus-chave-trilho">
+                <span />
+              </span>
+              Nesta semana
+            </button>
+            <div className="bus-segmento" role="group" aria-label="Ordenar">
+              <button type="button" className={ordem === "horario" ? "bus-ligada" : ""} aria-pressed={ordem === "horario"} onClick={() => setOrdem("horario")}>
+                Mais cedo
+              </button>
+              <button type="button" className={ordem === "nome" ? "bus-ligada" : ""} aria-pressed={ordem === "nome"} onClick={() => setOrdem("nome")}>
+                Nome
+              </button>
+            </div>
+            {busca.temFiltro && (
+              <button type="button" className="bus-link" onClick={busca.limpar}>
+                Limpar filtros
+              </button>
+            )}
+          </div>
         </div>
 
         {busca.erro ? (
@@ -135,22 +221,31 @@ export default function Buscar() {
               Tentar de novo
             </button>
           </>
-        ) : busca.voluntarios.length ? (
-          <ul className="usu-grade">
-            {busca.voluntarios.map((v) => (
-              <CartaoVoluntario key={v.id} voluntario={v} />
+        ) : busca.carregando && !lista.length ? (
+          <ul className="bus-grade">
+            {[0, 1, 2, 3].map((i) => (
+              <li key={i}>
+                <Esqueleto className="bus-esq-cartao" />
+              </li>
+            ))}
+          </ul>
+        ) : lista.length ? (
+          <ul className="bus-grade">
+            {lista.map((v, i) => (
+              <Cartao key={v.id} voluntario={v} ordem={i} />
             ))}
           </ul>
         ) : (
-          !busca.carregando && (
-            <p className="vol-vazio">
-              {busca.temFiltro
-                ? "Nenhum voluntário com esses filtros. Tente tirar algum."
-                : "Nenhum voluntário disponível no momento."}
-            </p>
-          )
+          <div className="bus-vazio">
+            <Svg nome="busca" tamanho={28} />
+            <strong>Ninguém com esses filtros</strong>
+            <span>Tente outra palavra ou tire a disponibilidade.</span>
+            <button type="button" className="bus-link" onClick={busca.limpar}>
+              Limpar filtros
+            </button>
+          </div>
         )}
       </section>
-    </>
+    </div>
   );
 }
