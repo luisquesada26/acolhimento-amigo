@@ -5,7 +5,7 @@ const SELECT_AGENDAMENTO = `
          h.id AS horario_id, h.data, h.hora_inicio, h.hora_fim,
          v.id AS voluntario_id, uv.nome AS voluntario_nome,
          s.id AS servico_id, s.titulo AS servico_titulo,
-         u.id AS usuario_id, u.nome AS usuario_nome, u.pais_origem AS usuario_pais, u.idioma AS usuario_idioma,
+         u.id AS usuario_id, u.nome AS usuario_nome, u.pais_origem AS usuario_pais, u.idiomas AS usuario_idiomas,
          u.email AS usuario_email, u.telefone AS usuario_telefone, u.foto AS usuario_foto
   FROM agendamentos a
   JOIN horarios h ON h.id = a.horario_id

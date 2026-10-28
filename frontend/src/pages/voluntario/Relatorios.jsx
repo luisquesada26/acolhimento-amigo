@@ -131,7 +131,7 @@ export default function Relatorios() {
                       <button type="button" className="historico-abrir" onClick={(e) => (e.stopPropagation(), setAbertoId(a.id))}>
                         {a.usuario.nome}
                       </button>
-                      <small>fala {nomeDoIdioma(a.usuario.idioma).toLowerCase()}</small>
+                      <small>fala {a.usuario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}</small>
                     </td>
                     <td>{a.usuario.pais_origem}</td>
                     <td>{a.servico.titulo}</td>

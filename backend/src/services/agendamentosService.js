@@ -25,7 +25,7 @@ function formatar(a) {
       telefone: a.usuario_telefone,
       foto: a.usuario_foto,
       pais_origem: a.usuario_pais,
-      idioma: a.usuario_idioma,
+      idiomas: a.usuario_idiomas.split(","),
     },
   };
 }

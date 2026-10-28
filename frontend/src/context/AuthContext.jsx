@@ -36,12 +36,18 @@ export function AuthProvider({ children }) {
     setSessao(null);
   }
 
+  // depois do PUT /me, o cabeçalho e o primeiro acesso leem o usuário novo
+  function atualizarUsuario(usuario) {
+    guardar({ ...sessao, usuario });
+  }
+
   const valor = {
     usuario: sessao?.usuario ?? null,
     logado: Boolean(sessao?.token),
     entrar,
     cadastrar,
     sair,
+    atualizarUsuario,
   };
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;
@@ -49,7 +55,12 @@ export function AuthProvider({ children }) {
 
 // para onde cada perfil vai depois de entrar
 export function paginaInicial(perfil) {
-  return perfil === "voluntario" ? "/voluntario" : "/bem-vindo";
+  return perfil === "voluntario" ? "/voluntario" : "/usuario";
+}
+
+// o voluntário precisa do contato e da nacionalidade de quem marca; sem eles, o primeiro passo é completar
+export function perfilCompleto(usuario) {
+  return Boolean(usuario?.telefone && usuario?.pais_origem);
 }
 
 export function useAuth() {

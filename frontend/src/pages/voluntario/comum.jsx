@@ -257,7 +257,7 @@ export function Pessoa({ usuario }) {
           <Svg nome="globo" tamanho={15} /> {usuario.pais_origem || "Nacionalidade não informada"}
         </li>
         <li>
-          <Svg nome="idioma" tamanho={15} /> Fala {nomeDoIdioma(usuario.idioma).toLowerCase()}
+          <Svg nome="idioma" tamanho={15} /> Fala {usuario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
         </li>
         <li>
           <Svg nome="telefone" tamanho={15} />{" "}

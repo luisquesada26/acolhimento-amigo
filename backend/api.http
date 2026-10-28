@@ -73,7 +73,7 @@ Content-Type: application/json
   "telefone": "11912345678",
   "perfil": "usuario",
   "pais_origem": "Guiné",
-  "idioma": "fr",
+  "idiomas": ["fr", "pt"],
   "aceite_lgpd": true
 }
 
@@ -101,7 +101,7 @@ Content-Type: application/json
   "email": "idioma@email.com",
   "senha": "123456",
   "perfil": "usuario",
-  "idioma": "ar",
+  "idiomas": ["pt", "ar"],
   "aceite_lgpd": true
 }
 

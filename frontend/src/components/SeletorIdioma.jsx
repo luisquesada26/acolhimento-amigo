@@ -19,7 +19,7 @@ const ROTULO = {
 };
 
 // bandeiras desenhadas aqui: o Windows não mostra emoji de bandeira
-function Bandeira({ codigo }) {
+export function Bandeira({ codigo }) {
   return (
     <svg className="bandeira" width="24" height="16" viewBox="0 0 24 16" aria-hidden="true">
       {codigo === "pt" && (
