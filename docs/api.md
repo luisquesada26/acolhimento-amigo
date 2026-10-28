@@ -28,7 +28,7 @@ A API descobre quem é a pessoa pelo token. Por isso ninguém manda `usuario_id`
 | POST | `/auth/cadastro` | público | Cria a conta e já devolve `{ token, usuario }` |
 | POST | `/auth/login` | público | Recebe `{ email, senha }` e devolve `{ token, usuario }` |
 | GET | `/me` | os dois | Meus dados. O voluntário recebe junto `voluntario` com os dados profissionais |
-| PUT | `/me` | os dois | Edita meus dados, inclusive a senha. O voluntário pode mandar `voluntario` com area_id, registro_profissional, idiomas, bio e ativo |
+| PUT | `/me` | os dois | Edita meus dados, inclusive a senha e o endereço (`cep` com 8 números, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` com a sigla; tudo opcional, `null` apaga). O voluntário pode mandar `voluntario` com area_id, registro_profissional, idiomas, bio e ativo |
 | DELETE | `/me` | os dois | Exclui a minha conta e libera os horários que eu tinha reservado |
 
 A senha é salva com bcrypt na coluna `senha_hash` e nunca volta nas respostas. E-mail ou senha errados dão sempre a mesma mensagem: `401 "E-mail ou senha incorretos"`.

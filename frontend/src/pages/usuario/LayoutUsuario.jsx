@@ -3,7 +3,9 @@ import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
 import { perfilCompleto, useAuth } from "../../context/AuthContext";
+import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
+import { traducoes } from "./traducoes";
 import "./usuario.css";
 
 const COMPLETAR = "/usuario/completar";
@@ -14,6 +16,8 @@ export default function LayoutUsuario() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const completo = perfilCompleto(usuario);
+  const { idioma } = useIdioma();
+  const t = useTextos(traducoes);
 
   // primeiro acesso: antes de qualquer tela, completar o perfil
   if (!completo && pathname !== COMPLETAR) return <Navigate to={COMPLETAR} replace />;
@@ -25,20 +29,20 @@ export default function LayoutUsuario() {
   }
 
   return (
-    <div className="usu">
+    <div className="usu" lang={LANG[idioma]}>
       <header className="usu-topo">
-        <Link to="/usuario" className="usu-logo" aria-label="Acolhimento Amigo, ir para a busca">
+        <Link to="/usuario" className="usu-logo" aria-label={t.logoBusca}>
           <Logo />
         </Link>
 
         <div className="usu-acoes">
           <SeletorIdioma />
           {completo ? (
-            <NavLink to="/usuario/perfil" className={({ isActive }) => (isActive ? "usu-pessoa usu-pessoa-atual" : "usu-pessoa")} title="Meu perfil">
+            <NavLink to="/usuario/perfil" className={({ isActive }) => (isActive ? "usu-pessoa usu-pessoa-atual" : "usu-pessoa")} title={t.meuPerfil}>
               <Avatar nome={usuario.nome} foto={usuario.foto} className="usu-avatar" />
               <span className="usu-pessoa-texto">
                 <span className="usu-pessoa-nome">{usuario.nome}</span>
-                <small>Meu perfil</small>
+                <small>{t.meuPerfil}</small>
               </span>
             </NavLink>
           ) : (
@@ -47,7 +51,7 @@ export default function LayoutUsuario() {
               <span className="usu-pessoa-nome">{usuario.nome}</span>
             </span>
           )}
-          <button type="button" className="usu-sair" onClick={deslogar} aria-label="Sair" title="Sair">
+          <button type="button" className="usu-sair" onClick={deslogar} aria-label={t.sair} title={t.sair}>
             <Svg nome="sair" tamanho={18} />
           </button>
         </div>

@@ -515,6 +515,61 @@
   align-items: end;
 }
 
+/* endereço: CEP sozinho, rua e número, complemento e bairro, cidade e estado */
+.pf-endereco {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pf-endereco-cep {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pf-endereco-cep .campo {
+  max-width: 260px;
+}
+
+.pf-endereco-rua,
+.pf-endereco-cidade {
+  grid-column: span 4;
+}
+
+.pf-endereco-numero,
+.pf-endereco-estado {
+  grid-column: span 2;
+}
+
+.pf-endereco-complemento,
+.pf-endereco-bairro {
+  grid-column: span 3;
+}
+
+.pf-dica-alerta {
+  color: var(--erro);
+}
+
+.pf-limpar {
+  margin-right: auto;
+}
+
+.pf-salvo + .pf-limpar {
+  margin-right: 0;
+}
+
+.pf-cartao-dados .pf-cartao-endereco {
+  align-items: flex-start;
+}
+
+.pf-cartao-endereco > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .pf-senha-botao {
   height: 52px;
 }
@@ -608,6 +663,18 @@
 
   .pf-linha-senha {
     grid-template-columns: 1fr;
+  }
+
+  .pf-endereco {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-endereco > * {
+    grid-column: auto;
+  }
+
+  .pf-endereco-cep .campo {
+    max-width: none;
   }
 
   .pf-acoes > button {

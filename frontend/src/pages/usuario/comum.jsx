@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import { visualDaArea } from "../../dados/areas";
+import { nomeDaArea, visualDaArea } from "../../dados/areas";
+import { useIdioma } from "../../context/IdiomaContext";
 
 // data e hora de um horário da API viram um Date
 export function momento(horario) {
@@ -39,9 +40,10 @@ export function Esqueleto({ className }) {
 
 export function EtiquetaArea({ nome }) {
   const { cor, fundo } = visualDaArea(nome);
+  const { idioma } = useIdioma();
   return (
     <span className="usu-area" style={{ background: fundo, color: cor }}>
-      {nome}
+      {nomeDaArea(nome, idioma)}
     </span>
   );
 }

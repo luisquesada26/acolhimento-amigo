@@ -10,6 +10,13 @@ CREATE TABLE usuarios (
   pais_origem   TEXT,
   idiomas       TEXT    NOT NULL DEFAULT 'pt', -- separados por virgula: 'es,pt'
   foto          TEXT,
+  cep           TEXT,               -- endereço, todo opcional; cep só com os 8 números
+  rua           TEXT,
+  numero        TEXT,
+  complemento   TEXT,
+  bairro        TEXT,
+  cidade        TEXT,
+  estado        TEXT,               -- sigla: 'SP'
   aceite_lgpd   INTEGER NOT NULL DEFAULT 0,
   criado_em     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );

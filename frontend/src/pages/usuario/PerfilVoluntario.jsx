@@ -5,6 +5,8 @@ import Avatar from "../../components/Avatar";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Janela, Svg, dataComAno, quando } from "../voluntario/comum";
 import { EtiquetaArea, momento } from "./comum";
+import { useTextos } from "../../context/IdiomaContext";
+import { traducoes } from "./traducoes";
 
 const MINIMO_DESCRICAO = 20;
 
@@ -19,6 +21,7 @@ function porDia(horarios) {
 }
 
 function FormMarcar({ voluntario, horario, aoMarcado }) {
+  const t = useTextos(traducoes).voluntario;
   const [servicoId, setServicoId] = useState(String(voluntario.servicos[0]?.id ?? ""));
   const [descricao, setDescricao] = useState("");
   const [erro, setErro] = useState("");
@@ -28,8 +31,8 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
 
   async function enviar(evento) {
     evento.preventDefault();
-    if (!servicoId) return setErro("Escolha o serviço.");
-    if (faltam > 0) return setErro(`Conte um pouco mais: faltam ${faltam} caracteres.`);
+    if (!servicoId) return setErro(t.escolhaServico);
+    if (faltam > 0) return setErro(t.conteMais(faltam));
 
     setEnviando(true);
     setErro("");
@@ -54,13 +57,13 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
         <span>
           <strong>{dataComAno(momento(horario))}</strong>
           <small>
-            {horario.hora_inicio} às {horario.hora_fim} · com {voluntario.nome}
+            {t.horarioCom(horario.hora_inicio, horario.hora_fim, voluntario.nome)}
           </small>
         </span>
       </p>
 
       <div className="campo">
-        <label htmlFor="marcar-servico">Serviço</label>
+        <label htmlFor="marcar-servico">{t.servico}</label>
         <select id="marcar-servico" value={servicoId} onChange={(e) => setServicoId(e.target.value)}>
           {voluntario.servicos.map((s) => (
             <option key={s.id} value={s.id}>
@@ -71,17 +74,17 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
       </div>
 
       <div className="campo">
-        <label htmlFor="marcar-descricao">O que você precisa?</label>
+        <label htmlFor="marcar-descricao">{t.oQuePrecisa}</label>
         <textarea
           id="marcar-descricao"
           rows={4}
           maxLength={1000}
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
-          placeholder="Conte seu caso em poucas linhas. Só o voluntário deste horário vai ler."
+          placeholder={t.descricaoExemplo}
         />
         <span className="dica">
-          {faltam > 0 ? `Faltam ${faltam} caracteres (mínimo de ${MINIMO_DESCRICAO}).` : "Pode enviar."}
+          {faltam > 0 ? t.faltam(faltam, MINIMO_DESCRICAO) : t.podeEnviar}
         </span>
       </div>
 
@@ -93,7 +96,7 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
 
       <div className="vol-acoes">
         <button type="submit" className="botao botao-primario" disabled={enviando}>
-          {enviando ? "Marcando..." : "Confirmar atendimento"}
+          {enviando ? t.marcando : t.confirmar}
         </button>
       </div>
     </form>
@@ -102,6 +105,8 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
 
 export default function PerfilVoluntario() {
   const { id } = useParams();
+  const tudo = useTextos(traducoes);
+  const t = tudo.voluntario;
   const [voluntario, setVoluntario] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -135,7 +140,7 @@ export default function PerfilVoluntario() {
   if (carregando) {
     return (
       <p className="usu-estado" role="status">
-        Carregando o perfil...
+        {t.carregando}
       </p>
     );
   }
@@ -147,7 +152,7 @@ export default function PerfilVoluntario() {
           {erro}
         </p>
         <Link to="/usuario" className="botao botao-primario">
-          Voltar para a busca
+          {t.voltar}
         </Link>
       </div>
     );
@@ -165,7 +170,7 @@ export default function PerfilVoluntario() {
   return (
     <>
       <Link to="/usuario" className="usu-voltar">
-        <Svg nome="anterior" tamanho={16} /> Voltar para a busca
+        <Svg nome="anterior" tamanho={16} /> {t.voltar}
       </Link>
 
       <header className="usu-perfil-topo">
@@ -175,7 +180,7 @@ export default function PerfilVoluntario() {
           <EtiquetaArea nome={voluntario.area} />
           <ul className="usu-perfil-dados">
             <li>
-              <Svg nome="idioma" tamanho={15} /> Fala {voluntario.idiomas.map((i) => nomeDoIdioma(i).toLowerCase()).join(", ")}
+              <Svg nome="idioma" tamanho={15} /> {tudo.fala(voluntario.idiomas.map(nomeDoIdioma))}
             </li>
             {voluntario.registro_profissional && (
               <li>
@@ -192,9 +197,9 @@ export default function PerfilVoluntario() {
         <div className="usu-confirmado" role="status" ref={avisoMarcado}>
           <Svg nome="check" tamanho={20} />
           <span>
-            <strong>Atendimento marcado!</strong>
+            <strong>{t.marcado}</strong>
             <small>
-              {dataComAno(momento(marcado))}, às {marcado.hora_inicio}. O voluntário já pode ver seu caso.
+              {t.marcadoTexto(dataComAno(momento(marcado)), marcado.hora_inicio)}
             </small>
           </span>
         </div>
@@ -202,7 +207,7 @@ export default function PerfilVoluntario() {
 
       <section className="usu-bloco" aria-labelledby="usu-servicos-titulo">
         <h2 id="usu-servicos-titulo" className="usu-bloco-titulo">
-          O que {voluntario.nome.split(" ")[0]} atende
+          {t.oQueAtende(voluntario.nome.split(" ")[0])}
         </h2>
         <ul className="usu-servicos">
           {voluntario.servicos.map((s) => (
@@ -219,7 +224,7 @@ export default function PerfilVoluntario() {
 
       <section className="usu-bloco" aria-labelledby="usu-horarios-titulo">
         <h2 id="usu-horarios-titulo" className="usu-bloco-titulo">
-          Horários livres
+          {t.horariosLivres}
         </h2>
 
         {dias.length ? (
@@ -243,11 +248,11 @@ export default function PerfilVoluntario() {
             ))}
           </ul>
         ) : (
-          <p className="vol-vazio">Este voluntário não tem horários livres agora. Tente outro ou volte depois.</p>
+          <p className="vol-vazio">{t.semHorarios}</p>
         )}
       </section>
 
-      <Janela aberta={Boolean(escolhido)} titulo="Marcar atendimento" aoFechar={() => setEscolhido(null)}>
+      <Janela aberta={Boolean(escolhido)} titulo={t.marcarAtendimento} aoFechar={() => setEscolhido(null)}>
         {escolhido && <FormMarcar voluntario={voluntario} horario={escolhido} aoMarcado={confirmado} />}
       </Janela>
     </>
