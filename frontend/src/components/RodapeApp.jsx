@@ -1,3 +1,4 @@
+import { ArrowUp } from "lucide-react";
 import { useTextos } from "../context/IdiomaContext";
 import { traducoes } from "./rodape-traducoes";
 import "./rodape-app.css";
@@ -10,6 +11,16 @@ const TELEFONES = [
   ["180", "mulher"],
   ["100", "direitos"],
 ];
+
+// nas duas áreas quem rola é a janela; o foco vai para o main, para o teclado seguir do começo
+function voltarAoTopo() {
+  const semAnimacao = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: semAnimacao ? "auto" : "smooth" });
+  const inicio = document.querySelector("main");
+  if (!inicio) return;
+  if (!inicio.hasAttribute("tabindex")) inicio.setAttribute("tabindex", "-1");
+  inicio.focus({ preventScroll: true });
+}
 
 // rodapé das áreas do usuário e do voluntário; a faixa azul é a mesma da página inicial
 export default function RodapeApp() {
@@ -41,9 +52,15 @@ export default function RodapeApp() {
         </section>
       </div>
 
-      <p className="rod-copy">
-        © {new Date().getFullYear()} Acolhimento Amigo. {t.direitos}
-      </p>
+      <div className="rod-baixo">
+        <p className="rod-copy">
+          © {new Date().getFullYear()} Acolhimento Amigo. {t.direitos}
+        </p>
+        <button type="button" className="rod-topo" onClick={voltarAoTopo}>
+          <ArrowUp size={16} aria-hidden="true" />
+          {t.voltarTopo}
+        </button>
+      </div>
     </footer>
   );
 }

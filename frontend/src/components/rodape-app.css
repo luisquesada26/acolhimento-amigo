@@ -111,14 +111,56 @@
   font-size: 0.95rem;
 }
 
-/* linha fina e copyright no centro */
-.rod-copy {
-  margin: 20px 0 0;
+/* linha fina; embaixo dela, colunas iguais nas pontas deixam o copyright no centro exato */
+.rod-baixo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.rod-copy {
+  grid-column: 2;
+  margin: 0;
   color: #c9d6ef;
   font-size: 0.8rem;
   text-align: center;
+}
+
+.rod-topo {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.rod-topo:hover {
+  border-color: #fcd34d;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rod-topo:focus-visible,
+.rod-telefones a:focus-visible {
+  outline: 2px solid #fcd34d;
+  outline-offset: 2px;
+}
+
+/* o main só recebe o foco do voltar ao topo; não precisa do contorno */
+.usu-conteudo[tabindex="-1"]:focus,
+.painel-conteudo[tabindex="-1"]:focus {
+  outline: none;
 }
 
 /* no celular empilha: logo, telefones e copyright, tudo no centro */
@@ -156,5 +198,20 @@
     width: 100%;
     height: 100%;
     text-align: center;
+  }
+
+  /* o voltar ao topo desce para baixo do copyright */
+  .rod-baixo {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .rod-copy,
+  .rod-topo {
+    grid-column: 1;
+  }
+
+  .rod-topo {
+    justify-self: center;
   }
 }

@@ -3,6 +3,7 @@ export const traducoes = {
   pt: {
     descricao: "Apoio e orientação para pessoas imigrantes.",
     direitos: "Todos os direitos reservados.",
+    voltarTopo: "Voltar ao topo",
     emergencia: "Em emergência",
     gratuito: "Ligação gratuita, de qualquer telefone, 24 horas.",
     ligarPara: (numero, nome) => `Ligar para ${numero}, ${nome}`,
@@ -17,6 +18,7 @@ export const traducoes = {
   en: {
     descricao: "Support and guidance for immigrants.",
     direitos: "All rights reserved.",
+    voltarTopo: "Back to top",
     emergencia: "In an emergency",
     gratuito: "Free call from any phone, 24 hours a day.",
     ligarPara: (numero, nome) => `Call ${numero}, ${nome}`,
@@ -31,6 +33,7 @@ export const traducoes = {
   es: {
     descricao: "Apoyo y orientación para personas inmigrantes.",
     direitos: "Todos los derechos reservados.",
+    voltarTopo: "Volver arriba",
     emergencia: "En una emergencia",
     gratuito: "Llamada gratuita desde cualquier teléfono, las 24 horas.",
     ligarPara: (numero, nome) => `Llamar al ${numero}, ${nome}`,
@@ -45,6 +48,7 @@ export const traducoes = {
   fr: {
     descricao: "Soutien et orientation pour les personnes immigrées.",
     direitos: "Tous droits réservés.",
+    voltarTopo: "Retour en haut",
     emergencia: "En cas d'urgence",
     gratuito: "Appel gratuit depuis n'importe quel téléphone, 24 h sur 24.",
     ligarPara: (numero, nome) => `Appeler le ${numero}, ${nome}`,
