@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Svg, diaExtenso } from "./comum";
 import DetalheAtendimento from "./DetalheAtendimento";
+import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
 
@@ -160,8 +161,9 @@ export default function Agenda() {
               <ul className="agenda-dia-lista">
                 {itensDoDia.map((item) =>
                   item.atendimento ? (
-                    <li key={`a${item.atendimento.id}`}>
+                    <li key={`a${item.atendimento.id}`} className="agenda-dia-atendimento">
                       <Etiqueta atendimento={item.atendimento} aoAbrir={setAbertoId} completa />
+                      <BotaoVideochamada atendimento={item.atendimento} className="botao botao-primario vol-botao-video" aoAtualizar={painel.recarregar} />
                     </li>
                   ) : (
                     <li key={`h${item.livre.id}`} className="agenda-vaga agenda-vaga-cartao">

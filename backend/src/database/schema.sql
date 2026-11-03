@@ -63,6 +63,8 @@ CREATE TABLE agendamentos (
   status      TEXT    NOT NULL DEFAULT 'confirmado'
               CHECK (status IN ('confirmado', 'cancelado', 'realizado')),
   anotacao    TEXT,
+  link_video        TEXT,            -- sala do Google Meet, quando o Google está configurado
+  google_evento_id  TEXT,            -- evento na agenda do projeto, para remarcar e cancelar
   criado_em   TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 

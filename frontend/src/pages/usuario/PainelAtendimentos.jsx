@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
+import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { Svg, quando } from "../voluntario/comum";
 import { momento } from "./comum";
@@ -63,8 +64,8 @@ function ConfirmarCancelamento({ atendimento, aoCancelar, aoManter }) {
   );
 }
 
-// uma linha: data, hora, serviço e voluntário; nos próximos, o cancelar
-function ItemCompacto({ atendimento: a, agora, aoCancelar }) {
+// uma linha: data, hora, serviço e voluntário; nos próximos, a videochamada e o cancelar
+function ItemCompacto({ atendimento: a, agora, aoCancelar, aoAtualizar }) {
   const t = useTextos(traducoes).atendimentos;
   const [confirmando, setConfirmando] = useState(false);
   const botaoCancelar = useRef(null);
@@ -97,6 +98,11 @@ function ItemCompacto({ atendimento: a, agora, aoCancelar }) {
           </button>
         )}
       </span>
+      {estado === "confirmado" && (
+        <span className="ma-compacto-video">
+          <BotaoVideochamada atendimento={a} className="ma-botao-video" aoAtualizar={aoAtualizar} />
+        </span>
+      )}
       {confirmando && <ConfirmarCancelamento atendimento={a} aoCancelar={aoCancelar} aoManter={manter} />}
     </li>
   );
@@ -240,7 +246,7 @@ function PainelSuspenso({ ancora, aoFechar, aoFecharTeclado }) {
             {itens.length ? (
               <ul className="ma-pop-lista">
                 {itens.map((a) => (
-                  <ItemCompacto key={a.id} atendimento={a} agora={agora} aoCancelar={cancelado} />
+                  <ItemCompacto key={a.id} atendimento={a} agora={agora} aoCancelar={cancelado} aoAtualizar={trocar} />
                 ))}
               </ul>
             ) : (

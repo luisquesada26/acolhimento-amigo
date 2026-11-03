@@ -21,4 +21,12 @@ if (colunas.length) {
   }
 }
 
+// a sala da videochamada de cada agendamento
+const colunasAgendamento = db.prepare("SELECT name FROM pragma_table_info('agendamentos')").all().map((c) => c.name);
+if (colunasAgendamento.length) {
+  for (const coluna of ["link_video", "google_evento_id"]) {
+    if (!colunasAgendamento.includes(coluna)) db.exec(`ALTER TABLE agendamentos ADD COLUMN ${coluna} TEXT`);
+  }
+}
+
 module.exports = db;

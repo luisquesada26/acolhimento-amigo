@@ -1,0 +1,37 @@
+/* botão da videochamada: a cor e o tamanho vêm da classe que cada área passa */
+.videochamada {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+button.videochamada:disabled {
+  background: #e2e9f4;
+  color: var(--texto-3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.videochamada-caixa {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.videochamada-dica {
+  color: var(--texto-3);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.videochamada-erro {
+  max-width: 260px;
+  color: var(--erro);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: right;
+}

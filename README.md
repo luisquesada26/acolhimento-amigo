@@ -25,7 +25,7 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 | Usuário (logado) | eu posso... | Ver meus atendimentos marcados e os que já passaram | `GET /meus-agendamentos` | Pronto |
 | Usuário (logado) | eu posso... | Remarcar um atendimento para outro horário do mesmo voluntário | `PUT /agendamentos/:id` | Só na API |
 | Usuário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Pronto |
-| Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento | Não usa a API | Falta a tela |
+| Usuário (logado) | eu posso... | Entrar na videochamada no dia do atendimento | `POST /agendamentos/:id/videochamada` | Pronto |
 | Usuário (logado) | eu posso... | Editar meus dados e colocar minha foto | `GET /me`, `PUT /me` | Pronto |
 | Usuário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Pronto |
 | Voluntário (logado) | eu posso... | Ver no painel meu próximo atendimento e os números do mês | `GET /meus-agendamentos`, `GET /meus-horarios` | Pronto |
@@ -77,8 +77,8 @@ Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` 
 1. O voluntário cria a conta escolhendo a área, cadastra os serviços que oferece e abre os horários em que pode atender.
 2. O usuário cria a conta e busca voluntários por palavra-chave, área, idioma e disponibilidade.
 3. No perfil do voluntário, escolhe um horário livre e um serviço e conta o que precisa.
-4. A API confere se o horário ainda está livre, e se o serviço é daquele voluntário. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`.
-5. O voluntário vê o atendimento no painel e na agenda, com o caso e o contato da pessoa.
+4. A API confere se o horário ainda está livre, se o serviço é daquele voluntário e se a pessoa não tem outro atendimento no mesmo horário. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`. Depois, com o Google configurado, cria a sala do Google Meet do atendimento.
+5. O voluntário vê o atendimento no painel e na agenda, com o caso e o contato da pessoa. Os dois entram pelo botão **Entrar na videochamada**, que libera 10 minutos antes do horário.
 6. Depois da conversa, o voluntário conclui o atendimento (`realizado`) e escreve a anotação, que o usuário também lê.
 7. Se um dos dois cancelar antes, o agendamento vira `cancelado` e o horário volta a ficar `livre` para outra pessoa.
 
@@ -115,6 +115,22 @@ Para entrar, use um dos usuários de teste abaixo ou crie uma conta nova como us
 5. `git add .`, `git commit -m "feat(xx): ..."` e `git push`
 6. Abrir o pull request para a `main` e esperar a aprovação do Luis
 
+### Videochamada (Google Meet)
+
+É opcional: sem ela, o agendamento funciona igual e o botão **Entrar na videochamada** avisa que a videochamada não está configurada.
+
+Com ela, cada atendimento marcado ganha uma sala do Google Meet. A sala é um evento na agenda da conta do projeto, `acolhimentoamigo@gmail.com`, com o usuário e o voluntário como convidados. Remarcar muda o horário da sala, e cancelar apaga. Os agendamentos que já existiam (os do seed) ganham a sala no primeiro clique no botão.
+
+Para ligar no seu computador:
+
+1. Peça ao Luis o ID e o segredo do cliente do Google e coloque no `backend/.env`, nas linhas `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` (o `backend/.env.example` mostra o formato). Nunca no GitHub.
+2. Na pasta `backend`, rode `npm run google:autorizar`. O navegador abre: entre com `acolhimentoamigo@gmail.com`, marque a permissão da agenda e clique em **Continuar**. O comando grava o `GOOGLE_REFRESH_TOKEN` no `.env`.
+3. Reinicie o `npm run dev`.
+
+Enquanto o app do Google estiver em modo de teste, a autorização vence em 7 dias: aí é só rodar o passo 2 de novo.
+
+No Meet, entra direto quem está convidado e logado no Google com aquele e-mail, ou a própria conta do projeto. Os e-mails do seed são de mentira, então na demonstração uma pessoa abre a sala logada com `acolhimentoamigo@gmail.com`. O convite por e-mail fica desligado (`GOOGLE_ENVIAR_CONVITES=false`), para não mandar e-mail para endereços que não existem.
+
 ## Banco de dados
 
 O arquivo `.db` não vai para o GitHub. Cada pessoa gera o seu com `npm run db:reset`, que apaga as tabelas, recria tudo pelo `schema.sql` e roda o `seed.js`. Pode rodar com o servidor ligado.
@@ -134,7 +150,7 @@ Só quem cuida do banco altera o `schema.sql`. Toda mudança vai em um pull requ
 | `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca |
 | `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `ativo` | O que cada voluntário oferece |
 | `horarios` | `voluntario_id`, `data`, `hora_inicio`, `hora_fim`, `status` | A agenda do voluntário: cada horário está `livre` ou `reservado` |
-| `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |
+| `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao`, `link_video`, `google_evento_id` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |
 
 ```mermaid
 erDiagram
@@ -208,6 +224,8 @@ erDiagram
         text descricao
         text status "confirmado, realizado ou cancelado"
         text anotacao
+        text link_video
+        text google_evento_id
         text criado_em
     }
 ```
@@ -256,6 +274,30 @@ Para usar pelo Postman, importe a coleção [docs/acolhimento-amigo.postman_coll
 - quando a coleção mudar, importe de novo e escolha **Replace** para substituir a antiga
 
 Os casos de erro (403, 409, dados inválidos) ficam no `api.http`.
+
+## Próximos passos
+
+O que fica para depois da entrega:
+
+- Videochamada dentro do próprio site
+- Remarcar o atendimento pela tela (a API já faz, com `PUT /agendamentos/:id`)
+- Avaliação do atendimento
+- Avisos por e-mail e WhatsApp
+- Painel para aprovar os voluntários
+- Publicar na internet, com o frontend no Vercel e o banco no Postgres do Supabase
+
+### Publicar na internet
+
+O frontend vira um site estático no `npm run build` e pode ir direto para o Vercel. O banco não pode ir junto do jeito que está: no Vercel a API roda em funções que não guardam arquivo, e o SQLite é um arquivo (`backend/data/acolhimento.db`). Cada acesso poderia cair numa cópia diferente do banco, e o que foi gravado se perderia.
+
+Por isso o banco passaria para o Postgres do Supabase. O que muda:
+
+- **Conexão:** sai o `better-sqlite3` e entra o `pg`, com a `DATABASE_URL` do Supabase
+- **Consultas assíncronas:** o `better-sqlite3` responde na hora e o Postgres responde depois, então os repositories, services e controllers passam a usar `async`/`await`, e as transações (`db.transaction`) viram `BEGIN` e `COMMIT`
+- **SQL do SQLite:** `INTEGER PRIMARY KEY AUTOINCREMENT` vira `GENERATED BY DEFAULT AS IDENTITY`, `datetime('now', 'localtime')` vira `now()` e os parâmetros `?` viram `$1`, `$2`...
+- **API:** com o banco fora do arquivo, a API também pode ir para o Vercel
+- **Rotas do React:** um `frontend/vercel.json` mandando toda rota para o `index.html`, senão um F5 em `/login` dá 404
+- **Variáveis:** no frontend, `VITE_API_URL` com o endereço da API; na API, `DATABASE_URL`, um `JWT_SECRET` novo, `CORS_ORIGIN` com o endereço do site e `TZ=America/Sao_Paulo`, porque o servidor roda em UTC e o `backend/src/utils/datas.js` usa o horário da máquina
 
 ## Integrantes
 

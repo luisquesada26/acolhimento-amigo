@@ -437,3 +437,40 @@
     border-radius: 0 0 var(--raio) var(--raio);
   }
 }
+
+/* entrar na videochamada: azul, para se destacar do cancelar */
+.ma-botao-video {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--azul);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(23, 87, 216, 0.22);
+}
+
+.ma-botao-video:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* no painel, a videochamada fica numa linha embaixo, alinhada com o texto */
+.ma-compacto-video {
+  grid-column: 1 / -1;
+  padding: 0 0 4px 62px;
+}
+
+.ma-compacto-video .videochamada-caixa {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.ma-compacto .ma-botao-video {
+  padding: 6px 12px;
+  font-size: 13px;
+  box-shadow: none;
+}
