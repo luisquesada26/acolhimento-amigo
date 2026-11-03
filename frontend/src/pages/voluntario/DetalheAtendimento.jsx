@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CancelarAtendimento, ConcluirAtendimento, Pessoa, Status, Svg, diaExtenso } from "./comum";
+import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
 
@@ -121,6 +122,7 @@ export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
 
           {atendimento.status === "confirmado" && (
             <div className="vol-acoes vol-proximo-acoes">
+              <BotaoVideochamada atendimento={atendimento} className="botao botao-primario vol-botao-video" aoAtualizar={painel.recarregar} />
               <ConcluirAtendimento id={atendimento.id} marcarRealizado={painel.marcarRealizado} />
               <CancelarAtendimento id={atendimento.id} cancelar={painel.cancelar} />
             </div>

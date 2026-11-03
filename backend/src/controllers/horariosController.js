@@ -27,8 +27,8 @@ function atualizar(req, res) {
   res.json(service.atualizar(req.usuario, lerId(req.params.id), req.body));
 }
 
-function excluir(req, res) {
-  service.excluir(req.usuario, lerId(req.params.id), req.query.confirmar === "true");
+async function excluir(req, res) {
+  await service.excluirComSala(req.usuario, lerId(req.params.id), req.query.confirmar === "true");
   res.status(204).end();
 }
 

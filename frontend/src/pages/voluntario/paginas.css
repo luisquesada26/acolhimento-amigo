@@ -569,6 +569,25 @@ button.agenda-vaga {
   font-size: 15px;
 }
 
+/* na visão do dia, a videochamada fica ao lado do atendimento */
+.agenda-dia-atendimento {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.agenda-dia-atendimento .agenda-etiqueta {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .agenda-dia-atendimento {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 /* janela com os dados da pessoa */
 .agenda-janela {
   width: min(520px, calc(100vw - 32px));

@@ -5,6 +5,7 @@ const voluntariosRepo = require("../repositories/voluntariosRepository");
 const areasRepo = require("../repositories/areasRepository");
 const agendamentosRepo = require("../repositories/agendamentosRepository");
 const { ErroApp } = require("../middlewares/erros");
+const videochamada = require("./videochamada");
 
 function montar(usuario) {
   const resultado = { ...usuario, idiomas: usuario.idiomas.split(","), aceite_lgpd: Boolean(usuario.aceite_lgpd) };
@@ -107,4 +108,10 @@ const excluir = db.transaction((id) => {
   repo.excluir(id);
 });
 
-module.exports = { buscar, criar, atualizar, excluir };
+async function excluirComSalas(id) {
+  const salas = agendamentosRepo.salasDaConta(id);
+  excluir(id);
+  await videochamada.apagarSalas(salas);
+}
+
+module.exports = { buscar, criar, atualizar, excluir, excluirComSalas };

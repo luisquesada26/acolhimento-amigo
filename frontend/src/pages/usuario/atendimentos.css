@@ -376,3 +376,21 @@
     width: 100%;
   }
 }
+
+/* entrar na videochamada: azul, para se destacar do cancelar */
+.ma-botao-video {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--azul);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(23, 87, 216, 0.22);
+}
+
+.ma-botao-video:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
