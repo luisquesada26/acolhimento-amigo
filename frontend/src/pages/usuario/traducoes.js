@@ -84,21 +84,16 @@ export const traducoes = {
 
     atendimentos: {
       titulo: "Meus atendimentos",
-      subtitulo: "Os que vêm por aí, os que já aconteceram e os cancelados.",
       carregando: "Carregando seus atendimentos...",
       tentarDeNovo: "Tentar de novo",
-      destaque: "Seu próximo atendimento",
       abas: "Filtrar atendimentos",
       proximos: "Próximos",
       anteriores: "Anteriores",
       cancelados: "Cancelados",
       horario: (inicio, fim) => `${inicio} às ${fim}`,
-      voceContou: "Você contou",
-      verPerfil: "Ver perfil",
-      marcarDeNovo: "Marcar de novo",
       status: { confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado", aguardando: "Aguardando o voluntário" },
-      aguardandoDica: "O horário já passou. O voluntário confirma se o atendimento aconteceu.",
       cancelar: "Cancelar atendimento",
+      cancelarCurto: "Cancelar",
       cancelarConfirmar: "Cancelar este atendimento? O horário volta para a agenda do voluntário.",
       manter: "Manter",
       simCancelar: "Sim, cancelar",
@@ -110,6 +105,7 @@ export const traducoes = {
         cancelados: "Nenhum atendimento cancelado.",
       },
       buscar: "Buscar voluntários",
+      contagemProximos: (n) => `${n} ${n === 1 ? "atendimento marcado" : "atendimentos marcados"}`,
     },
 
     perfil: {
@@ -280,21 +276,16 @@ export const traducoes = {
 
     atendimentos: {
       titulo: "My appointments",
-      subtitulo: "Upcoming, past and cancelled appointments.",
       carregando: "Loading your appointments...",
       tentarDeNovo: "Try again",
-      destaque: "Your next appointment",
       abas: "Filter appointments",
       proximos: "Upcoming",
       anteriores: "Past",
       cancelados: "Cancelled",
       horario: (inicio, fim) => `${inicio} to ${fim}`,
-      voceContou: "What you told us",
-      verPerfil: "View profile",
-      marcarDeNovo: "Book again",
       status: { confirmado: "Confirmed", realizado: "Done", cancelado: "Cancelled", aguardando: "Waiting for the volunteer" },
-      aguardandoDica: "The time has passed. The volunteer will confirm whether the appointment happened.",
       cancelar: "Cancel appointment",
+      cancelarCurto: "Cancel",
       cancelarConfirmar: "Cancel this appointment? The time slot goes back to the volunteer’s schedule.",
       manter: "Keep",
       simCancelar: "Yes, cancel",
@@ -306,6 +297,7 @@ export const traducoes = {
         cancelados: "No cancelled appointments.",
       },
       buscar: "Find volunteers",
+      contagemProximos: (n) => `${n} upcoming ${n === 1 ? "appointment" : "appointments"}`,
     },
 
     perfil: {
@@ -476,21 +468,16 @@ export const traducoes = {
 
     atendimentos: {
       titulo: "Mis citas",
-      subtitulo: "Las próximas, las que ya pasaron y las canceladas.",
       carregando: "Cargando tus citas...",
       tentarDeNovo: "Intentar de nuevo",
-      destaque: "Tu próxima cita",
       abas: "Filtrar citas",
       proximos: "Próximas",
       anteriores: "Anteriores",
       cancelados: "Canceladas",
       horario: (inicio, fim) => `${inicio} a ${fim}`,
-      voceContou: "Lo que contaste",
-      verPerfil: "Ver perfil",
-      marcarDeNovo: "Reservar de nuevo",
       status: { confirmado: "Confirmada", realizado: "Realizada", cancelado: "Cancelada", aguardando: "Esperando al voluntario" },
-      aguardandoDica: "La hora ya pasó. El voluntario confirmará si la cita se realizó.",
       cancelar: "Cancelar cita",
+      cancelarCurto: "Cancelar",
       cancelarConfirmar: "¿Cancelar esta cita? El horario vuelve a la agenda del voluntario.",
       manter: "Mantener",
       simCancelar: "Sí, cancelar",
@@ -502,6 +489,7 @@ export const traducoes = {
         cancelados: "Ninguna cita cancelada.",
       },
       buscar: "Buscar voluntarios",
+      contagemProximos: (n) => `${n} ${n === 1 ? "cita reservada" : "citas reservadas"}`,
     },
 
     perfil: {
@@ -672,21 +660,16 @@ export const traducoes = {
 
     atendimentos: {
       titulo: "Mes rendez-vous",
-      subtitulo: "À venir, passés et annulés.",
       carregando: "Chargement de vos rendez-vous...",
       tentarDeNovo: "Réessayer",
-      destaque: "Votre prochain rendez-vous",
       abas: "Filtrer les rendez-vous",
       proximos: "À venir",
       anteriores: "Passés",
       cancelados: "Annulés",
       horario: (inicio, fim) => `${inicio} à ${fim}`,
-      voceContou: "Ce que vous avez raconté",
-      verPerfil: "Voir le profil",
-      marcarDeNovo: "Reprendre rendez-vous",
       status: { confirmado: "Confirmé", realizado: "Effectué", cancelado: "Annulé", aguardando: "En attente du bénévole" },
-      aguardandoDica: "L’heure est passée. Le bénévole confirmera si le rendez-vous a eu lieu.",
       cancelar: "Annuler le rendez-vous",
+      cancelarCurto: "Annuler",
       cancelarConfirmar: "Annuler ce rendez-vous ? Le créneau retourne dans l’agenda du bénévole.",
       manter: "Garder",
       simCancelar: "Oui, annuler",
@@ -698,6 +681,7 @@ export const traducoes = {
         cancelados: "Aucun rendez-vous annulé.",
       },
       buscar: "Trouver un bénévole",
+      contagemProximos: (n) => `${n} rendez-vous à venir`,
     },
 
     perfil: {
