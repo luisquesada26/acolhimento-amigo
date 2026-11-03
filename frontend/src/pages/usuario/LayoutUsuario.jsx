@@ -5,6 +5,7 @@ import Avatar from "../../components/Avatar";
 import { perfilCompleto, useAuth } from "../../context/AuthContext";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
+import BotaoAtendimentos from "./PainelAtendimentos";
 import { AtendimentosProvider } from "./useAtendimentos";
 import { traducoes } from "./traducoes";
 import "./usuario.css";
@@ -37,12 +38,10 @@ export default function LayoutUsuario() {
             <Logo />
           </Link>
 
-          {/* a busca fica no logo; aqui só o que não tem outro caminho */}
+          {/* a busca fica no logo; meus atendimentos abre por cima da tela atual */}
           {completo && (
             <nav className="usu-navegacao" aria-label={t.navegacao}>
-              <NavLink to="/usuario/atendimentos" className={({ isActive }) => (isActive ? "usu-nav usu-nav-atual" : "usu-nav")}>
-                <Svg nome="agenda" tamanho={17} /> {t.navAtendimentos}
-              </NavLink>
+              <BotaoAtendimentos />
             </nav>
           )}
 

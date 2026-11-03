@@ -96,6 +96,7 @@ export const traducoes = {
       status: { confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado", aguardando: "Aguardando o voluntário" },
       aguardandoDica: "O horário já passou. O voluntário confirma se o atendimento aconteceu.",
       cancelar: "Cancelar atendimento",
+      cancelarCurto: "Cancelar",
       cancelarConfirmar: "Cancelar este atendimento? O horário volta para a agenda do voluntário.",
       manter: "Manter",
       simCancelar: "Sim, cancelar",
@@ -107,6 +108,7 @@ export const traducoes = {
         cancelados: "Nenhum atendimento cancelado.",
       },
       buscar: "Buscar voluntários",
+      contagemProximos: (n) => `${n} ${n === 1 ? "atendimento marcado" : "atendimentos marcados"}`,
     },
 
     perfil: {
@@ -289,6 +291,7 @@ export const traducoes = {
       status: { confirmado: "Confirmed", realizado: "Done", cancelado: "Cancelled", aguardando: "Waiting for the volunteer" },
       aguardandoDica: "The time has passed. The volunteer will confirm whether the appointment happened.",
       cancelar: "Cancel appointment",
+      cancelarCurto: "Cancel",
       cancelarConfirmar: "Cancel this appointment? The time slot goes back to the volunteer’s schedule.",
       manter: "Keep",
       simCancelar: "Yes, cancel",
@@ -300,6 +303,7 @@ export const traducoes = {
         cancelados: "No cancelled appointments.",
       },
       buscar: "Find volunteers",
+      contagemProximos: (n) => `${n} upcoming ${n === 1 ? "appointment" : "appointments"}`,
     },
 
     perfil: {
@@ -482,6 +486,7 @@ export const traducoes = {
       status: { confirmado: "Confirmada", realizado: "Realizada", cancelado: "Cancelada", aguardando: "Esperando al voluntario" },
       aguardandoDica: "La hora ya pasó. El voluntario confirmará si la cita se realizó.",
       cancelar: "Cancelar cita",
+      cancelarCurto: "Cancelar",
       cancelarConfirmar: "¿Cancelar esta cita? El horario vuelve a la agenda del voluntario.",
       manter: "Mantener",
       simCancelar: "Sí, cancelar",
@@ -493,6 +498,7 @@ export const traducoes = {
         cancelados: "Ninguna cita cancelada.",
       },
       buscar: "Buscar voluntarios",
+      contagemProximos: (n) => `${n} ${n === 1 ? "cita reservada" : "citas reservadas"}`,
     },
 
     perfil: {
@@ -675,6 +681,7 @@ export const traducoes = {
       status: { confirmado: "Confirmé", realizado: "Effectué", cancelado: "Annulé", aguardando: "En attente du bénévole" },
       aguardandoDica: "L’heure est passée. Le bénévole confirmera si le rendez-vous a eu lieu.",
       cancelar: "Annuler le rendez-vous",
+      cancelarCurto: "Annuler",
       cancelarConfirmar: "Annuler ce rendez-vous ? Le créneau retourne dans l’agenda du bénévole.",
       manter: "Garder",
       simCancelar: "Oui, annuler",
@@ -686,6 +693,7 @@ export const traducoes = {
         cancelados: "Aucun rendez-vous annulé.",
       },
       buscar: "Trouver un bénévole",
+      contagemProximos: (n) => `${n} rendez-vous à venir`,
     },
 
     perfil: {
