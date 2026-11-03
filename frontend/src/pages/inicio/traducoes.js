@@ -4,7 +4,11 @@ export const traducoes = {
     navServicos: "Serviços",
     navVoluntario: "Seja voluntário",
     navSobre: "Sobre nós",
+    navPrincipal: "Navegação principal",
     entrar: "Entrar",
+
+    imagemPrincipal: "Grupo de pessoas reunidas em um ambiente acolhedor",
+    imagemComoFunciona: "Pessoa utilizando recursos digitais para se comunicar",
 
     heroEtiqueta: "Apoio e orientação para pessoas imigrantes",
     heroTitulo1: "Você não está",
@@ -129,21 +133,25 @@ export const traducoes = {
     navServicos: "Services",
     navVoluntario: "Volunteer",
     navSobre: "About us",
+    navPrincipal: "Main navigation",
     entrar: "Sign in",
 
+    imagemPrincipal: "A group of people gathered in a welcoming space",
+    imagemComoFunciona: "A person using a digital device to communicate",
+
     heroEtiqueta: "Support and guidance for immigrants",
-    heroTitulo1: "You are not",
+    heroTitulo1: "You're not",
     heroTitulo2: "alone!",
     heroDescricao:
-      "We are a support network for immigrants. We offer free online sessions with specialized professionals, Portuguese classes and much more.",
-    heroBotao: "Book your session",
+      "We're a support network for immigrants. We offer free online sessions with qualified professionals, plus Portuguese classes and much more.",
+    heroBotao: "Book a session",
 
     servicosEtiqueta: "Our services",
     servicosTitulo: "How can we help?",
     servicosDescricao:
-      "We offer free, safe and online support in different areas.",
+      "We offer free, safe online support in many different areas.",
     servicosContagem: "{n} services available",
-    verServicos: "See services ↓",
+    verServicos: "Show services ↓",
     ocultarServicos: "Hide services ↑",
 
     comoEtiqueta: "Quick and simple",
@@ -161,19 +169,19 @@ export const traducoes = {
       },
       {
         titulo: "Choose and book",
-        descricao: "Pick the professional, the service and a free time slot.",
+        descricao: "Pick a professional, a service and an open time slot.",
       },
       {
         titulo: "Get support",
-        descricao: "Talk to the professional and ask your questions.",
+        descricao: "Talk to the professional and get answers to your questions.",
       },
     ],
     cadastroBotao: "Create my account",
 
-    sobreEtiqueta: "Our purpose",
-    sobreTitulo: "Together we build a better future!",
+    sobreEtiqueta: "Our mission",
+    sobreTitulo: "Together, we can build a better future!",
     sobreDescricao:
-      "Acolhimento Amigo brings people together and makes it easier to reach information, services and opportunities, building a more caring and welcoming community.",
+      "Acolhimento Amigo brings people together and makes information, services and opportunities easier to reach, helping build a more caring and welcoming community.",
 
     rodapeDescricao: "Support and guidance for immigrants.",
     voltarTopo: "Back to top ↑",
@@ -183,8 +191,8 @@ export const traducoes = {
       "assistencia-social": {
         titulo: "Social assistance",
         itens: [
-          "Enrollment in social programs",
-          "Guidance on the public service network",
+          "Signing up for social programs",
+          "Finding your way around public services",
         ],
       },
       "aulas-portugues": {
@@ -204,22 +212,22 @@ export const traducoes = {
       empreendedorismo: {
         titulo: "Entrepreneurship",
         itens: [
-          "Opening an MEI (small business)",
-          "Selling more",
+          "Registering an MEI (micro-business)",
+          "Growing your sales",
         ],
       },
       "informatica-basica": {
         titulo: "Basic computer skills",
         itens: [
-          "First steps on the phone and computer",
+          "Getting started with phones and computers",
           "Government services online",
         ],
       },
       juridico: {
-        titulo: "Legal",
+        titulo: "Legal aid",
         itens: [
-          "Refugee protocol",
-          "Visa and residence",
+          "Applying for refugee status",
+          "Visas and residence permits",
         ],
       },
       "mentoria-carreira": {
@@ -239,7 +247,7 @@ export const traducoes = {
       "orientacao-saude": {
         titulo: "Health guidance",
         itens: [
-          "How to use SUS, the public health system",
+          "How to use SUS, Brazil's public health system",
           "Vaccines and health documents",
         ],
       },
@@ -247,18 +255,18 @@ export const traducoes = {
         titulo: "Psychology",
         itens: [
           "Psychological support",
-          "Help adapting",
+          "Support settling in",
         ],
       },
       "recolocacao-profissional": {
-        titulo: "Job placement",
+        titulo: "Job search support",
         itens: [
           "Cover letter",
           "How the hiring process works",
           "Résumé for tech jobs",
           "Technical interview",
           "Networking on LinkedIn",
-          "Where to find jobs",
+          "Where to find job openings",
           "LinkedIn profile",
           "Job search plan",
           "Résumé review",
@@ -280,14 +288,18 @@ export const traducoes = {
     navServicos: "Servicios",
     navVoluntario: "Ser voluntario",
     navSobre: "Sobre nosotros",
+    navPrincipal: "Navegación principal",
     entrar: "Iniciar sesión",
+
+    imagemPrincipal: "Un grupo de personas reunidas en un ambiente acogedor",
+    imagemComoFunciona: "Una persona que usa herramientas digitales para comunicarse",
 
     heroEtiqueta: "Apoyo y orientación para personas inmigrantes",
     heroTitulo1: "¡No estás",
-    heroTitulo2: "solo/a!",
+    heroTitulo2: "solo!",
     heroDescricao:
       "Somos una red de apoyo para inmigrantes. Ofrecemos atención gratuita y en línea con profesionales especializados, además de clases de portugués y mucho más.",
-    heroBotao: "Solicita atención",
+    heroBotao: "Reserva tu cita",
 
 
     servicosEtiqueta: "Nuestros servicios",
@@ -309,7 +321,7 @@ export const traducoes = {
       },
       {
         titulo: "Crea tu cuenta o inicia sesión",
-        descricao: "Regístrate o entra en la cuenta que ya tienes.",
+        descricao: "Regístrate o inicia sesión si ya tienes una cuenta.",
       },
       {
         titulo: "Elige y reserva",
@@ -320,7 +332,7 @@ export const traducoes = {
         descricao: "Habla con el profesional y resuelve tus dudas.",
       },
     ],
-    cadastroBotao: "Quiero crear una cuenta",
+    cadastroBotao: "Quiero registrarme",
 
     sobreEtiqueta: "Nuestro propósito",
     sobreTitulo: "¡Juntos construimos un futuro mejor!",
@@ -354,13 +366,13 @@ export const traducoes = {
       "informatica-basica": {
         titulo: "Informática básica",
         itens: [
-          "Primeros pasos con el móvil y el ordenador",
+          "Primeros pasos con el celular y la computadora",
           "Servicios del gobierno por internet",
         ],
       },
       juridico: {
         titulo: "Asesoría jurídica",
-        itens: ["Protocolo de refugio", "Visado y residencia"],
+        itens: ["Solicitud de refugio", "Visa y residencia"],
       },
       "mentoria-carreira": {
         titulo: "Mentoría profesional",
@@ -368,24 +380,24 @@ export const traducoes = {
       },
       moradia: {
         titulo: "Vivienda",
-        itens: ["Refugios y ayuda para el alquiler", "Alquilar una vivienda"],
+        itens: ["Albergues y ayuda para el alquiler", "Alquilar una vivienda"],
       },
       "orientacao-saude": {
         titulo: "Orientación en salud",
-        itens: ["Cómo utilizar el SUS", "Vacunas y documentos sanitarios"],
+        itens: ["Cómo usar el SUS, el sistema público de salud", "Vacunas y documentos de salud"],
       },
       psicologia: {
         titulo: "Psicología",
-        itens: ["Apoyo psicológico", "Apoyo durante la adaptación"],
+        itens: ["Apoyo psicológico", "Apoyo para adaptarte al país"],
       },
       "recolocacao-profissional": {
         titulo: "Inserción laboral",
         itens: [
           "Carta de presentación",
           "Cómo funciona el proceso de selección",
-          "Currículum para empleos tecnológicos",
+          "Currículum para empleos en tecnología",
           "Entrevista técnica",
-          "Contactos profesionales en LinkedIn",
+          "Networking en LinkedIn",
           "Dónde encontrar ofertas de empleo",
           "Perfil en LinkedIn",
           "Plan de búsqueda de empleo",
@@ -405,7 +417,11 @@ export const traducoes = {
     navServicos: "Services",
     navVoluntario: "Devenir bénévole",
     navSobre: "À propos",
+    navPrincipal: "Navigation principale",
     entrar: "Se connecter",
+
+    imagemPrincipal: "Un groupe de personnes réunies dans un lieu chaleureux",
+    imagemComoFunciona: "Une personne qui utilise des outils numériques pour communiquer",
 
     heroEtiqueta: "Soutien et orientation pour les personnes immigrées",
     heroTitulo1: "Vous n'êtes pas",
@@ -440,7 +456,7 @@ export const traducoes = {
         descricao: "Choisissez le professionnel, le service et un créneau libre dans son agenda.",
       },
       {
-        titulo: "Recevez du soutien",
+        titulo: "Faites-vous accompagner",
         descricao: "Échangez avec le professionnel et posez vos questions.",
       },
     ],
@@ -487,14 +503,14 @@ export const traducoes = {
       "informatica-basica": {
         titulo: "Informatique de base",
         itens: [
-          "Premiers pas sur le téléphone et l'ordinateur",
+          "Premiers pas sur smartphone et ordinateur",
           "Services publics en ligne",
         ],
       },
       juridico: {
         titulo: "Juridique",
         itens: [
-          "Protocole de demande d'asile",
+          "Demande d'asile",
           "Visa et résidence",
         ],
       },
@@ -515,7 +531,7 @@ export const traducoes = {
       "orientacao-saude": {
         titulo: "Orientation santé",
         itens: [
-          "Comment utiliser le SUS",
+          "Utiliser le SUS, le système de santé public",
           "Vaccins et documents de santé",
         ],
       },

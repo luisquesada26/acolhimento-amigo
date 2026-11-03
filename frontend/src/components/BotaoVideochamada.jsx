@@ -5,9 +5,9 @@ import "./videochamada.css";
 
 const TEXTOS = {
   pt: { entrar: "Entrar na videochamada", abrindo: "Abrindo a sala...", liberaAs: (hora) => `Libera às ${hora}`, liberaAntes: "Libera 10 min antes" },
-  en: { entrar: "Join video call", abrindo: "Opening the room...", liberaAs: (hora) => `Opens at ${hora}`, liberaAntes: "Opens 10 min before" },
-  es: { entrar: "Entrar a la videollamada", abrindo: "Abriendo la sala...", liberaAs: (hora) => `Se habilita a las ${hora}`, liberaAntes: "Se habilita 10 min antes" },
-  fr: { entrar: "Rejoindre l’appel vidéo", abrindo: "Ouverture de la salle...", liberaAs: (hora) => `Disponible à ${hora}`, liberaAntes: "Disponible 10 min avant" },
+  en: { entrar: "Join video call", abrindo: "Opening the room...", liberaAs: (hora) => `Opens at ${hora}`, liberaAntes: "Opens 10 min before the start" },
+  es: { entrar: "Unirse a la videollamada", abrindo: "Abriendo la sala...", liberaAs: (hora) => `Se habilita a las ${hora}`, liberaAntes: "Se habilita 10 min antes del inicio" },
+  fr: { entrar: "Rejoindre l’appel vidéo", abrindo: "Ouverture de la salle...", liberaAs: (hora) => `Disponible à partir de ${hora}`, liberaAntes: "Disponible 10 min avant le début" },
 };
 
 // o botão libera 10 minutos antes do horário e some quando o atendimento acaba

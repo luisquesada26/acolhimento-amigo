@@ -19,135 +19,20 @@ import {
 import { traducoes } from "./traducoes";
 
 
+// só a cor e o ícone de cada área; o título e os serviços vêm do traducoes.js, no idioma da bandeira
 const servicos = [
-  {
-    id: "assistencia-social",
-    cor: "verde",
-    icone: Users,
-    titulo: "Assistência social",
-    itens: [
-      "Cadastro em programas sociais",
-      "Orientação sobre a rede de serviços",
-    ],
-  },
-  {
-    id: "aulas-portugues",
-    cor: "azul",
-    icone: BookOpen,
-    titulo: "Aulas de português",
-    itens: ["Conversação", "Português para iniciantes"],
-  },
-  {
-    id: "educacao-financeira",
-    cor: "laranja",
-    icone: Wallet,
-    titulo: "Educação financeira",
-    itens: ["Conta, Pix e cartão", "Orçamento da família"],
-  },
-  {
-    id: "empreendedorismo",
-    cor: "roxo",
-    icone: Store,
-    titulo: "Empreendedorismo",
-    itens: ["Abrir um MEI", "Vender mais"],
-  },
-  {
-    id: "informatica-basica",
-    cor: "azul",
-    icone: Laptop,
-    titulo: "Informática básica",
-    itens: [
-      "Primeiros passos no celular e no computador",
-      "Serviços do governo na internet",
-    ],
-  },
-  {
-    id: "juridico",
-    cor: "azul",
-    icone: Scale,
-    titulo: "Jurídico",
-    itens: ["Protocolo de refúgio", "Visto e residência"],
-  },
-  {
-    id: "mentoria-carreira",
-    cor: "roxo",
-    icone: Target,
-    titulo: "Mentoria de carreira",
-    itens: ["Cursos e qualificação", "Planejamento de carreira"],
-  },
-  {
-    id: "moradia",
-    cor: "laranja",
-    icone: House,
-    titulo: "Moradia",
-    itens: ["Abrigos e aluguel social", "Alugar um imóvel"],
-  },
-  {
-    id: "orientacao-saude",
-    cor: "verde",
-    icone: Stethoscope,
-    titulo: "Orientação em saúde",
-    itens: ["Como usar o SUS", "Vacinas e documentos de saúde"],
-  },
-  {
-    id: "psicologia",
-    cor: "roxo",
-    icone: Brain,
-    titulo: "Psicologia",
-    itens: ["Acolhimento psicológico", "Apoio na adaptação"],
-  },
-  {
-    id: "recolocacao-profissional",
-    cor: "azul",
-    icone: BriefcaseBusiness,
-    titulo: "Recolocação profissional",
-    itens: [
-      "Carta de apresentação",
-      "Como funciona o processo seletivo",
-      "Currículo para vagas de tecnologia",
-      "Entrevista técnica",
-      "Networking no LinkedIn",
-      "Onde encontrar vagas",
-      "Perfil no LinkedIn",
-      "Plano de busca de emprego",
-      "Revisão de currículo",
-      "Simulação de entrevista",
-    ],
-  },
-  {
-    id: "revalidacao-diplomas",
-    cor: "laranja",
-    icone: GraduationCap,
-    titulo: "Revalidação de diplomas",
-    itens: ["Documentos e traduções", "Revalidação de diploma"],
-  },
-];
-
-const etapas = [
-  {
-    numero: "1",
-    titulo: "Conheça os serviços",
-    descricao:
-      "Navegue pelas áreas e veja como podemos ajudar.",
-  },
-  {
-    numero: "2",
-    titulo: "Crie sua conta ou entre",
-    descricao:
-      "Faça seu cadastro ou entre na conta que você já tem.",
-  },
-  {
-    numero: "3",
-    titulo: "Escolha e agende",
-    descricao:
-      "Escolha o profissional, o serviço e um horário livre na agenda.",
-  },
-  {
-    numero: "4",
-    titulo: "Receba o apoio",
-    descricao:
-      "Converse com o profissional e tire suas dúvidas.",
-  },
+  { id: "assistencia-social", cor: "verde", icone: Users },
+  { id: "aulas-portugues", cor: "azul", icone: BookOpen },
+  { id: "educacao-financeira", cor: "laranja", icone: Wallet },
+  { id: "empreendedorismo", cor: "roxo", icone: Store },
+  { id: "informatica-basica", cor: "azul", icone: Laptop },
+  { id: "juridico", cor: "azul", icone: Scale },
+  { id: "mentoria-carreira", cor: "roxo", icone: Target },
+  { id: "moradia", cor: "laranja", icone: House },
+  { id: "orientacao-saude", cor: "verde", icone: Stethoscope },
+  { id: "psicologia", cor: "roxo", icone: Brain },
+  { id: "recolocacao-profissional", cor: "azul", icone: BriefcaseBusiness },
+  { id: "revalidacao-diplomas", cor: "laranja", icone: GraduationCap },
 ];
 
 export default function Inicio() {
@@ -185,7 +70,7 @@ export default function Inicio() {
           <div className="imagem-principal">
             <img
               src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=85"
-              alt="Grupo de pessoas reunidas em um ambiente acolhedor"
+              alt={t.imagemPrincipal}
             />
           </div>
         </section>
@@ -258,7 +143,7 @@ export default function Inicio() {
           <div className="imagem-como-funciona">
             <img
               src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85"
-              alt="Pessoa utilizando recursos digitais para se comunicar"
+              alt={t.imagemComoFunciona}
               loading="lazy"
             />
           </div>
@@ -275,22 +160,18 @@ export default function Inicio() {
             </p>
 
             <div className="lista-etapas"> 
-              {etapas.map((etapa, index) => {
-                const etapaTexto = t.etapas[index];
+              {t.etapas.map((etapa, index) => (
+                <article className="item-etapa" key={index}>
+                  <span className="numero-etapa">
+                    {index + 1}
+                  </span>
 
-                return (
-                  <article className="item-etapa" key={etapa.numero}>
-                    <span className="numero-etapa">
-                      {etapa.numero}
-                    </span>
-
-                    <div>
-                      <h3>{etapaTexto.titulo}</h3>
-                      <p>{etapaTexto.descricao}</p>
-                    </div>
-                  </article>
-                );
-              })}
+                  <div>
+                    <h3>{etapa.titulo}</h3>
+                    <p>{etapa.descricao}</p>
+                  </div>
+                </article>
+              ))}
             </div>
 
             <a href="/login?modo=cadastro" className="botao-principal">
