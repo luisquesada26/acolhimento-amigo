@@ -1,32 +1,67 @@
-const fs = require("fs");
-const path = require("path");
-const Database = require("better-sqlite3");
-const { DB_PATH } = require("../config/env");
+const { AsyncLocalStorage } = require("async_hooks");
+const { Pool } = require("pg");
+const { DATABASE_URL } = require("../config/env");
 
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-
-const db = new Database(DB_PATH);
-db.pragma("foreign_keys = ON");
-
-// banco criado antes ganha as colunas novas de usuarios sem precisar do db:reset
-const colunas = db.prepare("SELECT name FROM pragma_table_info('usuarios')").all().map((c) => c.name);
-if (colunas.length) {
-  // o usuário passou a falar mais de um idioma
-  if (colunas.includes("idioma") && !colunas.includes("idiomas")) {
-    db.exec("ALTER TABLE usuarios RENAME COLUMN idioma TO idiomas");
-  }
-  // endereço, todo opcional
-  for (const coluna of ["cep", "rua", "numero", "complemento", "bairro", "cidade", "estado"]) {
-    if (!colunas.includes(coluna)) db.exec(`ALTER TABLE usuarios ADD COLUMN ${coluna} TEXT`);
+function ehLocal(url) {
+  try {
+    return ["localhost", "127.0.0.1", "[::1]"].includes(new URL(url).hostname);
+  } catch {
+    return false;
   }
 }
 
-// a sala da videochamada de cada agendamento
-const colunasAgendamento = db.prepare("SELECT name FROM pragma_table_info('agendamentos')").all().map((c) => c.name);
-if (colunasAgendamento.length) {
-  for (const coluna of ["link_video", "google_evento_id"]) {
-    if (!colunasAgendamento.includes(coluna)) db.exec(`ALTER TABLE agendamentos ADD COLUMN ${coluna} TEXT`);
+// o Supabase exige SSL; o Postgres da própria máquina, não
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+  ssl: DATABASE_URL && !ehLocal(DATABASE_URL) ? { rejectUnauthorized: false } : false,
+});
+
+// conexão parada que o servidor fechou: só registra, sem derrubar a API
+pool.on("error", (erro) => console.error("Conexão com o banco caiu:", erro.message));
+
+// guarda o cliente da transação em andamento: as consultas de dentro dela vão pela mesma conexão
+const emTransacao = new AsyncLocalStorage();
+
+// os repositories escrevem ? (ou @nome, com um objeto) como no SQLite; o pg espera $1, $2...
+function paraPostgres(sql, params) {
+  if (Array.isArray(params)) {
+    let i = 0;
+    return [sql.replace(/\?/g, () => `$${++i}`), params];
+  }
+
+  const valores = [];
+  const posicoes = {};
+  const texto = sql.replace(/@(\w+)/g, (_, nome) => {
+    if (!(nome in posicoes)) {
+      valores.push(params[nome]);
+      posicoes[nome] = valores.length;
+    }
+    return `$${posicoes[nome]}`;
+  });
+  return [texto, valores];
+}
+
+function consulta(sql, params = []) {
+  const [texto, valores] = paraPostgres(sql, params);
+  return (emTransacao.getStore() ?? pool).query(texto, valores);
+}
+
+// tudo o que fn fizer no banco vale junto, ou nada vale
+async function transacao(fn) {
+  if (emTransacao.getStore()) return fn();
+
+  const cliente = await pool.connect();
+  try {
+    await cliente.query("BEGIN");
+    const resultado = await emTransacao.run(cliente, fn);
+    await cliente.query("COMMIT");
+    return resultado;
+  } catch (erro) {
+    await cliente.query("ROLLBACK").catch(() => {});
+    throw erro;
+  } finally {
+    cliente.release();
   }
 }
 
-module.exports = db;
+module.exports = { pool, consulta, transacao };

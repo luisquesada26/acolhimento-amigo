@@ -1,8 +1,13 @@
 const app = require("./app");
-const { PORT, JWT_SECRET } = require("./config/env");
+const { PORT, JWT_SECRET, DATABASE_URL } = require("./config/env");
 
 if (!JWT_SECRET) {
   console.error("Falta o JWT_SECRET. Copie o backend/.env.example para backend/.env");
+  process.exit(1);
+}
+
+if (!DATABASE_URL) {
+  console.error("Falta a DATABASE_URL no backend/.env (o endereço do Postgres, veja o README)");
   process.exit(1);
 }
 
