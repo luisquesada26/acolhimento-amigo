@@ -119,6 +119,7 @@ export const icones = {
   maleta: "M2 7h20v14H2z M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
   registro: "M3 5h18v14H3z M7 15h4 M7 11h10",
   proximo: "M9 18l6-6-6-6",
+  descer: "M6 9l6 6 6-6",
   relatorio: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8 M8 9h2",
   busca: "M11 3a8 8 0 1 0 0 16a8 8 0 1 0 0-16z M21 21l-4.3-4.3",
 };

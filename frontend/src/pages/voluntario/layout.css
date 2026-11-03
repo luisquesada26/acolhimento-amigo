@@ -1,0 +1,530 @@
+/* coluna da direita do voluntário: barra de cima, saudação do painel e rodapé em cartão */
+
+.painel-coluna {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-coluna > .painel-conteudo {
+  width: 100%;
+  flex: 1 0 auto;
+}
+
+/* ---------- barra de cima ---------- */
+
+/* sobe por cima do respiro de cima, para o conteúdo não aparecer ali ao rolar */
+.painel-barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 68px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: -16px;
+  padding: 26px clamp(8px, 2vw, 24px) 10px;
+  background: var(--fundo);
+}
+
+/* no computador o logo fica no menu */
+.painel-barra-logo {
+  display: none;
+}
+
+.painel-trilha {
+  min-width: 0;
+}
+
+.painel-trilha ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.painel-trilha li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* setinha entre os níveis */
+.painel-trilha li + li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-top: 1.8px solid #9aaac4;
+  border-right: 1.8px solid #9aaac4;
+  transform: rotate(45deg);
+}
+
+.painel-trilha a {
+  color: var(--texto-3);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.painel-trilha a:hover {
+  color: var(--azul);
+  text-decoration: underline;
+}
+
+.painel-trilha [aria-current="page"] {
+  color: var(--texto);
+  font-weight: 800;
+}
+
+.painel-barra-acoes {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* idioma e conta em pílulas brancas sobre o fundo */
+.painel-barra .idioma-botao {
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(10, 42, 94, 0.08);
+}
+
+/* conta: foto, nome e status, com o menu de meu perfil e sair */
+.barra-conta {
+  position: relative;
+}
+
+.barra-conta-botao {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(10, 42, 94, 0.08);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.barra-conta-botao:hover,
+.barra-conta-botao[aria-expanded="true"] {
+  border-color: #c5d3ea;
+}
+
+.barra-conta-botao:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.barra-conta-avatar {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--marinho);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.barra-conta-avatar .painel-status {
+  border-color: #fff;
+}
+
+.barra-conta-texto {
+  min-width: 0;
+  max-width: 170px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.barra-conta-texto strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-conta-texto small {
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barra-conta-texto .barra-conta-ativo {
+  color: var(--verde-escuro);
+}
+
+.barra-conta-seta {
+  display: flex;
+  color: var(--texto-3);
+  transition: transform 0.15s;
+}
+
+.barra-conta-botao[aria-expanded="true"] .barra-conta-seta {
+  transform: rotate(180deg);
+}
+
+.barra-conta-caixa {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: 260px;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(10, 42, 94, 0.18);
+}
+
+.barra-conta-quem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.barra-conta-quem strong {
+  font-size: 14.5px;
+}
+
+.barra-conta-quem small {
+  overflow: hidden;
+  color: var(--texto-3);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-conta-item {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.barra-conta-item svg {
+  color: var(--texto-3);
+}
+
+.barra-conta-item:hover,
+.barra-conta-item:focus-visible {
+  outline: none;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+}
+
+.barra-conta-sair:hover,
+.barra-conta-sair:focus-visible {
+  background: var(--erro-claro);
+  color: var(--erro);
+}
+
+.barra-conta-item:hover svg,
+.barra-conta-item:focus-visible svg {
+  color: currentColor;
+}
+
+/* ---------- saudação do painel: cartão claro com o dia ao lado ---------- */
+
+.saudacao {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  align-items: center;
+  gap: 24px;
+  padding: 26px 28px;
+  border: 1px solid #d5e7ef;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #e8f7ef 0%, #eaf1fd 100%);
+}
+
+.saudacao-texto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saudacao p {
+  margin: 0;
+}
+
+.saudacao-data {
+  color: var(--verde-escuro);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.saudacao h1 {
+  margin: 0;
+  color: var(--marinho);
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.saudacao-nome {
+  color: var(--azul);
+}
+
+.saudacao-frase {
+  color: var(--texto-2);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.saudacao-frase strong {
+  color: var(--texto);
+}
+
+.saudacao-dia {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(10, 42, 94, 0.08);
+}
+
+.saudacao-dia h2 {
+  margin: 0 0 4px;
+  color: var(--texto-3);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.saudacao-dia dl {
+  margin: 0;
+}
+
+.saudacao-dia dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.saudacao-dia dl > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.saudacao-dia dt {
+  color: var(--texto-3);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.saudacao-dia dd {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.saudacao-bolinha {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #8a98ae;
+}
+
+.saudacao-ativo .saudacao-bolinha {
+  background: #2fbf6b;
+  box-shadow: 0 0 0 3px rgba(47, 191, 107, 0.22);
+}
+
+/* ---------- rodapé: cartão azul baixo, alinhado com os cartões do conteúdo ----------
+   o RodapeApp é o mesmo da área do usuário; aqui só muda o tamanho */
+
+.painel .rod {
+  margin-inline: clamp(8px, 2vw, 24px);
+  padding: 14px 22px 10px;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(8, 33, 82, 0.16);
+}
+
+.painel .rod-linha {
+  gap: 10px 20px;
+}
+
+.painel .rod-marca {
+  gap: 4px;
+}
+
+.painel .rod-logo {
+  height: 22px;
+}
+
+.painel .rod-marca span {
+  font-size: 12px;
+}
+
+/* telefones à direita, mesmo quando descem de linha */
+.painel .rod-emergencia {
+  gap: 6px;
+  margin-left: auto;
+}
+
+.painel .rod-emergencia-cabeca {
+  gap: 0 8px;
+}
+
+.painel .rod-emergencia-cabeca h2 {
+  font-size: 13px;
+}
+
+.painel .rod-emergencia-cabeca p {
+  font-size: 11.5px;
+}
+
+.painel .rod-telefones {
+  gap: 6px;
+}
+
+.painel .rod-telefones a {
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.painel .rod-telefones strong {
+  font-size: 13px;
+}
+
+.painel .rod-baixo {
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.painel .rod-copy {
+  font-size: 12px;
+}
+
+.painel .rod-topo {
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
+/* ---------- celular ---------- */
+@media (max-width: 760px) {
+  /* uma faixa só em cima: logo, idioma e conta; o menu está embaixo */
+  .painel-barra {
+    min-height: 0;
+    gap: 10px;
+    margin-top: -10px;
+    padding: 14px 4px 8px;
+  }
+
+  .painel-barra-logo {
+    display: flex;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .painel-barra-logo svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .painel-barra-logo .logo-texto span {
+    font-size: 14px;
+  }
+
+  .painel-barra-logo .logo-texto strong {
+    font-size: 16px;
+  }
+
+  .painel-trilha,
+  .barra-conta-texto,
+  .barra-conta-seta {
+    display: none;
+  }
+
+  .barra-conta-botao {
+    min-height: 0;
+    padding: 3px;
+  }
+
+  .barra-conta-caixa {
+    width: min(260px, calc(100vw - 28px));
+  }
+
+  .saudacao {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+
+  /* rodapé: telefones em pílulas que quebram no centro, sem a grade de duas colunas */
+  .painel .rod {
+    margin-inline: 4px;
+    padding: 14px 12px 10px;
+    border-radius: 18px;
+  }
+
+  .painel .rod-linha {
+    gap: 10px;
+  }
+
+  .painel .rod-emergencia-cabeca {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .painel .rod-telefones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .painel .rod-telefones a {
+    width: auto;
+    height: auto;
+  }
+
+  .painel .rod-baixo {
+    gap: 6px;
+  }
+}

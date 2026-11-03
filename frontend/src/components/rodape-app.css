@@ -15,12 +15,6 @@
   margin-top: auto;
 }
 
-/* no voluntário o rodapé fica na coluna do conteúdo e encosta nas bordas dela */
-.painel-conteudo > .rod {
-  margin-inline: calc(-1 * clamp(16px, 3vw, 40px));
-  margin-bottom: -32px;
-}
-
 .rod-linha {
   display: flex;
   flex-wrap: wrap;
