@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
 import Avatar from "../../components/Avatar";
+import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { Svg, diaExtenso, quando } from "../voluntario/comum";
 import { EtiquetaArea, momento } from "./comum";
@@ -86,7 +87,7 @@ function Cancelar({ atendimento, aoCancelar }) {
   );
 }
 
-function Atendimento({ atendimento: a, agora, destaque = false, aoCancelar }) {
+function Atendimento({ atendimento: a, agora, destaque = false, aoCancelar, aoAtualizar }) {
   const t = useTextos(traducoes).atendimentos;
   const inicio = momento(a.horario);
   const estado = situacao(a, agora);
@@ -121,7 +122,10 @@ function Atendimento({ atendimento: a, agora, destaque = false, aoCancelar }) {
       <div className="ma-lado">
         <span className={`ma-status ma-status-${estado}`}>{t.status[estado]}</span>
         {estado === "confirmado" ? (
-          <Cancelar atendimento={a} aoCancelar={aoCancelar} />
+          <>
+            <BotaoVideochamada atendimento={a} className="ma-botao-video" aoAtualizar={aoAtualizar} />
+            <Cancelar atendimento={a} aoCancelar={aoCancelar} />
+          </>
         ) : (
           <Link to={`/usuario/voluntario/${a.voluntario.id}`} className="ma-botao">
             {estado === "realizado" || estado === "cancelado" ? t.marcarDeNovo : t.verPerfil}
@@ -156,6 +160,11 @@ export default function MeusAtendimentos() {
   function cancelado(atualizado) {
     setLista((atual) => atual.map((a) => (a.id === atualizado.id ? atualizado : a)));
     setAviso(t.cancelado);
+  }
+
+  // a sala da videochamada foi criada agora: o atendimento volta com o link
+  function comSala(atualizado) {
+    setLista((atual) => atual.map((a) => (a.id === atualizado.id ? atualizado : a)));
   }
 
   if (erro) {
@@ -218,7 +227,7 @@ export default function MeusAtendimentos() {
         {aba === "proximos" && proximo && (
           <div className="ma-destaque">
             <span className="ma-destaque-rotulo">{t.destaque}</span>
-            <Atendimento atendimento={proximo} agora={agora} destaque aoCancelar={cancelado} />
+            <Atendimento atendimento={proximo} agora={agora} destaque aoCancelar={cancelado} aoAtualizar={comSala} />
           </div>
         )}
 
@@ -235,7 +244,7 @@ export default function MeusAtendimentos() {
         ) : (
           <div className="ma-lista">
             {itens.map((a) => (
-              <Atendimento key={a.id} atendimento={a} agora={agora} aoCancelar={cancelado} />
+              <Atendimento key={a.id} atendimento={a} agora={agora} aoCancelar={cancelado} aoAtualizar={comSala} />
             ))}
           </div>
         )}

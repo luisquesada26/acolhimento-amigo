@@ -59,7 +59,7 @@ export default function PainelVoluntario() {
 
       <div className="painel-colunas">
         <div className="painel-principal">
-          <ProximoAtendimento atendimento={painel.proximo} cancelar={painel.cancelar} marcarRealizado={painel.marcarRealizado} />
+          <ProximoAtendimento atendimento={painel.proximo} cancelar={painel.cancelar} marcarRealizado={painel.marcarRealizado} aoAtualizar={painel.recarregar} />
 
           <section className="painel-cartao" aria-labelledby="proximos-titulo">
             <div className="painel-cartao-topo">

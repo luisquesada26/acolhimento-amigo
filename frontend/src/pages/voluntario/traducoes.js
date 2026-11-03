@@ -41,7 +41,6 @@ export const traducoes = {
     naoAconteceu: "Não aconteceu",
     proximoAtendimento: "Próximo atendimento",
     nenhumMarcado: "Nenhum atendimento marcado por enquanto. Quando alguém escolher um horário seu, ele aparece aqui.",
-    entrarVideo: "Entrar na videochamada",
     pendenciasTitulo: "Complete seu perfil para aparecer na busca",
     pendenciasProntos: (feitas, total) =>
       `${feitas} de ${total} prontos. Quem procura atendimento só encontra você quando tudo estiver pronto.`,
@@ -268,7 +267,6 @@ export const traducoes = {
     naoAconteceu: "It didn’t happen",
     proximoAtendimento: "Next appointment",
     nenhumMarcado: "No appointments booked yet. When someone picks one of your time slots, it shows up here.",
-    entrarVideo: "Join video call",
     pendenciasTitulo: "Complete your profile to show up in search",
     pendenciasProntos: (feitas, total) =>
       `${feitas} of ${total} done. People looking for support can only find you once everything is ready.`,
@@ -485,7 +483,6 @@ export const traducoes = {
     naoAconteceu: "No se realizó",
     proximoAtendimento: "Próxima cita",
     nenhumMarcado: "Aún no hay citas reservadas. Cuando alguien elija uno de tus horarios, aparecerá aquí.",
-    entrarVideo: "Entrar a la videollamada",
     pendenciasTitulo: "Completa tu perfil para aparecer en la búsqueda",
     pendenciasProntos: (feitas, total) =>
       `${feitas} de ${total} listos. Quien busca atención solo te encuentra cuando todo está listo.`,
@@ -701,7 +698,6 @@ export const traducoes = {
     naoAconteceu: "Il n’a pas eu lieu",
     proximoAtendimento: "Prochain rendez-vous",
     nenhumMarcado: "Aucun rendez-vous pour le moment. Quand quelqu’un choisit l’un de vos créneaux, il apparaît ici.",
-    entrarVideo: "Rejoindre l’appel vidéo",
     pendenciasTitulo: "Complétez votre profil pour apparaître dans la recherche",
     pendenciasProntos: (feitas, total) =>
       `${feitas} sur ${total} prêts. Les personnes qui cherchent de l’aide ne vous trouvent que lorsque tout est prêt.`,
