@@ -2,6 +2,7 @@ import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
+import RodapeApp from "../../components/RodapeApp";
 import { perfilCompleto, useAuth } from "../../context/AuthContext";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
@@ -69,6 +70,7 @@ export default function LayoutUsuario() {
       <main className="usu-conteudo">
         <Outlet />
       </main>
+      <RodapeApp />
     </div>
   );
 }
