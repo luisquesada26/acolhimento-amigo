@@ -1,26 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
-import { diasDoCalendario, lerDataLocal } from "./useBusca";
+import { dataLocal, diasDoMes, lerDataLocal, somarDias, somarMeses } from "./useBusca";
 import { traducoes } from "./traducoes";
 
-// setas andam um dia para o lado ou uma semana para cima e para baixo
+// setas andam um dia para o lado ou uma semana para cima e para baixo; PageUp e PageDown trocam de mês
 const PASSOS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+const MESES = { PageUp: -1, PageDown: 1 };
 
-// "Novembro" ou, quando os 14 dias viram o mês, "Novembro e dezembro"
-function mesesDaJanela(dias, locale) {
-  const formato = new Intl.DateTimeFormat(locale, { month: "long" });
-  const meses = [...new Set(dias.filter((d) => d.livre).map((d) => formato.format(d.data)))];
-  const texto = new Intl.ListFormat(locale, { type: "conjunction" }).format(meses);
-  return texto[0].toUpperCase() + texto.slice(1);
-}
+// os nomes do cabeçalho saem de uma semana qualquer que começa na segunda (2/11/2026)
+const SEMANA = Array.from({ length: 7 }, (_, i) => new Date(2026, 10, 2 + i));
+
+const maiuscula = (texto) => texto[0].toUpperCase() + texto.slice(1);
 
 function Calendario({ escolhido, aoEscolher }) {
   const t = useTextos(traducoes).busca;
   const locale = localeAtual();
-  const dias = useMemo(() => diasDoCalendario(), []);
-  const [foco, setFoco] = useState(() => (dias.some((d) => d.livre && d.valor === escolhido) ? escolhido : dias.find((d) => d.hoje).valor));
+  const hoje = dataLocal(new Date());
+  // o mês visível é sempre o do dia em foco. Abre no dia escolhido ou, sem dia (ou com um que já passou ou não existe), em hoje
+  const [foco, setFoco] = useState(() => (escolhido >= hoje && somarDias(escolhido, 0) === escolhido ? escolhido : hoje));
+  const mes = foco.slice(0, 7);
+  const podeVoltar = mes > hoje.slice(0, 7);
   const caixa = useRef(null);
+  // pelo teclado o foco vai junto para o dia novo, que pode ser de outro mês e só existe depois de desenhar
+  const levarFoco = useRef(false);
 
   // abre com o foco no dia escolhido (ou em hoje) e, no celular, rola até o calendário aparecer inteiro
   useEffect(() => {
@@ -28,50 +31,87 @@ function Calendario({ escolhido, aoEscolher }) {
     caixa.current.querySelector('[tabindex="0"]').focus({ preventScroll: true });
   }, []);
 
+  useEffect(() => {
+    if (!levarFoco.current) return;
+    levarFoco.current = false;
+    caixa.current.querySelector(`[data-dia="${foco}"]`).focus();
+  }, [foco]);
+
+  // o mesmo dia no mês ao lado; voltando para o mês atual, nunca antes de hoje
+  function noMes(passo) {
+    const destino = somarMeses(foco, passo);
+    return destino < hoje ? hoje : destino;
+  }
+
+  // pelos botões o foco fica no botão clicado
+  function trocarMes(passo) {
+    if (passo < 0 && !podeVoltar) return;
+    setFoco(noMes(passo));
+  }
+
   function andar(e) {
     const passo = PASSOS[e.key];
-    if (!passo) return;
+    const meses = MESES[e.key];
+    if (!passo && !meses) return;
     e.preventDefault();
-    const destino = dias[dias.findIndex((d) => d.valor === foco) + passo];
-    if (!destino?.livre) return;
-    setFoco(destino.valor);
-    caixa.current.querySelector(`[data-dia="${destino.valor}"]`).focus();
+    if (meses < 0 && !podeVoltar) return;
+    const destino = passo ? somarDias(foco, passo) : noMes(meses);
+    // dia que já passou não recebe o foco: a seta fica parada
+    if (destino < hoje) return;
+    levarFoco.current = true;
+    setFoco(destino);
   }
 
   const semana = new Intl.DateTimeFormat(locale, { weekday: "short" });
   const extenso = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" });
+  const titulo = maiuscula(new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(lerDataLocal(foco)));
 
-  // tabIndex -1: o clique num dia apagado ou no espaço entre os dias deixa o foco aqui dentro
+  // tabIndex -1: o clique num dia apagado ou no espaço entre os dias deixa o foco aqui dentro.
+  // "Mês anterior" usa aria-disabled e não disabled: ao voltar para o mês atual, o foco continua no botão
   return (
     <div id="bus-calendario" className="bus-calendario" role="dialog" aria-label={t.escolherDia} tabIndex={-1} ref={caixa} onKeyDown={andar}>
-      <strong className="bus-cal-mes">{mesesDaJanela(dias, locale)}</strong>
+      <div className="bus-cal-topo">
+        <button type="button" className="bus-cal-seta" aria-label={t.mesAnterior} aria-disabled={!podeVoltar} onClick={() => trocarMes(-1)}>
+          <Svg nome="anterior" tamanho={18} />
+        </button>
+        <strong className="bus-cal-mes" aria-live="polite">
+          {titulo}
+        </strong>
+        <button type="button" className="bus-cal-seta" aria-label={t.proximoMes} onClick={() => trocarMes(1)}>
+          <Svg nome="proximo" tamanho={18} />
+        </button>
+      </div>
       <div className="bus-cal-semana" aria-hidden="true">
-        {dias.slice(0, 7).map((d) => (
-          <span key={d.valor}>{semana.format(d.data).replace(".", "")}</span>
+        {SEMANA.map((d) => (
+          <span key={d.getDay()}>{semana.format(d).replace(".", "")}</span>
         ))}
       </div>
       <div className="bus-cal-dias">
-        {dias.map((d) => (
-          <button
-            key={d.valor}
-            type="button"
-            data-dia={d.valor}
-            disabled={!d.livre}
-            tabIndex={d.valor === foco ? 0 : -1}
-            aria-label={extenso.format(d.data)}
-            aria-pressed={d.valor === escolhido}
-            aria-current={d.hoje ? "date" : undefined}
-            onClick={() => aoEscolher(d.valor)}
-          >
-            {d.data.getDate()}
-          </button>
-        ))}
+        {diasDoMes(mes).map((d, i) =>
+          d ? (
+            <button
+              key={d.valor}
+              type="button"
+              data-dia={d.valor}
+              disabled={!d.livre}
+              tabIndex={d.valor === foco ? 0 : -1}
+              aria-label={extenso.format(d.data)}
+              aria-pressed={d.valor === escolhido}
+              aria-current={d.hoje ? "date" : undefined}
+              onClick={() => aoEscolher(d.valor)}
+            >
+              {d.data.getDate()}
+            </button>
+          ) : (
+            <span key={`vazio-${i}`} aria-hidden="true" />
+          ),
+        )}
       </div>
     </div>
   );
 }
 
-// o "Quando" da busca: dois atalhos e o botão que abre o calendário dos próximos 14 dias
+// o "Quando" da busca: dois atalhos e o botão que abre o calendário do mês
 export default function FiltroQuando({ valor, aoMudar }) {
   const t = useTextos(traducoes).busca;
   const [aberto, setAberto] = useState(false);
