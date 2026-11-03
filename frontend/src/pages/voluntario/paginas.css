@@ -1432,6 +1432,11 @@ a.painel-item:focus-visible {
     min-width: 0;
   }
 
+  /* meu perfil já está no menu da conta, em cima; com quatro abas os rótulos cabem inteiros */
+  .painel-menu-grupo:has(a[href="/voluntario/perfil"]) {
+    display: none;
+  }
+
   .painel-item,
   .painel-recolhido .painel-item {
     position: relative;
@@ -1441,7 +1446,7 @@ a.painel-item:focus-visible {
     min-height: 54px;
     padding: 4px 2px;
     border-radius: 14px;
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 700;
     text-align: center;
   }
