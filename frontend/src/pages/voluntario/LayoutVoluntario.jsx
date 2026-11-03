@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
+import RodapeApp from "../../components/RodapeApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import usePainel from "./usePainel";
 import { NAVEGACAO, Svg } from "./comum";
@@ -128,6 +129,7 @@ export default function LayoutVoluntario() {
           <SeletorIdioma />
         </div>
         <Outlet context={painel} />
+        <RodapeApp />
       </main>
     </div>
   );
