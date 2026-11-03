@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import Historico from "./Historico";
 import DetalheAtendimento from "./DetalheAtendimento";
-import { Aguardando, CancelarAtendimento, ConcluirAtendimento, Pessoa, diaExtenso, quando } from "./comum";
+import { AcoesAtendimento, Aguardando, Pessoa, diaExtenso, quando } from "./comum";
 import { useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
 
@@ -31,10 +31,7 @@ function ItemAtendimento({ atendimento, cancelar, marcarRealizado }) {
           <blockquote className="vol-caso">
             <p>{atendimento.descricao}</p>
           </blockquote>
-          <div className="vol-acoes vol-proximo-acoes">
-            <ConcluirAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} />
-            <CancelarAtendimento id={atendimento.id} cancelar={cancelar} />
-          </div>
+          <AcoesAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} cancelar={cancelar} />
         </div>
       )}
     </li>
