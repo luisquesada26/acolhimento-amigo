@@ -117,17 +117,20 @@ A agenda é lida em `GET /meus-horarios`. Regras:
 | GET | `/agendamentos/:id` | quem marcou e o voluntário do horário | Um agendamento |
 | PUT | `/agendamentos/:id` | ver abaixo | Remarca, marca como realizado ou edita a descrição |
 | DELETE | `/agendamentos/:id` | quem marcou e o voluntário do horário | Cancela: status vira `cancelado` e o horário volta a ficar livre |
+| POST | `/agendamentos/:id/videochamada` | quem marcou e o voluntário do horário | Devolve o agendamento com o `link_video`, criando a sala do Google Meet se ainda não tiver |
 
 A lista de cada um fica em `GET /meus-agendamentos`. Regras:
 
 - Só perfil `usuario` marca atendimento
 - O horário precisa estar livre e no futuro. Se já foi reservado: `409 "Este horário acabou de ser reservado. Escolha outro."`
 - O serviço precisa ser do mesmo voluntário do horário
+- O usuário não marca dois atendimentos confirmados que se sobrepõem, nem com voluntários diferentes: `409 "Você já tem um atendimento nesse horário"`. Vale também ao remarcar
 - Descrição com pelo menos 20 caracteres
 - Só quem marcou remarca (`horario_id`) ou edita a `descricao`, e só para outro horário livre do mesmo voluntário
 - Só o voluntário marca `"status": "realizado"` (ao concluir o atendimento, a qualquer momento)
 - Só agendamento `confirmado` pode ser alterado ou cancelado
 - A descrição do caso e o contato da pessoa (e-mail, telefone e foto) só aparecem para quem marcou e para o voluntário daquele horário
+- Com o Google configurado no `.env` (README, seção Videochamada), marcar cria a sala do Google Meet e devolve o `link_video`; remarcar muda o horário da sala e cancelar apaga. Sem o Google, `link_video` fica `null` e o `POST /agendamentos/:id/videochamada` responde `503`
 - O voluntário escreve a `anotacao` (o que foi feito, o que recomendou e o próximo passo, até 1000 caracteres). Pode mandar junto com `"status": "realizado"` ao concluir, ou depois, com o atendimento já realizado. Quem marcou lê a anotação, mas não altera
 
 Resposta de `POST /agendamentos`:
@@ -137,6 +140,7 @@ Resposta de `POST /agendamentos`:
   "id": 11,
   "status": "confirmado",
   "descricao": "Preciso entender como renovar meu protocolo de refúgio.",
+  "link_video": "https://meet.google.com/abc-defg-hij",
   "criado_em": "2026-10-18 16:20:00",
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
   "voluntario": { "id": 1, "nome": "Rafael Almeida", "foto": null, "area": "Jurídico" },

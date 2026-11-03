@@ -8,8 +8,8 @@ async function atualizar(req, res) {
   res.json(await usuariosService.atualizar(req.usuario.id, req.body));
 }
 
-function excluir(req, res) {
-  usuariosService.excluir(req.usuario.id);
+async function excluir(req, res) {
+  await usuariosService.excluirComSalas(req.usuario.id);
   res.status(204).end();
 }
 
