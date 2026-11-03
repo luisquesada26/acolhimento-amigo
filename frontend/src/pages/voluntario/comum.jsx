@@ -163,7 +163,7 @@ export function useAcao(acao) {
 // as duas saídas de um atendimento: concluir (vai para o histórico, com a anotação) ou cancelar.
 // fechado, mostra os dois botões; escolhido um, o outro some e o painel abre na largura toda.
 // "Voltar" desfaz a escolha e devolve o foco ao botão de onde o painel saiu
-export function AcoesAtendimento({ id, marcarRealizado, cancelar, rotuloConcluir, rotuloCancelar, rotuloSimCancelar }) {
+export function AcoesAtendimento({ id, marcarRealizado, cancelar, rotuloConcluir, rotuloCancelar, rotuloSimCancelar, perguntaCancelar }) {
   const t = useTextos(traducoes);
   const [aberto, setAberto] = useState(null); // null, "concluir" ou "cancelar"
   const [voltouDe, setVoltouDe] = useState(null);
@@ -213,7 +213,7 @@ export function AcoesAtendimento({ id, marcarRealizado, cancelar, rotuloConcluir
   if (aberto === "cancelar") {
     return (
       <div ref={foco} className="vol-confirmar vol-atendimento-painel" role="group" aria-labelledby={pergunta} tabIndex={-1}>
-        <p id={pergunta}>{t.cancelarMesmo}</p>
+        <p id={pergunta}>{perguntaCancelar ?? t.cancelarMesmo}</p>
         <div className="vol-acoes">
           <button type="button" className="vol-botao-perigo vol-botao-cheio" onClick={desmarcar.executar} disabled={desmarcar.ocupado}>
             {desmarcar.ocupado ? t.cancelando : (rotuloSimCancelar ?? t.simCancelar)}
@@ -371,6 +371,7 @@ function ItemAguardando({ atendimento, marcarRealizado, cancelar }) {
         rotuloConcluir={t.marcarRealizado}
         rotuloCancelar={t.naoAconteceu}
         rotuloSimCancelar={t.simNaoAconteceu}
+        perguntaCancelar={t.naoAconteceuMesmo}
       />
     </li>
   );
