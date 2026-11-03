@@ -94,8 +94,7 @@ git clone https://github.com/luisquesada26/acolhimento-amigo.git
 cd acolhimento-amigo
 npm run install:all
 cp backend/.env.example backend/.env    # no Windows: copy backend\.env.example backend\.env
-# preencha a DATABASE_URL no backend/.env (veja "O banco de cada um", logo abaixo)
-npm run db:reset
+# coloque no backend/.env a DATABASE_URL que o Luis passa em particular
 npm run dev
 ```
 
@@ -108,20 +107,15 @@ O `npm run dev` sobe as duas partes juntas:
 
 Para entrar, use um dos usuários de teste abaixo ou crie uma conta nova como usuário ou como voluntário.
 
-### O banco de cada um (DATABASE_URL)
+### Um banco só, o do site
 
-A API precisa de um Postgres. Para programar, cada pessoa usa o seu, porque o `npm run db:reset` apaga tudo o que está no banco da `DATABASE_URL`.
-
-- **Supabase (o mais fácil):** crie um projeto grátis em [supabase.com](https://supabase.com), clique em **Connect**, copie a URI do **Transaction pooler** e troque `[YOUR-PASSWORD]` pela senha do banco. Se a senha tiver símbolos como `@`, `#` ou `/`, escreva-os codificados (o `@` vira `%40`). Não acrescente `?sslmode=` no fim: a API liga o SSL sozinha quando o banco não está na própria máquina.
-- **Postgres na própria máquina:** `postgresql://postgres:suasenha@localhost:5432/acolhimento`, com o banco `acolhimento` já criado.
-
-O banco do site publicado é outro, e só o Luis roda comandos nele.
+Existe um banco só: o Postgres do Supabase que o site usa. **O `npm run dev` de todo mundo grava nele**, então o que você cria, edita ou apaga testando aparece no site. O plano Free do Supabase não tem backup: o que for apagado não volta.
 
 ### Dia a dia
 
 1. `git checkout main` e `git pull`
 2. `git checkout -b feature/nome-da-tarefa`
-3. Se o `schema.sql` ou o `seed.js` mudou, rodar `npm run db:reset`. Se o `package.json` mudou, rodar `npm run install:all`
+3. Se o `package.json` mudou, rodar `npm run install:all`
 4. Programar e testar com `npm run dev`
 5. `git add .`, `git commit -m "feat(xx): ..."` e `git push`
 6. Abrir o pull request para a `main` e esperar a aprovação do Luis
@@ -144,23 +138,19 @@ No Meet, entra direto quem está convidado e logado no Google com aquele e-mail,
 
 ## Banco de dados
 
-O banco é um PostgreSQL, e a `DATABASE_URL` do `backend/.env` diz qual: no dia a dia, o seu (veja **Como rodar**); no site publicado, o do Supabase do projeto.
+O banco é o PostgreSQL do Supabase, o mesmo do site, e a `DATABASE_URL` do `backend/.env` aponta para ele. Não existe comando para recriar o banco: o `npm run dev` de todo mundo grava nos dados de verdade, e o plano Free não tem backup.
 
-O `npm run db:reset` apaga todas as tabelas desse banco, recria tudo pelo `schema.sql` e roda o `seed.js`, numa transação só: se algo falhar no meio, o banco fica como estava. Pode rodar com o servidor ligado.
-
-O seed cria 12 áreas, 5 voluntários por área (cada um com 2 serviços e horários nas próximas 2 semanas), 5 usuários e alguns agendamentos.
-
-Para levar ao Postgres os dados de um banco SQLite de antes da mudança (`backend/data/acolhimento.db`), com os mesmos ids, rode `npm run db:copiar-sqlite` na pasta `backend` (ou `npm run db:copiar-sqlite -- caminho/do/arquivo.db`). Ele também apaga as tabelas do Postgres antes de copiar, só lê o SQLite e, no fim, mostra quantas linhas cada tabela tem nos dois bancos.
+O schema fica em `supabase/migrations/`. O primeiro arquivo, `20261103120000_schema_inicial.sql`, é o schema com que o banco nasceu. **Mudança de schema é um arquivo novo nessa pasta, numa pull request**, e ele é aplicado no banco quando entra na `main`, pela integração. Nunca edite uma migration que já entrou.
 
 As senhas são salvas com bcrypt, nunca em texto puro.
 
-Algumas escolhas do `schema.sql`:
+Algumas escolhas do schema inicial:
 
 - datas e horas ficam em texto (`'2026-11-04'`, `'14:00'`) e os campos de sim ou não em `0` e `1`, do jeito que o frontend já recebia do SQLite
 - os nomes e os textos da busca usam `COLLATE "C"`, para a ordem e a busca serem as mesmas em qualquer servidor
 - a RLS fica ligada em todas as tabelas, sem nenhuma regra: a API entra como dona das tabelas e não é barrada, e a API automática do Supabase (Data API) fica fechada para quem tiver a chave pública
 
-Só quem cuida do banco altera o `schema.sql`. Toda mudança vai em um pull request próprio e, depois do merge, todos rodam `npm run db:reset`.
+Só quem cuida do banco cria migration. Toda migration vai em um pull request próprio.
 
 ### Tabelas
 
@@ -291,10 +281,12 @@ Para usar pelo Postman, importe a coleção [docs/acolhimento-amigo.postman_coll
 - tem GET, POST, PUT e DELETE de cada tabela, uma pasta por tabela
 - não precisa fazer login: antes de cada envio a coleção entra sozinha com os usuários de teste
 - PUT e DELETE trabalham no que o POST da mesma pasta criou (se não tiver, a coleção cria na hora), então os dados do seed não são apagados
-- depois de um `npm run db:reset`, se alguma requisição der 401 ou 404, é só mandar de novo
+- se alguma requisição der 401 ou 404 (token vencido ou item já apagado), é só mandar de novo
 - quando a coleção mudar, importe de novo e escolha **Replace** para substituir a antiga
 
 Os casos de erro (403, 409, dados inválidos) ficam no `api.http`.
+
+**Atenção:** o `npm run dev` grava no banco do site, então o `api.http` e a coleção criam, editam e apagam dados de verdade. O `api.http` usa ids fixos (como `DELETE /servicos/121` e `DELETE /horarios/1?confirmar=true`), que hoje podem ser dados reais.
 
 ## Próximos passos
 
@@ -318,13 +310,12 @@ Já feito:
 - **SQL do Postgres:** `GENERATED BY DEFAULT AS IDENTITY` no lugar do `AUTOINCREMENT`, `RETURNING id` no lugar do `lastInsertRowid`, `ILIKE` na busca (o `LIKE` do Postgres diferencia maiúsculas) e `COUNT(*)::int` (o `pg` devolve a contagem como texto)
 - **Fuso horário:** o servidor do Vercel roda em UTC e não deixa trocar o `TZ`, então o `backend/src/utils/datas.js` calcula a data e a hora com `timeZone: "America/Sao_Paulo"`. Sem isso, o `agora()` ficaria 3 horas adiantado e os horários das próximas 3 horas apareceriam como já passados
 - **Rotas do React:** o `frontend/vercel.json` manda toda rota para o `index.html`, senão um F5 em `/login` dá 404
+- **Banco:** o Supabase do site está no ar, com o schema de `supabase/migrations/` e os dados que estavam no SQLite
 
 Falta:
 
-1. Criar o projeto no Supabase e pôr a `DATABASE_URL` dele no `backend/.env`
-2. Na pasta `backend`, rodar `npm run db:reset` (banco com o seed) ou `npm run db:copiar-sqlite` (com os dados do SQLite)
-3. Publicar o frontend no Vercel (pasta `frontend`), com a `VITE_API_URL` apontando para a API
-4. Publicar a API no Vercel (pasta `backend`), com a `DATABASE_URL`, um `JWT_SECRET` novo, o `CORS_ORIGIN` com o endereço do site e, para a videochamada, as chaves `GOOGLE_*`
+1. Publicar o frontend no Vercel (pasta `frontend`), com a `VITE_API_URL` apontando para a API
+2. Publicar a API no Vercel (pasta `backend`), com a `DATABASE_URL` (ou a `POSTGRES_URL` da integração com o Supabase), um `JWT_SECRET` novo, o `CORS_ORIGIN` com o endereço do site e, para a videochamada, as chaves `GOOGLE_*`
 
 ## Integrantes
 
