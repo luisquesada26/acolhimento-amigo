@@ -1,0 +1,177 @@
+/* rodapé da área logada; vale no usuário (.usu) e no voluntário (.painel-conteudo) */
+
+/* o layout ocupa a altura da tela e o rodapé desce até o fim, mesmo em página curta */
+.usu {
+  display: flex;
+  flex-direction: column;
+}
+
+.usu > .usu-conteudo {
+  width: 100%;
+}
+
+.rod {
+  margin-top: auto;
+}
+
+/* no voluntário o rodapé fica na coluna do conteúdo e encosta nas bordas dela */
+.painel-conteudo > .rod {
+  margin-inline: calc(-1 * clamp(16px, 3vw, 40px));
+  margin-bottom: -32px;
+}
+
+/* B: fino */
+.rod-fino {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 14px 28px;
+  border-top: 1px solid var(--borda);
+  background: #fff;
+  color: var(--texto-3);
+  font-size: 0.85rem;
+}
+
+.rod-fino-logo {
+  display: block;
+  width: auto;
+  height: 26px;
+}
+
+.rod-fino-projeto {
+  margin-left: auto;
+}
+
+/* C: ajuda */
+.rod-ajuda {
+  padding: 24px 28px 16px;
+  border-top: 1px solid var(--borda);
+  background: #fff;
+}
+
+.rod-ajuda-emergencia {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rod-ajuda-cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+
+.rod-ajuda-cabeca h2 {
+  margin: 0;
+  color: var(--texto);
+  font-size: 1rem;
+}
+
+.rod-ajuda-cabeca p {
+  margin: 0;
+  color: var(--texto-3);
+  font-size: 0.85rem;
+}
+
+.rod-ajuda-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rod-ajuda-lista a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--fundo);
+  color: var(--texto);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.rod-ajuda-lista a:hover,
+.rod-ajuda-lista a:focus-visible {
+  border-color: var(--azul);
+}
+
+.rod-ajuda-lista strong {
+  color: #b42318;
+  font-size: 1rem;
+}
+
+.rod-ajuda-copy {
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+  color: var(--texto-3);
+  font-size: 0.8rem;
+}
+
+/* barra provisória para trocar as opções; sai depois da escolha */
+.rod-opcoes {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--marinho);
+  box-shadow: 0 10px 30px rgba(8, 33, 82, 0.25);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+/* no voluntário, à direita do menu lateral para não cobrir o botão de sair */
+.painel .rod-opcoes {
+  left: 266px;
+}
+
+.rod-opcoes > span {
+  padding: 0 8px;
+  color: #c9d6ef;
+}
+
+.rod-opcoes button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rod-opcoes button.rod-opcoes-ligada {
+  background: #fff;
+  color: var(--marinho);
+}
+
+@media (max-width: 760px) {
+  .painel .rod-opcoes {
+    left: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .rod-fino,
+  .rod-ajuda {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .rod-fino-projeto {
+    width: 100%;
+    margin-left: 0;
+  }
+}
