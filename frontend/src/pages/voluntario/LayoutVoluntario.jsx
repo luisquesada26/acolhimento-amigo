@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
-import SeletorIdioma from "../../components/SeletorIdioma";
-import Avatar from "../../components/Avatar";
 import RodapeApp from "../../components/RodapeApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import usePainel from "./usePainel";
+import BarraTopo from "./BarraTopo";
 import { NAVEGACAO, Svg } from "./comum";
 import { traducoes } from "./traducoes";
 import "./painel.css";
 import "./paginas.css";
+import "./layout.css";
 
 const CHAVE_MENU = "acolhimento:menu-recolhido";
 
@@ -21,7 +21,7 @@ function lerMenuRecolhido() {
   }
 }
 
-// menu lateral das telas do voluntário; os dados carregam aqui e as telas recebem pelo Outlet
+// menu lateral e barra de cima das telas do voluntário; os dados carregam aqui e as telas recebem pelo Outlet
 export default function LayoutVoluntario() {
   const painel = usePainel();
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido);
@@ -61,7 +61,6 @@ export default function LayoutVoluntario() {
 
   const { perfil } = painel;
   const grupos = [...new Set(NAVEGACAO.map((item) => item.grupo))];
-  const naBusca = perfil.voluntario.ativo;
 
   return (
     <div className={recolhido ? "painel painel-recolhido" : "painel"} lang={LANG[idioma]}>
@@ -108,29 +107,15 @@ export default function LayoutVoluntario() {
             </div>
           ))}
         </nav>
-
-        <div className="painel-usuario">
-          <Avatar nome={perfil.nome} foto={perfil.foto} className="painel-avatar">
-            {/* bolinha: verde quando aparece na busca, cinza quando está pausado */}
-            <span className={naBusca ? "painel-status painel-status-ativo" : "painel-status"}></span>
-          </Avatar>
-          <span className="painel-usuario-nome">
-            <strong>{perfil.nome}</strong>
-            <small>{naBusca ? t.naBusca : t.pausado}</small>
-          </span>
-          <button type="button" className="painel-sair" onClick={painel.sair} aria-label={t.sair} title={t.sair}>
-            <Svg nome="sair" />
-          </button>
-        </div>
       </aside>
 
-      <main className="painel-conteudo">
-        <div className="painel-topo">
-          <SeletorIdioma />
-        </div>
-        <Outlet context={painel} />
+      <div className="painel-coluna">
+        <BarraTopo perfil={perfil} sair={painel.sair} />
+        <main className="painel-conteudo">
+          <Outlet context={painel} />
+        </main>
         <RodapeApp />
-      </main>
+      </div>
     </div>
   );
 }

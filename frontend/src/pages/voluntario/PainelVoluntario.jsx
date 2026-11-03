@@ -2,18 +2,10 @@ import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import Historico from "./Historico";
 import DetalheAtendimento from "./DetalheAtendimento";
+import Saudacao from "./Saudacao";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
-import {
-  Aguardando,
-  HorariosLivres,
-  ListaAtendimentos,
-  Numeros,
-  Pendencias,
-  ProximoAtendimento,
-  hojeExtenso,
-  primeiroNome,
-} from "./comum";
+import { Aguardando, HorariosLivres, ListaAtendimentos, Numeros, Pendencias, ProximoAtendimento } from "./comum";
 
 function nomeDoMes(mes) {
   const nome = new Date(`${mes}-01T00:00:00`).toLocaleDateString(localeAtual(), { month: "long", year: "numeric" });
@@ -28,10 +20,7 @@ export default function PainelVoluntario() {
 
   return (
     <>
-      <header className="painel-cabecalho">
-        <h1>{t.boasVindas(primeiroNome(painel.perfil.nome))}</h1>
-        <p>{hojeExtenso()}</p>
-      </header>
+      <Saudacao painel={painel} />
 
       {!painel.perfilCompleto && <Pendencias pendencias={painel.pendencias} />}
 
