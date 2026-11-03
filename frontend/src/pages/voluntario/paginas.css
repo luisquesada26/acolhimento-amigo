@@ -1223,33 +1223,6 @@ textarea.perfil-input {
 }
 
 @media (max-width: 760px) {
-  .painel-recolher {
-    display: none;
-  }
-
-  /* no celular o menu já é uma barra: ignora o recolhido */
-  .painel-recolhido .painel-menu {
-    width: 100%;
-    padding: 12px 16px;
-  }
-
-  .painel-recolhido .painel-menu-topo {
-    flex-direction: row;
-  }
-
-  .painel-recolhido .painel-item-texto,
-  .painel-recolhido .painel-menu .logo-texto {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip: auto;
-  }
-
-  .painel-recolhido .painel-item {
-    padding: 0 14px;
-  }
-
   .agenda-horario {
     grid-template-columns: 1fr auto;
   }
@@ -1421,30 +1394,85 @@ a.painel-item:focus-visible {
   position: relative;
 }
 
-/* no celular o menu é uma barra: sem a aba */
+/* no celular o menu vira uma barra de abas presa embaixo da tela; o logo vai para a barra de cima
+   e o recolhido não vale */
 @media (max-width: 760px) {
-  .painel-menu nav {
-    flex-direction: row;
-    gap: 4px;
+  .painel-menu,
+  .painel-recolhido .painel-menu {
+    position: fixed;
+    top: auto;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px;
+    width: auto;
+    height: auto;
+    padding: 6px;
+    border-radius: 20px;
   }
 
-  .painel-menu-grupo {
-    flex-direction: row;
-  }
-
+  .painel-menu-topo,
+  .painel-recolher,
   .painel-menu-rotulo {
     display: none;
   }
 
-  /* no celular o traço fica embaixo do item */
-  .painel-item.painel-item-atual::before {
-    top: auto;
-    right: 14px;
-    bottom: 2px;
-    left: 14px;
+  /* os itens dos dois grupos dividem a barra em partes iguais */
+  .painel-menu nav {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .painel-menu-grupo,
+  .painel-menu ul {
+    display: contents;
+  }
+
+  .painel-menu li {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .painel-item,
+  .painel-recolhido .painel-item {
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: 54px;
+    padding: 4px 2px;
+    border-radius: 14px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .painel-item-texto,
+  .painel-recolhido .painel-item-texto {
+    position: static;
     width: auto;
-    height: 3px;
-    border-radius: 3px;
+    height: auto;
+    max-width: 100%;
+    overflow: hidden;
+    clip: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* sem o traço: o item aberto já tem fundo e ícone verde */
+  .painel-item.painel-item-atual::before {
+    display: none;
+  }
+
+  .painel-contador,
+  .painel-recolhido .painel-contador {
+    position: absolute;
+    top: 3px;
+    right: calc(50% - 24px);
+    min-width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0 5px;
+    font-size: 11px;
   }
 }
 

@@ -29,6 +29,11 @@
   background: var(--fundo);
 }
 
+/* no computador o logo fica no menu */
+.painel-barra-logo {
+  display: none;
+}
+
 .painel-trilha {
   min-width: 0;
 }
@@ -444,11 +449,31 @@
 
 /* ---------- celular ---------- */
 @media (max-width: 760px) {
+  /* uma faixa só em cima: logo, idioma e conta; o menu está embaixo */
   .painel-barra {
     min-height: 0;
     gap: 10px;
     margin-top: -10px;
     padding: 14px 4px 8px;
+  }
+
+  .painel-barra-logo {
+    display: flex;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .painel-barra-logo svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .painel-barra-logo .logo-texto span {
+    font-size: 14px;
+  }
+
+  .painel-barra-logo .logo-texto strong {
+    font-size: 16px;
   }
 
   .painel-trilha,
