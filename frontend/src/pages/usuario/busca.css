@@ -20,7 +20,7 @@
   white-space: nowrap;
 }
 
-.bus :is(button, a, input):focus-visible {
+.bus :is(button, a, input, select):focus-visible {
   outline: 3px solid rgba(23, 87, 216, 0.35);
   outline-offset: 2px;
 }
@@ -245,56 +245,26 @@
   letter-spacing: -0.01em;
 }
 
-.bus-controles {
+/* filtros da lista: idioma, turno e dia */
+
+.bus-filtros {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 12px 28px;
+  margin-bottom: 20px;
 }
 
-.bus-chave {
-  display: inline-flex;
+.bus-filtro {
+  display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--texto);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
 }
 
-.bus-chave-trilho {
-  position: relative;
-  flex: none;
-  width: 38px;
-  height: 22px;
-  border-radius: 999px;
-  background: #cfd9ea;
-  transition: background 0.15s;
-}
-
-.bus-chave-trilho span {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s;
-}
-
-.bus-chave-ligada .bus-chave-trilho {
-  background: var(--verde);
-}
-
-.bus-chave-ligada .bus-chave-trilho span {
-  transform: translateX(16px);
+.bus-filtro-rotulo {
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .bus-segmento {
@@ -306,6 +276,9 @@
 }
 
 .bus-segmento button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 7px 12px;
   border: 0;
   border-radius: 8px;
@@ -322,6 +295,26 @@
   background: #fff;
   color: var(--texto);
   box-shadow: 0 1px 2px rgba(11, 27, 58, 0.1), 0 1px 1px rgba(11, 27, 58, 0.04);
+}
+
+/* select nativo com a cara do segmento: no celular abre a lista do próprio sistema */
+.bus-select {
+  height: 36px;
+  padding: 0 34px 0 14px;
+  border: 0;
+  border-radius: 11px;
+  background: #e9eef7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5b78' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  appearance: none;
+}
+
+.bus-select-ligado {
+  background-color: #fff;
+  color: var(--texto);
+  box-shadow: inset 0 0 0 1px var(--borda-campo), 0 1px 2px rgba(11, 27, 58, 0.1);
 }
 
 /* ============ áreas ============ */
@@ -628,6 +621,39 @@
 
   .bus-numero-destaque strong {
     font-size: 18px;
+  }
+
+  /* cada filtro numa linha, com o rótulo em cima */
+  .bus-filtros,
+  .bus-filtro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bus-filtros {
+    gap: 14px;
+  }
+
+  .bus-filtro {
+    gap: 6px;
+  }
+
+  .bus-filtro .bus-segmento {
+    display: flex;
+  }
+
+  /* 44px de altura para o dedo; cada botão parte da largura do próprio texto, então "Après-midi" não estoura */
+  .bus-filtro .bus-segmento button {
+    flex: auto;
+    min-height: 38px;
+    padding-inline: 8px;
+  }
+
+  /* abaixo de 16px o iPhone dá zoom ao tocar no select */
+  .bus-select {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
   }
 }
 
