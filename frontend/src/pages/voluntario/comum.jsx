@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
 import Avatar from "../../components/Avatar";
+import BotaoVideochamada from "../../components/BotaoVideochamada";
 import "./comum.css";
 
 // peças do painel que as três opções usam
@@ -355,7 +356,7 @@ function ItemAguardando({ atendimento, marcarRealizado, cancelar }) {
   );
 }
 
-export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, titulo: tituloRecebido }) {
+export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoAtualizar, titulo: tituloRecebido }) {
   const t = useTextos(traducoes);
   const titulo = tituloRecebido ?? t.proximoAtendimento;
   if (!atendimento) {
@@ -383,10 +384,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, tit
         <div className="vol-proximo-lado">
           {/* verde aqui, para não se confundir com o botão azul da videochamada */}
           <span className="vol-quando vol-quando-verde">{quando(atendimento.inicio)}</span>
-          {/* a videochamada não faz parte do projeto: o botão fica só para mostrar onde ela entraria */}
-          <button type="button" className="botao botao-primario vol-botao-video">
-            <Svg nome="video" tamanho={16} /> {t.entrarVideo}
-          </button>
+          <BotaoVideochamada atendimento={atendimento} className="botao botao-primario vol-botao-video" aoAtualizar={aoAtualizar} />
         </div>
       </div>
       <blockquote className="vol-caso">
