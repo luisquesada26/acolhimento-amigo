@@ -1,22 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { paginaInicial, useAuth } from "../../context/AuthContext";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
 
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// a API responde em português; estes a tela mostra no idioma da bandeira (ver erros em traducoes.js)
-const ERROS_DA_API = {
-  "E-mail ou senha incorretos": "loginIncorreto",
-  "Este e-mail já está cadastrado": "emailCadastrado",
-  "Algo deu errado. Tente de novo.": "generico",
-};
-
-function lerErroTraduzivel(erro) {
-  const { mensagem, campos } = lerErro(erro);
-  if (!erro.response) return { mensagem: "semServidor", campos };
-  return { mensagem: ERROS_DA_API[mensagem] ?? mensagem, campos };
-}
+// o erro da API fica guardado em português e o Campos.jsx traduz na hora de mostrar:
+// assim, trocar a bandeira depois do erro troca a mensagem junto
 
 export function useEntrar() {
   const { entrar } = useAuth();
@@ -42,7 +32,7 @@ export function useEntrar() {
       const usuario = await entrar(email.trim(), senha);
       navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
-      const { mensagem: texto, campos } = lerErroTraduzivel(erro);
+      const { mensagem: texto, campos } = lerErroSemTraduzir(erro);
       setMensagem(texto);
       setErros(campos);
     } finally {
@@ -112,7 +102,7 @@ export function useCadastro(perfilInicial = "usuario") {
       const usuario = await cadastrar(corpo);
       navigate(paginaInicial(usuario.perfil));
     } catch (erro) {
-      const { mensagem: texto, campos } = lerErroTraduzivel(erro);
+      const { mensagem: texto, campos } = lerErroSemTraduzir(erro);
       setMensagem(texto);
       setErros(campos);
     } finally {

@@ -75,18 +75,26 @@ function registrar(config, status, recebido) {
   console.groupEnd();
 }
 
-// transforma o erro do axios no formato { mensagem, campos } usado nos formulários, já no idioma da bandeira
-export function lerErro(erro) {
+// transforma o erro do axios no formato { mensagem, campos } usado nos formulários, como a API mandou.
+// Os dois textos daqui são chaves do errosApi.js, que tem a tradução
+export function lerErroSemTraduzir(erro) {
   if (!erro.response) {
-    return { mensagem: traduzirErroApi("Não foi possível falar com o servidor. Confira se a API está rodando."), campos: {} };
+    return { mensagem: "Não foi possível falar com o servidor. Confira se a API está rodando.", campos: {} };
   }
 
   const { erro: mensagem, detalhes = [] } = erro.response.data || {};
   const campos = {};
   for (const d of detalhes) {
-    if (d.campo && !campos[d.campo]) campos[d.campo] = traduzirErroApi(d.mensagem);
+    if (d.campo && !campos[d.campo]) campos[d.campo] = d.mensagem;
   }
-  return { mensagem: traduzirErroApi(mensagem || "Algo deu errado. Tente de novo."), campos };
+  return { mensagem: mensagem || "Algo deu errado. Tente de novo.", campos };
+}
+
+// o mesmo, já no idioma da bandeira
+export function lerErro(erro) {
+  const { mensagem, campos } = lerErroSemTraduzir(erro);
+  for (const campo in campos) campos[campo] = traduzirErroApi(campos[campo]);
+  return { mensagem: traduzirErroApi(mensagem), campos };
 }
 
 export default api;
