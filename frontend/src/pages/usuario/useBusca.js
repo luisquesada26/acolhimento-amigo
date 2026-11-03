@@ -13,12 +13,22 @@ function dataLocal(dia) {
   return `${dia.getFullYear()}-${doisDigitos(dia.getMonth() + 1)}-${doisDigitos(dia.getDate())}`;
 }
 
-// os dias do "Quando", a partir de hoje, no idioma da tela
-export function proximosDias(locale, hoje = new Date(), quantos = 14) {
-  const formato = new Intl.DateTimeFormat(locale, { weekday: "short", day: "2-digit", month: "2-digit" });
-  return Array.from({ length: quantos }, (_, i) => {
-    const dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i);
-    return { valor: dataLocal(dia), rotulo: formato.format(dia) };
+// o caminho de volta: new Date("2026-11-06") seria meia-noite UTC, ainda dia 5 no Brasil
+export function lerDataLocal(valor) {
+  const [ano, mes, dia] = valor.split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
+}
+
+// a grade do "Escolher dia": semanas de segunda a domingo, da semana de hoje até cobrir os próximos 14 dias.
+// Os dias antes de hoje e depois do 14º só completam a semana e vêm com livre: false
+export function diasDoCalendario(agora = new Date(), quantos = 14) {
+  // getDay() conta a partir do domingo; aqui a segunda é a coluna 0
+  const recuo = (agora.getDay() + 6) % 7;
+  const semanas = Math.ceil((recuo + quantos) / 7);
+  return Array.from({ length: semanas * 7 }, (_, i) => {
+    const data = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - recuo + i);
+    const distancia = i - recuo;
+    return { valor: dataLocal(data), data, hoje: distancia === 0, livre: distancia >= 0 && distancia < quantos };
   });
 }
 

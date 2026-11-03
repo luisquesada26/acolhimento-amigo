@@ -297,24 +297,107 @@
   box-shadow: 0 1px 2px rgba(11, 27, 58, 0.1), 0 1px 1px rgba(11, 27, 58, 0.04);
 }
 
-/* select nativo com a cara do segmento: no celular abre a lista do próprio sistema */
-.bus-select {
-  height: 36px;
-  padding: 0 34px 0 14px;
-  border: 0;
-  border-radius: 11px;
-  background: #e9eef7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5b78' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
-  color: var(--texto-2);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  appearance: none;
+/* "Quando": o botão "Escolher dia" abre, sempre para baixo, o calendário dos próximos 14 dias */
+.bus-filtro-quando {
+  position: relative;
 }
 
-.bus-select-ligado {
-  background-color: #fff;
+.bus-filtro-quando .bus-segmento button {
+  gap: 6px;
+}
+
+.bus-filtro-quando .bus-segmento svg {
+  flex: none;
+}
+
+/* z-index abaixo da barra de cima (10), que fica presa no topo ao rolar */
+.bus-calendario {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  width: 308px;
+  padding: 14px 12px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(11, 27, 58, 0.16);
+}
+
+.bus-calendario:focus {
+  outline: 0;
+}
+
+.bus-cal-mes {
+  display: block;
+  margin: 0 4px 10px;
   color: var(--texto);
-  box-shadow: inset 0 0 0 1px var(--borda-campo), 0 1px 2px rgba(11, 27, 58, 0.1);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.bus-cal-semana,
+.bus-cal-dias {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.bus-cal-semana {
+  margin-bottom: 4px;
+  color: var(--texto-3);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.bus-cal-dias button {
+  position: relative;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.bus-cal-dias button[aria-pressed="false"]:enabled:hover {
+  background: #e9eef7;
+}
+
+.bus-cal-dias button:disabled {
+  color: var(--texto-3);
+  font-weight: 500;
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bus-cal-dias button[aria-pressed="true"] {
+  background: var(--azul);
+  color: #fff;
+}
+
+/* hoje: um ponto discreto embaixo do número */
+.bus-cal-dias button[aria-current="date"]::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--azul);
+}
+
+.bus-cal-dias button[aria-pressed="true"]::after {
+  background: #fff;
 }
 
 /* ============ áreas ============ */
@@ -649,11 +732,22 @@
     padding-inline: 8px;
   }
 
-  /* abaixo de 16px o iPhone dá zoom ao tocar no select */
-  .bus-select {
-    width: 100%;
-    height: 44px;
-    font-size: 16px;
+  /* "N’importe quel jour" não cabe numa linha em 360px: o texto quebra dentro do botão */
+  .bus-filtro-quando .bus-segmento button {
+    white-space: normal;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  /* o calendário ocupa a largura útil, de ponta a ponta do filtro */
+  .bus-calendario {
+    left: 0;
+    width: auto;
+  }
+
+  .bus-cal-dias button {
+    height: 42px;
+    font-size: 15px;
   }
 }
 
