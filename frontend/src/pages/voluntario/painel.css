@@ -71,68 +71,6 @@
   font-weight: 700;
 }
 
-.painel-usuario {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.painel-avatar {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #fff;
-  color: var(--marinho);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.painel-usuario-nome {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.painel-usuario-nome strong {
-  overflow: hidden;
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.painel-usuario-nome small {
-  color: #c3d2ec;
-  font-size: 12.5px;
-}
-
-.painel-sair {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #c3d2ec;
-  cursor: pointer;
-}
-
-.painel-sair:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
 .painel-conteudo {
   flex: 1;
   min-width: 0;
@@ -350,16 +288,6 @@
 
   .painel-item {
     white-space: nowrap;
-  }
-
-  .painel-usuario-nome {
-    display: none;
-  }
-
-  .painel-usuario {
-    margin: 0 0 0 auto;
-    padding: 0;
-    background: transparent;
   }
 
   /* em coluna, margin-inline: auto desliga o esticar e o conteúdo ficava da largura do texto mais longo */

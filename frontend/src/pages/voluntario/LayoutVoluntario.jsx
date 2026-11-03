@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
-import SeletorIdioma from "../../components/SeletorIdioma";
-import Avatar from "../../components/Avatar";
 import RodapeApp from "../../components/RodapeApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import usePainel from "./usePainel";
+import BarraTopo from "./BarraTopo";
+import { BarraOpcoes, useOpcaoLayout } from "./OpcoesLayout";
 import { NAVEGACAO, Svg } from "./comum";
 import { traducoes } from "./traducoes";
 import "./painel.css";
 import "./paginas.css";
+import "./layout.css";
 
 const CHAVE_MENU = "acolhimento:menu-recolhido";
 
@@ -21,10 +22,11 @@ function lerMenuRecolhido() {
   }
 }
 
-// menu lateral das telas do voluntário; os dados carregam aqui e as telas recebem pelo Outlet
+// menu lateral e barra de cima das telas do voluntário; os dados carregam aqui e as telas recebem pelo Outlet
 export default function LayoutVoluntario() {
   const painel = usePainel();
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido);
+  const [opcao, setOpcao] = useOpcaoLayout();
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
 
@@ -61,10 +63,10 @@ export default function LayoutVoluntario() {
 
   const { perfil } = painel;
   const grupos = [...new Set(NAVEGACAO.map((item) => item.grupo))];
-  const naBusca = perfil.voluntario.ativo;
+  const classes = ["painel", `layout-${opcao}`, recolhido ? "painel-recolhido" : ""].filter(Boolean).join(" ");
 
   return (
-    <div className={recolhido ? "painel painel-recolhido" : "painel"} lang={LANG[idioma]}>
+    <div className={classes} lang={LANG[idioma]}>
       <aside className="painel-menu">
         <div className="painel-menu-topo">
           <Logo claro />
@@ -108,29 +110,18 @@ export default function LayoutVoluntario() {
             </div>
           ))}
         </nav>
-
-        <div className="painel-usuario">
-          <Avatar nome={perfil.nome} foto={perfil.foto} className="painel-avatar">
-            {/* bolinha: verde quando aparece na busca, cinza quando está pausado */}
-            <span className={naBusca ? "painel-status painel-status-ativo" : "painel-status"}></span>
-          </Avatar>
-          <span className="painel-usuario-nome">
-            <strong>{perfil.nome}</strong>
-            <small>{naBusca ? t.naBusca : t.pausado}</small>
-          </span>
-          <button type="button" className="painel-sair" onClick={painel.sair} aria-label={t.sair} title={t.sair}>
-            <Svg nome="sair" />
-          </button>
-        </div>
       </aside>
 
-      <main className="painel-conteudo">
-        <div className="painel-topo">
-          <SeletorIdioma />
-        </div>
-        <Outlet context={painel} />
-        <RodapeApp />
-      </main>
+      {/* na opção B a coluna some (display: contents) e a barra e o rodapé ocupam a largura toda */}
+      <div className="painel-coluna">
+        <BarraTopo perfil={perfil} sair={painel.sair} comLogo={opcao === "b"} />
+        <main className="painel-conteudo">
+          <Outlet context={{ ...painel, opcaoLayout: opcao }} />
+        </main>
+        <RodapeApp claro={opcao === "a"} />
+      </div>
+
+      <BarraOpcoes opcao={opcao} aoMudar={setOpcao} />
     </div>
   );
 }

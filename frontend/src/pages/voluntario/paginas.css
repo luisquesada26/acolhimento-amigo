@@ -64,8 +64,7 @@ a.painel-item:hover:not(.painel-item-atual) {
 }
 
 .painel-recolhido .painel-menu .logo-texto,
-.painel-recolhido .painel-item-texto,
-.painel-recolhido .painel-usuario-nome {
+.painel-recolhido .painel-item-texto {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -77,15 +76,6 @@ a.painel-item:hover:not(.painel-item-atual) {
 .painel-recolhido .painel-item {
   justify-content: center;
   padding: 0;
-}
-
-.painel-recolhido .painel-usuario {
-  flex-direction: column;
-  padding: 8px 0;
-}
-
-.painel-recolhido .painel-sair {
-  margin: 0;
 }
 
 .painel-recolhido .painel-conteudo {
@@ -1377,10 +1367,6 @@ a.painel-item:hover:not(.painel-item-atual) {
   font-weight: 800;
 }
 
-.painel-avatar {
-  position: relative;
-}
-
 .painel-status {
   position: absolute;
   right: -1px;
@@ -1458,36 +1444,6 @@ a.painel-item:hover:not(.painel-item-atual) {
     width: auto;
     height: 3px;
     border-radius: 3px;
-  }
-}
-
-/* seletor de idioma flutuando no canto de cima, sem empurrar o conteúdo */
-.painel-conteudo {
-  position: relative;
-}
-
-.painel-topo {
-  position: absolute;
-  top: 28px;
-  right: clamp(16px, 3vw, 40px);
-  z-index: 10;
-}
-
-/* o título e os botões do cabeçalho não passam por baixo da bandeira */
-.painel-cabecalho {
-  padding-right: 120px;
-}
-
-@media (max-width: 760px) {
-  .painel-topo {
-    position: static;
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: -10px;
-  }
-
-  .painel-cabecalho {
-    padding-right: 0;
   }
 }
 

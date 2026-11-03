@@ -1,0 +1,64 @@
+/* barra das opções de layout (só na fase de exemplos) */
+.opcoes-layout {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(11, 27, 58, 0.92);
+  box-shadow: 0 12px 30px rgba(8, 33, 82, 0.35);
+  transform: translateX(-50%);
+}
+
+.opcoes-layout > span {
+  padding: 0 8px 0 12px;
+  color: #9fb3d6;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.opcoes-layout button {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #dbe5f7;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.opcoes-layout button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.opcoes-layout button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--marinho);
+  font-weight: 800;
+}
+
+/* espaço no fim do rodapé para a barra não tapar o copyright */
+.painel:has(> .opcoes-layout) .rod {
+  padding-bottom: 72px;
+}
+
+@media (max-width: 760px) {
+  .opcoes-layout > span {
+    display: none;
+  }
+
+  .opcoes-layout button {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
