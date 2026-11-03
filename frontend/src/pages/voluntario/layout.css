@@ -369,6 +369,79 @@
   box-shadow: 0 0 0 3px rgba(47, 191, 107, 0.22);
 }
 
+/* ---------- rodapé: cartão azul baixo, alinhado com os cartões do conteúdo ----------
+   o RodapeApp é o mesmo da área do usuário; aqui só muda o tamanho */
+
+.painel .rod {
+  margin-inline: clamp(8px, 2vw, 24px);
+  padding: 14px 22px 10px;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(8, 33, 82, 0.16);
+}
+
+.painel .rod-linha {
+  gap: 10px 20px;
+}
+
+.painel .rod-marca {
+  gap: 4px;
+}
+
+.painel .rod-logo {
+  height: 22px;
+}
+
+.painel .rod-marca span {
+  font-size: 12px;
+}
+
+/* telefones à direita, mesmo quando descem de linha */
+.painel .rod-emergencia {
+  gap: 6px;
+  margin-left: auto;
+}
+
+.painel .rod-emergencia-cabeca {
+  gap: 0 8px;
+}
+
+.painel .rod-emergencia-cabeca h2 {
+  font-size: 13px;
+}
+
+.painel .rod-emergencia-cabeca p {
+  font-size: 11.5px;
+}
+
+.painel .rod-telefones {
+  gap: 6px;
+}
+
+.painel .rod-telefones a {
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.painel .rod-telefones strong {
+  font-size: 13px;
+}
+
+.painel .rod-baixo {
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.painel .rod-copy {
+  font-size: 12px;
+}
+
+.painel .rod-topo {
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
 /* ---------- celular ---------- */
 @media (max-width: 760px) {
   .painel-barra {
@@ -396,5 +469,37 @@
   .saudacao {
     grid-template-columns: minmax(0, 1fr);
     padding: 20px;
+  }
+
+  /* rodapé: telefones em pílulas que quebram no centro, sem a grade de duas colunas */
+  .painel .rod {
+    margin-inline: 4px;
+    padding: 14px 12px 10px;
+    border-radius: 18px;
+  }
+
+  .painel .rod-linha {
+    gap: 10px;
+  }
+
+  .painel .rod-emergencia-cabeca {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .painel .rod-telefones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .painel .rod-telefones a {
+    width: auto;
+    height: auto;
+  }
+
+  .painel .rod-baixo {
+    gap: 6px;
   }
 }
