@@ -360,6 +360,15 @@
   content: "”";
 }
 
+/* em francês as aspas são « » */
+.vol-caso p:lang(fr)::before {
+  content: "«\00a0";
+}
+
+.vol-caso p:lang(fr)::after {
+  content: "\00a0»";
+}
+
 .vol-proximo-acoes > .vol-confirmar {
   flex-basis: 100%;
 }

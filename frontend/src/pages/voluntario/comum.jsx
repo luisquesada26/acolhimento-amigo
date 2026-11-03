@@ -50,21 +50,12 @@ export function OrdenarPorData({ ordem, aoMudar }) {
   );
 }
 
+// "7h30" em português, "7h 30m" em inglês: o formato vem das traduções (horas)
 export function formatarHoras(minutos) {
-  const h = Math.floor(minutos / 60);
-  const m = Math.round(minutos % 60);
-  if (h === 0) return `${m} min`;
-  return m ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
+  return textosAtuais(traducoes).horas(Math.floor(minutos / 60), Math.round(minutos % 60));
 }
 
-const QUANDO = {
-  pt: { hoje: "Hoje", amanha: "Amanhã", ontem: "Ontem", emDias: (n) => `Em ${n} dias`, emSemanas: (n) => `Em ${n} semanas`, haDias: (n) => `Há ${n} dias` },
-  en: { hoje: "Today", amanha: "Tomorrow", ontem: "Yesterday", emDias: (n) => `In ${n} days`, emSemanas: (n) => `In ${n} weeks`, haDias: (n) => `${n} days ago` },
-  es: { hoje: "Hoy", amanha: "Mañana", ontem: "Ayer", emDias: (n) => `En ${n} días`, emSemanas: (n) => `En ${n} semanas`, haDias: (n) => `Hace ${n} días` },
-  fr: { hoje: "Aujourd’hui", amanha: "Demain", ontem: "Hier", emDias: (n) => `Dans ${n} jours`, emSemanas: (n) => `Dans ${n} semaines`, haDias: (n) => `Il y a ${n} jours` },
-};
-
-// "Hoje", "Amanhã", "Em 3 dias", no idioma da bandeira
+// "Hoje", "Amanhã", "Em 3 dias", no idioma da bandeira (quando, nas traduções)
 export function quando(data) {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -72,7 +63,7 @@ export function quando(data) {
   dia.setHours(0, 0, 0, 0);
   const dias = Math.round((dia - hoje) / 86400000);
 
-  const t = textosAtuais(QUANDO);
+  const t = textosAtuais(traducoes).quando;
   if (dias === 0) return t.hoje;
   if (dias === 1) return t.amanha;
   if (dias === -1) return t.ontem;
@@ -128,13 +119,13 @@ export function Svg({ nome, tamanho }) {
   return <Icone d={icones[nome]} tamanho={tamanho} />;
 }
 
-// nome e grupo ficam em português aqui; o menu (LayoutVoluntario) mostra no idioma da bandeira
+// o nome de cada item vem das traduções pelo ícone (menu) e o de cada grupo pela chave (grupos)
 export const NAVEGACAO = [
-  { nome: "Painel", icone: "painel", caminho: "/voluntario", grupo: "Seu trabalho" },
-  { nome: "Agenda", icone: "agenda", caminho: "/voluntario/agenda", grupo: "Seu trabalho" },
-  { nome: "Atendimentos", icone: "atendimentos", caminho: "/voluntario/atendimentos", grupo: "Seu trabalho" },
-  { nome: "Relatórios", icone: "relatorio", caminho: "/voluntario/relatorios", grupo: "Seu trabalho" },
-  { nome: "Meu perfil", icone: "perfil", caminho: "/voluntario/perfil", grupo: "Sua conta" },
+  { icone: "painel", caminho: "/voluntario", grupo: "trabalho" },
+  { icone: "agenda", caminho: "/voluntario/agenda", grupo: "trabalho" },
+  { icone: "atendimentos", caminho: "/voluntario/atendimentos", grupo: "trabalho" },
+  { icone: "relatorio", caminho: "/voluntario/relatorios", grupo: "trabalho" },
+  { icone: "perfil", caminho: "/voluntario/perfil", grupo: "conta" },
 ];
 
 // onde resolver cada pendência do perfil; o texto do link fica nas traduções
@@ -451,7 +442,7 @@ export function Pendencias({ pendencias }) {
         {pendencias.map((p) => (
           <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : ""}>
             <Svg nome={p.feito ? "check" : "relogio"} tamanho={18} />
-            <span>{t.pendencias[p.chave] ?? p.titulo}</span>
+            <span>{t.pendencias[p.chave]}</span>
             {p.feito ? (
               <small>{t.pronto}</small>
             ) : (
