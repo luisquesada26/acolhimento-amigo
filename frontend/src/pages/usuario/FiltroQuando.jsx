@@ -43,14 +43,14 @@ function Calendario({ escolhido, aoEscolher }) {
 
   // tabIndex -1: o clique num dia apagado ou no espaço entre os dias deixa o foco aqui dentro
   return (
-    <div id="bus-calendario" className="bus-calendario" role="dialog" aria-label={t.escolherDia} tabIndex={-1} ref={caixa}>
+    <div id="bus-calendario" className="bus-calendario" role="dialog" aria-label={t.escolherDia} tabIndex={-1} ref={caixa} onKeyDown={andar}>
       <strong className="bus-cal-mes">{mesesDaJanela(dias, locale)}</strong>
       <div className="bus-cal-semana" aria-hidden="true">
         {dias.slice(0, 7).map((d) => (
           <span key={d.valor}>{semana.format(d.data).replace(".", "")}</span>
         ))}
       </div>
-      <div className="bus-cal-dias" onKeyDown={andar}>
+      <div className="bus-cal-dias">
         {dias.map((d) => (
           <button
             key={d.valor}
@@ -77,7 +77,8 @@ export default function FiltroQuando({ valor, aoMudar }) {
   const [aberto, setAberto] = useState(false);
   const caixa = useRef(null);
   const botao = useRef(null);
-  const dia = valor === "semana" ? "" : valor;
+  // só um AAAA-MM-DD é dia; qualquer outro valor não pode derrubar o Intl lá embaixo
+  const dia = /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : "";
 
   useEffect(() => {
     if (!aberto) return;
