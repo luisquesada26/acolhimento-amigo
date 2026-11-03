@@ -5,6 +5,7 @@
 @api = http://localhost:3000/api
 @amanha = {{$localDatetime "YYYY-MM-DD" 1 d}}
 @daquiTresDias = {{$localDatetime "YYYY-MM-DD" 3 d}}
+@daquiVinteDias = {{$localDatetime "YYYY-MM-DD" 20 d}}
 
 ### Servidor no ar
 GET {{api}}/saude
@@ -416,6 +417,64 @@ Content-Type: application/json
   "horario_id": 6,
   "servico_id": 2,
   "descricao": "Também quero orientação sobre o visto de residência."
+}
+
+### Voluntario abre um horario daqui a 20 dias (fora da agenda do seed)
+# @name horarioRafaelVinte
+POST {{api}}/horarios
+Authorization: Bearer {{loginVoluntario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "data": "{{daquiVinteDias}}",
+  "hora_inicio": "10:00",
+  "hora_fim": "10:45"
+}
+
+### Outra voluntaria abre um horario que bate com esse
+# @name horarioMarianaVinte
+POST {{api}}/horarios
+Authorization: Bearer {{loginOutroVoluntario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "data": "{{daquiVinteDias}}",
+  "hora_inicio": "10:15",
+  "hora_fim": "11:00"
+}
+
+### Outra voluntaria cria um servico para o teste
+# @name servicoMariana
+POST {{api}}/servicos
+Authorization: Bearer {{loginOutroVoluntario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "titulo": "Orientação de teste",
+  "descricao": "Serviço criado pelo teste de dois atendimentos no mesmo horário.",
+  "duracao_min": 45
+}
+
+### Marcar com o Rafael daqui a 20 dias
+POST {{api}}/agendamentos
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "horario_id": {{horarioRafaelVinte.response.body.$.id}},
+  "servico_id": 2,
+  "descricao": "Preciso de ajuda com a documentação para trabalhar."
+}
+
+### Marcar outro atendimento no mesmo horario, com outra voluntaria (409)
+POST {{api}}/agendamentos
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "horario_id": {{horarioMarianaVinte.response.body.$.id}},
+  "servico_id": {{servicoMariana.response.body.$.id}},
+  "descricao": "Queria também uma orientação no mesmo horário."
 }
 
 ### Ver o agendamento marcado

@@ -86,6 +86,9 @@ const criar = db.transaction((logado, dados) => {
   if (servico.voluntario_id !== horario.voluntario_id) {
     throw new ErroApp(400, "Este serviço não é oferecido pelo voluntário deste horário");
   }
+  if (repo.temConflito(usuario.id, horario)) {
+    throw new ErroApp(409, "Você já tem um atendimento nesse horário");
+  }
 
   const id = repo.criar({ ...dados, usuario_id: usuario.id });
   horariosRepo.mudarStatus(horario.id, "reservado");
@@ -115,6 +118,9 @@ const atualizar = db.transaction((usuario, id, dados) => {
     const novo = horarioDisponivel(dados.horario_id);
     if (novo.voluntario_id !== atual.voluntario.id) {
       throw new ErroApp(400, "Só é possível remarcar com o mesmo voluntário");
+    }
+    if (repo.temConflito(atual.usuario.id, novo, id)) {
+      throw new ErroApp(409, "Você já tem um atendimento nesse horário");
     }
 
     horariosRepo.mudarStatus(atual.horario.id, "livre");

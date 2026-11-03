@@ -68,6 +68,7 @@ const LINHAS = [
   ["Status deve ser confirmado, cancelado ou realizado", "Status must be confirmado, cancelado or realizado", "El estado debe ser confirmado, cancelado o realizado", "Le statut doit être confirmado, cancelado ou realizado"],
   ["Para cancelar use DELETE. Aqui o status só pode ser realizado", "To cancel, use DELETE. Here the status can only be realizado", "Para cancelar usa DELETE. Aquí el estado solo puede ser realizado", "Pour annuler, utilisez DELETE. Ici le statut ne peut être que realizado"],
   ["Id inválido", "Invalid id", "Id inválido", "Id invalide"],
+  ["Você já tem um atendimento nesse horário", "You already have an appointment at this time", "Ya tienes una cita en ese horario", "Vous avez déjà un rendez-vous à cet horaire"],
 ];
 
 const COLUNA = { en: 1, es: 2, fr: 3 };

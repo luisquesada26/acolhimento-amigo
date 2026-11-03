@@ -41,6 +41,16 @@ function buscarPorId(id) {
   return db.prepare(`${SELECT_AGENDAMENTO} WHERE a.id = ?`).get(id);
 }
 
+// outro atendimento confirmado do mesmo usuário que se sobrepõe a este horário
+function temConflito(usuarioId, horario, ignorarId = 0) {
+  return Boolean(db.prepare(`
+    SELECT 1 FROM agendamentos a
+    JOIN horarios h ON h.id = a.horario_id
+    WHERE a.usuario_id = ? AND a.status = 'confirmado' AND a.id <> ?
+      AND h.data = ? AND h.hora_inicio < ? AND h.hora_fim > ?
+  `).get(usuarioId, ignorarId, horario.data, horario.hora_fim, horario.hora_inicio));
+}
+
 function criar(a) {
   const { lastInsertRowid } = db
     .prepare(`
@@ -64,4 +74,4 @@ function liberarHorariosDoUsuario(usuarioId) {
   `).run(usuarioId);
 }
 
-module.exports = { listar, buscarPorId, criar, atualizar, liberarHorariosDoUsuario };
+module.exports = { listar, buscarPorId, temConflito, criar, atualizar, liberarHorariosDoUsuario };
