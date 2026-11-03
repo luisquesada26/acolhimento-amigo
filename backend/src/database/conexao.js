@@ -10,10 +10,24 @@ function ehLocal(url) {
   }
 }
 
+// a URL que o Supabase e o Vercel mostram pode vir com ?sslmode=require&supa=...&pgbouncer=...
+// Esses parâmetros saem: com sslmode=require o pg exige certificado verificado, e o do Supabase não passa
+function semParametrosDoSupabase(url) {
+  try {
+    const endereco = new URL(url);
+    for (const parametro of ["sslmode", "supa", "pgbouncer"]) endereco.searchParams.delete(parametro);
+    return endereco.toString();
+  } catch {
+    return url;
+  }
+}
+
+const URL_DO_BANCO = DATABASE_URL && semParametrosDoSupabase(DATABASE_URL);
+
 // o Supabase exige SSL; o Postgres da própria máquina, não
 const pool = new Pool({
-  connectionString: DATABASE_URL,
-  ssl: DATABASE_URL && !ehLocal(DATABASE_URL) ? { rejectUnauthorized: false } : false,
+  connectionString: URL_DO_BANCO,
+  ssl: URL_DO_BANCO && !ehLocal(URL_DO_BANCO) ? { rejectUnauthorized: false } : false,
 });
 
 // conexão parada que o servidor fechou: só registra, sem derrubar a API

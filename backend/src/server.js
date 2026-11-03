@@ -7,7 +7,7 @@ if (!JWT_SECRET) {
 }
 
 if (!DATABASE_URL) {
-  console.error("Falta a DATABASE_URL no backend/.env (o endereço do Postgres, veja o README)");
+  console.error("Falta o endereço do banco: DATABASE_URL no backend/.env (ou POSTGRES_URL, a da integração do Vercel)");
   process.exit(1);
 }
 
