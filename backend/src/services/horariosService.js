@@ -3,6 +3,8 @@ const repo = require("../repositories/horariosRepository");
 const { voluntarioLogado, garantirDono } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 const { agora } = require("../utils/datas");
+const agendamentosRepo = require("../repositories/agendamentosRepository");
+const videochamada = require("./videochamada");
 
 function formatar(h) {
   const {
@@ -93,4 +95,10 @@ const excluir = db.transaction((usuario, id, confirmar) => {
   repo.excluir(id);
 });
 
-module.exports = { meus, criar, atualizar, excluir };
+async function excluirComSala(usuario, id, confirmar) {
+  const salas = agendamentosRepo.salasDoHorario(id);
+  excluir(usuario, id, confirmar);
+  await videochamada.apagarSalas(salas);
+}
+
+module.exports = { meus, criar, atualizar, excluir, excluirComSala };

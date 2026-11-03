@@ -16,16 +16,20 @@ function buscar(req, res) {
   res.json(service.buscarPara(req.usuario, lerId(req.params.id)));
 }
 
-function criar(req, res) {
-  res.status(201).json(service.criar(req.usuario, req.body));
+async function criar(req, res) {
+  res.status(201).json(await service.criarComSala(req.usuario, req.body));
 }
 
-function atualizar(req, res) {
-  res.json(service.atualizar(req.usuario, lerId(req.params.id), req.body));
+async function atualizar(req, res) {
+  res.json(await service.atualizarComSala(req.usuario, lerId(req.params.id), req.body));
 }
 
-function cancelar(req, res) {
-  res.json(service.cancelar(req.usuario, lerId(req.params.id)));
+async function cancelar(req, res) {
+  res.json(await service.cancelarComSala(req.usuario, lerId(req.params.id)));
 }
 
-module.exports = { meus, buscar, criar, atualizar, cancelar };
+async function videochamada(req, res) {
+  res.json(await service.garantirSala(req.usuario, lerId(req.params.id)));
+}
+
+module.exports = { meus, buscar, criar, atualizar, cancelar, videochamada };

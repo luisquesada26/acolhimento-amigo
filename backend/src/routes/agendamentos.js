@@ -14,5 +14,7 @@ router.get("/:id", controller.buscar);
 router.post("/", exigirPerfil("usuario"), validar(criarAgendamentoSchema), controller.criar);
 router.put("/:id", validar(atualizarAgendamentoSchema), controller.atualizar);
 router.delete("/:id", controller.cancelar);
+// devolve o agendamento com o link do Meet, criando a sala se ainda não tiver
+router.post("/:id/videochamada", controller.videochamada);
 
 module.exports = router;

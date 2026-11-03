@@ -7,6 +7,7 @@ const voluntariosRepo = require("../repositories/voluntariosRepository");
 const { voluntarioLogado } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
 const { agora } = require("../utils/datas");
+const videochamada = require("./videochamada");
 
 function formatar(a) {
   return {
@@ -14,6 +15,7 @@ function formatar(a) {
     status: a.status,
     descricao: a.descricao,
     anotacao: a.anotacao,
+    link_video: a.link_video,
     criado_em: a.criado_em,
     horario: { id: a.horario_id, data: a.data, hora_inicio: a.hora_inicio, hora_fim: a.hora_fim },
     voluntario: { id: a.voluntario_id, nome: a.voluntario_nome, foto: a.voluntario_foto, area: a.voluntario_area },
@@ -157,4 +159,66 @@ const cancelar = db.transaction((usuario, id) => {
   return buscar(id);
 });
 
-module.exports = { meus, buscarPara, criar, atualizar, cancelar };
+// a sala do Meet fica fora da transação: o agendamento vale mesmo se o Google falhar,
+// e o botão da videochamada cria a sala depois (garantirSala)
+async function abrirSala(id) {
+  const a = repo.buscarPorId(id);
+  const sala = await videochamada.criarSala(a);
+  repo.atualizar(id, { link_video: sala.link, google_evento_id: sala.eventoId });
+}
+
+async function criarComSala(logado, dados) {
+  const agendamento = criar(logado, dados);
+  if (videochamada.ligado) {
+    try {
+      await abrirSala(agendamento.id);
+    } catch (erro) {
+      console.error(`Sala do Meet não criada para o agendamento ${agendamento.id}: ${erro.message}`);
+    }
+  }
+  return buscar(agendamento.id);
+}
+
+async function atualizarComSala(usuario, id, dados) {
+  const atualizado = atualizar(usuario, id, dados);
+  const { google_evento_id: eventoId } = repo.buscarPorId(id);
+  if (dados.horario_id && eventoId) {
+    try {
+      await videochamada.moverSala(eventoId, atualizado.horario);
+    } catch (erro) {
+      console.error(`Sala do Meet não remarcada no agendamento ${id}: ${erro.message}`);
+    }
+  }
+  return atualizado;
+}
+
+async function cancelarComSala(usuario, id) {
+  cancelar(usuario, id);
+  const { google_evento_id: eventoId } = repo.buscarPorId(id);
+  if (eventoId) {
+    await videochamada.apagarSalas([eventoId]);
+    repo.atualizar(id, { link_video: null, google_evento_id: null });
+  }
+  return buscar(id);
+}
+
+// o botão da videochamada chama aqui quando o agendamento ainda não tem sala (os do seed, ou se o Google falhou ao marcar)
+async function garantirSala(usuario, id) {
+  const atual = buscarPara(usuario, id);
+  if (atual.status !== "confirmado") {
+    throw new ErroApp(409, "A videochamada só existe para atendimentos confirmados");
+  }
+  if (atual.link_video) return atual;
+  if (!videochamada.ligado) {
+    throw new ErroApp(503, "A videochamada não está configurada neste servidor");
+  }
+  try {
+    await abrirSala(id);
+  } catch (erro) {
+    console.error(`Sala do Meet não criada para o agendamento ${id}: ${erro.message}`);
+    throw new ErroApp(502, "Não foi possível criar a sala da videochamada. Tente de novo.");
+  }
+  return buscar(id);
+}
+
+module.exports = { meus, buscarPara, criar, atualizar, cancelar, criarComSala, atualizarComSala, cancelarComSala, garantirSala };

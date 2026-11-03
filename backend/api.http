@@ -477,6 +477,14 @@ Content-Type: application/json
   "descricao": "Queria também uma orientação no mesmo horário."
 }
 
+### Sala da videochamada (503 sem as chaves do Google no .env; com elas, 200 e o link_video)
+POST {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}/videochamada
+Authorization: Bearer {{loginUsuario.response.body.$.token}}
+
+### Outro usuario pedindo a sala da videochamada (403)
+POST {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}/videochamada
+Authorization: Bearer {{loginOutroUsuario.response.body.$.token}}
+
 ### Ver o agendamento marcado
 GET {{api}}/agendamentos/{{marcarAtendimento.response.body.$.id}}
 Authorization: Bearer {{loginUsuario.response.body.$.token}}
