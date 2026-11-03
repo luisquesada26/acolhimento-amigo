@@ -1,38 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { lerErro } from "../../services/api";
 import Avatar from "../../components/Avatar";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { Svg, diaExtenso, quando } from "../voluntario/comum";
 import { EtiquetaArea, momento } from "./comum";
+import { situacao, useAtendimentos } from "./useAtendimentos";
 import { traducoes } from "./traducoes";
 import "./atendimentos.css";
 
 const ABAS = ["proximos", "anteriores", "cancelados"];
-
-function fimDe(a) {
-  return new Date(`${a.horario.data}T${a.horario.hora_fim}:00`);
-}
-
-// próximos: confirmados que ainda não acabaram. Confirmado com o horário já passado espera o voluntário confirmar
-function separar(lista, agora) {
-  const grupos = { proximos: [], anteriores: [], cancelados: [] };
-  for (const a of lista) {
-    if (a.status === "cancelado") grupos.cancelados.push(a);
-    else if (a.status === "confirmado" && fimDe(a) > agora) grupos.proximos.push(a);
-    else grupos.anteriores.push(a);
-  }
-  const porData = (x, y) => momento(x.horario) - momento(y.horario);
-  grupos.proximos.sort(porData);
-  grupos.anteriores.sort((x, y) => porData(y, x));
-  grupos.cancelados.sort((x, y) => porData(y, x));
-  return grupos;
-}
-
-function situacao(a, agora) {
-  if (a.status === "confirmado" && fimDe(a) <= agora) return "aguardando";
-  return a.status;
-}
 
 function Data({ inicio }) {
   return (
@@ -135,26 +112,16 @@ function Atendimento({ atendimento: a, agora, destaque = false, aoCancelar }) {
 // tudo o que a pessoa marcou: o que vem por aí, o que já passou e o que foi cancelado
 export default function MeusAtendimentos() {
   const t = useTextos(traducoes).atendimentos;
-  const [lista, setLista] = useState(null);
-  const [erro, setErro] = useState("");
+  const { lista, erro, grupos, carregar, trocar } = useAtendimentos();
   const [aba, setAba] = useState("proximos");
   const [aviso, setAviso] = useState("");
 
-  function carregar() {
-    setErro("");
-    api
-      .get("/meus-agendamentos")
-      .then(({ data }) => setLista(data))
-      .catch((problema) => setErro(lerErro(problema).mensagem));
-  }
-
-  useEffect(carregar, []);
+  useEffect(carregar, [carregar]);
 
   const agora = new Date();
-  const grupos = useMemo(() => separar(lista ?? [], new Date()), [lista]);
 
   function cancelado(atualizado) {
-    setLista((atual) => atual.map((a) => (a.id === atualizado.id ? atualizado : a)));
+    trocar(atualizado);
     setAviso(t.cancelado);
   }
 
