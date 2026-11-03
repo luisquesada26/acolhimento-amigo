@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../../components/Avatar";
 import { Bandeira } from "../../components/SeletorIdioma";
@@ -8,9 +8,12 @@ import { nomeDaArea, visualDaArea } from "../../dados/areas";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
 import { Esqueleto, IconeArea, momento, totalPorArea, useTodos } from "./comum";
-import useBusca from "./useBusca";
+import useBusca, { proximosDias } from "./useBusca";
 import { traducoes } from "./traducoes";
 import "./busca.css";
+
+const IDIOMAS = ["pt", "en", "es", "fr"];
+const TURNOS = ["manha", "tarde", "noite"];
 
 function Cartao({ voluntario, ordem }) {
   const { idioma } = useIdioma();
@@ -72,7 +75,6 @@ export default function Buscar() {
   const todos = useTodos();
   const total = totalPorArea(todos);
   const resultados = useRef(null);
-  const [ordem, setOrdem] = useState("horario");
 
   const maisCedo = useMemo(
     () =>
@@ -83,15 +85,10 @@ export default function Buscar() {
     [todos],
   );
 
-  const lista = useMemo(() => {
-    if (ordem === "nome") return busca.voluntarios;
-    return [...busca.voluntarios].sort((a, b) => {
-      if (!a.proximo_horario) return 1;
-      if (!b.proximo_horario) return -1;
-      return momento(a.proximo_horario) - momento(b.proximo_horario) || a.nome.localeCompare(b.nome, localeAtual());
-    });
-  }, [busca.voluntarios, ordem]);
+  // a API já manda por nome, mas o SQLite põe "Élodie" e nome em minúscula depois do "Z"
+  const lista = useMemo(() => [...busca.voluntarios].sort((a, b) => a.nome.localeCompare(b.nome, localeAtual())), [busca.voluntarios, idioma]);
 
+  const dias = proximosDias(localeAtual());
   const areaEscolhida = busca.areas.find((a) => String(a.id) === filtros.area);
 
   function irParaResultados() {
@@ -188,32 +185,70 @@ export default function Buscar() {
           <h2 id="bus-titulo" aria-live="polite">
             {busca.carregando ? t.buscando : t.resultado(lista.length, areaEscolhida && nomeDaArea(areaEscolhida.nome, idioma))}
           </h2>
-          <div className="bus-controles">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={Boolean(filtros.disponivel)}
-              className={filtros.disponivel ? "bus-chave bus-chave-ligada" : "bus-chave"}
-              onClick={() => busca.mudar("disponivel", filtros.disponivel ? "" : "semana")}
-            >
-              <span className="bus-chave-trilho">
-                <span />
-              </span>
-              {t.nestaSemana}
+          {busca.temFiltro && (
+            <button type="button" className="bus-link" onClick={busca.limpar}>
+              {t.limparFiltros}
             </button>
-            <div className="bus-segmento" role="group" aria-label={t.ordenar}>
-              <button type="button" className={ordem === "horario" ? "bus-ligada" : ""} aria-pressed={ordem === "horario"} onClick={() => setOrdem("horario")}>
-                {t.maisCedo}
+          )}
+        </div>
+
+        <div className="bus-filtros">
+          <div className="bus-filtro">
+            <span id="bus-rotulo-idioma" className="bus-filtro-rotulo">
+              {t.idioma}
+            </span>
+            <div className="bus-segmento" role="group" aria-labelledby="bus-rotulo-idioma">
+              <button type="button" className={filtros.idioma ? "" : "bus-ligada"} aria-pressed={!filtros.idioma} onClick={() => busca.mudar("idioma", "")}>
+                {t.todos}
               </button>
-              <button type="button" className={ordem === "nome" ? "bus-ligada" : ""} aria-pressed={ordem === "nome"} onClick={() => setOrdem("nome")}>
-                {t.nome}
-              </button>
+              {IDIOMAS.map((codigo) => {
+                const ligado = filtros.idioma === codigo;
+                return (
+                  <button
+                    key={codigo}
+                    type="button"
+                    className={ligado ? "bus-ligada" : ""}
+                    aria-pressed={ligado}
+                    aria-label={nomeDoIdioma(codigo)}
+                    title={nomeDoIdioma(codigo)}
+                    onClick={() => busca.mudar("idioma", ligado ? "" : codigo)}
+                  >
+                    <Bandeira codigo={codigo} />
+                  </button>
+                );
+              })}
             </div>
-            {busca.temFiltro && (
-              <button type="button" className="bus-link" onClick={busca.limpar}>
-                {t.limparFiltros}
-              </button>
-            )}
+          </div>
+
+          <div className="bus-filtro">
+            <span id="bus-rotulo-turno" className="bus-filtro-rotulo">
+              {t.turno}
+            </span>
+            <div className="bus-segmento" role="group" aria-labelledby="bus-rotulo-turno">
+              {TURNOS.map((turno) => {
+                const ligado = filtros.turno === turno;
+                return (
+                  <button key={turno} type="button" className={ligado ? "bus-ligada" : ""} aria-pressed={ligado} onClick={() => busca.mudar("turno", ligado ? "" : turno)}>
+                    {t.turnos[turno]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="bus-filtro">
+            <label htmlFor="bus-dia" className="bus-filtro-rotulo">
+              {t.quando}
+            </label>
+            <select id="bus-dia" className={filtros.quando ? "bus-select bus-select-ligado" : "bus-select"} value={filtros.quando} onChange={(e) => busca.mudar("quando", e.target.value)}>
+              <option value="">{t.qualquerDia}</option>
+              <option value="semana">{t.proximos7}</option>
+              {dias.map((dia) => (
+                <option key={dia.valor} value={dia.valor}>
+                  {dia.rotulo}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

@@ -500,6 +500,18 @@
                   "value": "semana",
                   "disabled": true,
                   "description": "só quem tem horário livre nos próximos 7 dias"
+                },
+                {
+                  "key": "data",
+                  "value": "2026-12-01",
+                  "disabled": true,
+                  "description": "só quem tem horário livre nesse dia (AAAA-MM-DD); o seed só cria horários nos próximos 14 dias"
+                },
+                {
+                  "key": "turno",
+                  "value": "tarde",
+                  "disabled": true,
+                  "description": "manha, tarde ou noite; vale junto com disponivel e data para o mesmo horário"
                 }
               ]
             },

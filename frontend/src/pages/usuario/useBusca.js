@@ -3,7 +3,32 @@ import api, { lerErro } from "../../services/api";
 
 const ESPERA_DIGITANDO = 350;
 
-const FILTROS_VAZIOS = { q: "", area: "", idioma: "", disponivel: "" };
+// quando: "" (qualquer dia), "semana" (próximos 7 dias) ou um dia AAAA-MM-DD
+const FILTROS_VAZIOS = { q: "", area: "", idioma: "", turno: "", quando: "" };
+
+const doisDigitos = (n) => String(n).padStart(2, "0");
+
+// AAAA-MM-DD pela data local: toISOString() usa UTC e, às 22h no Brasil, já devolve o dia seguinte
+function dataLocal(dia) {
+  return `${dia.getFullYear()}-${doisDigitos(dia.getMonth() + 1)}-${doisDigitos(dia.getDate())}`;
+}
+
+// os dias do "Quando", a partir de hoje, no idioma da tela
+export function proximosDias(locale, hoje = new Date(), quantos = 14) {
+  const formato = new Intl.DateTimeFormat(locale, { weekday: "short", day: "2-digit", month: "2-digit" });
+  return Array.from({ length: quantos }, (_, i) => {
+    const dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i);
+    return { valor: dataLocal(dia), rotulo: formato.format(dia) };
+  });
+}
+
+// na tela o "Quando" é um campo só; para a API vira disponivel=semana ou data=AAAA-MM-DD
+function paraParametros({ quando, ...resto }) {
+  const params = Object.fromEntries(Object.entries(resto).filter(([, valor]) => valor !== ""));
+  if (quando === "semana") params.disponivel = "semana";
+  else if (quando) params.data = quando;
+  return params;
+}
 
 // a busca é feita pela API: cada filtro vira parâmetro de GET /voluntarios
 export default function useBusca() {
@@ -26,8 +51,7 @@ export default function useBusca() {
     const meu = ++pedido.current;
     setCarregando(true);
     try {
-      const params = Object.fromEntries(Object.entries(atuais).filter(([, valor]) => valor !== ""));
-      const { data } = await api.get("/voluntarios", { params });
+      const { data } = await api.get("/voluntarios", { params: paraParametros(atuais) });
       if (meu !== pedido.current) return;
       setVoluntarios(data);
       setErro("");

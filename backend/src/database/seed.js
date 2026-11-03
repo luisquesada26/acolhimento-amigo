@@ -3,6 +3,12 @@ const { formatarData, diaMais } = require("../utils/datas");
 
 const SENHA_PADRAO = "senha123";
 
+const HORAS_POR_TURNO = [
+  [["09:00", "09:45"], ["10:00", "10:45"]],
+  [["14:00", "14:45"], ["15:00", "15:45"]],
+  [["19:00", "19:45"], ["20:00", "20:45"]],
+];
+
 const areas = [
   "Jurídico",
   "Psicologia",
@@ -267,6 +273,21 @@ function seed(db) {
       WHERE email = 'usuario@teste.com'
     `).run();
 
+    // horarios livres de segunda a sexta, de primeiroDia ate daqui a 14 dias
+    function criarAgenda(voluntarioId, horas, primeiroDia) {
+      const horarios = [];
+      for (let d = primeiroDia; d <= 14; d++) {
+        const data = diaMais(d);
+        const diaSemana = data.getDay();
+        if (diaSemana === 0 || diaSemana === 6) continue;
+
+        for (const [inicio, fim] of horas) {
+          horarios.push(inserirHorario.run(voluntarioId, formatarData(data), inicio, fim, "livre").lastInsertRowid);
+        }
+      }
+      return horarios;
+    }
+
     // guarda o primeiro servico e os horarios de cada voluntario para montar os agendamentos
     const vols = [];
     let indice = 0;
@@ -278,19 +299,11 @@ function seed(db) {
 
         const servicos = (p.servicos ?? grupo.servicos).map((s) => inserirServico.run(voluntarioId, s.titulo, s.descricao).lastInsertRowid);
 
-        // metade atende de manha, metade a noite
-        const horas = indice % 2 === 0 ? [["09:00", "09:45"], ["10:00", "10:45"]] : [["19:00", "19:45"], ["20:00", "20:45"]];
-        const horarios = [];
-
-        for (let d = 1; d <= 14; d++) {
-          const data = diaMais(d);
-          const diaSemana = data.getDay();
-          if (diaSemana === 0 || diaSemana === 6) continue;
-
-          for (const [inicio, fim] of horas) {
-            horarios.push(inserirHorario.run(voluntarioId, formatarData(data), inicio, fim, "livre").lastInsertRowid);
-          }
-        }
+        // um terco de manha, um a tarde e um a noite; 1 em cada 4 so tem agenda a partir da semana que vem.
+        // O Rafael (indice 0) fica de manha e desde amanha: o api.http usa os horarios dele e cria um as 14:00
+        const horas = HORAS_POR_TURNO[indice % 3];
+        const primeiroDia = indice % 4 === 3 ? 8 : 1;
+        const horarios = criarAgenda(voluntarioId, horas, primeiroDia);
 
         vols.push({ voluntarioId, servicos, horarios, horas });
         indice++;
@@ -350,6 +363,18 @@ function seed(db) {
     // proximos do Rafael, fora dos horarios 2 a 5 que o api.http usa nos testes
     agendar(3, 0, 6, "Tenho entrevista na Polícia Federal e quero saber o que levar.");
     agendar(2, 0, 9, "Minha carteira de trabalho ainda não saiu e o protocolo vence logo.");
+
+    // conta de teste do Jesus; fica no fim para nao mudar os ids que o api.http usa
+    const jesusUsuario = inserirUsuario.run("Jesus Voluntario", "jesus@jesus.com", hash, null, "voluntario", "Brasil", "pt").lastInsertRowid;
+    const jesus = inserirVoluntario.run(
+      jesusUsuario,
+      idsAreas["Assistência social"],
+      null,
+      "pt",
+      "Assistente social, ajudo quem acabou de chegar a encontrar documentos, benefícios e serviços públicos."
+    ).lastInsertRowid;
+    inserirServico.run(jesus, "Primeiros passos no Brasil", "Orientação sobre CPF, cartão do SUS e onde pedir cada documento.");
+    criarAgenda(jesus, HORAS_POR_TURNO[0], 1);
   });
 
   popular();

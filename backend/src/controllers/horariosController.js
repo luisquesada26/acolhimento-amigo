@@ -1,13 +1,7 @@
 const service = require("../services/horariosService");
 const { lerId } = require("../utils/id");
-const { data } = require("../schemas/horariosSchema");
+const { lerData } = require("../utils/datas");
 const { ErroApp } = require("../middlewares/erros");
-
-function lerData(valor) {
-  if (!valor) return undefined;
-  if (!data.safeParse(valor).success) throw new ErroApp(400, "Data deve estar no formato AAAA-MM-DD");
-  return valor;
-}
 
 function meus(req, res) {
   const { status, de, ate } = req.query;
