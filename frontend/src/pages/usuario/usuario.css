@@ -270,10 +270,16 @@ a.usu-pessoa:hover,
 
 .usu-confirmado-link {
   margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--verde-escuro);
+  font-family: inherit;
   font-size: 14px;
   font-weight: 800;
+  text-decoration: underline;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .usu-servicos {

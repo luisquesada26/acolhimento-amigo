@@ -8,6 +8,7 @@ import { EtiquetaArea, momento } from "./comum";
 import { useTextos } from "../../context/IdiomaContext";
 import { traducoes } from "./traducoes";
 import CalendarioHorarios from "./CalendarioHorarios";
+import { useAbertura, useAtendimentos } from "./useAtendimentos";
 
 const MINIMO_DESCRICAO = 20;
 
@@ -104,6 +105,8 @@ export default function PerfilVoluntario() {
   const [escolhido, setEscolhido] = useState(null);
   const [marcado, setMarcado] = useState(null);
   const avisoMarcado = useRef(null);
+  const atendimentos = useAtendimentos();
+  const { abrir: abrirAtendimentos } = useAbertura();
 
   // recarregar depois de marcar não troca a página por "Carregando", senão ela pisca e volta para o topo
   const carregar = useCallback(async () => {
@@ -149,11 +152,13 @@ export default function PerfilVoluntario() {
     );
   }
 
-  // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação
+  // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação.
+  // A lista do cabeçalho também recarrega, para o número do botão já contar o novo
   function confirmado() {
     setMarcado(escolhido);
     setEscolhido(null);
     carregar();
+    atendimentos.carregar();
   }
 
   return (
@@ -191,9 +196,9 @@ export default function PerfilVoluntario() {
               {t.marcadoTexto(dataComAno(momento(marcado)), marcado.hora_inicio)}
             </small>
           </span>
-          <Link to="/usuario/atendimentos" className="usu-confirmado-link">
+          <button type="button" className="usu-confirmado-link" onClick={abrirAtendimentos}>
             {t.verMeus}
-          </Link>
+          </button>
         </div>
       )}
 
