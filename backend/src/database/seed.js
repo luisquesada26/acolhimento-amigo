@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { consulta, transacao } = require("./conexao");
 const { formatarData, diaMais } = require("../utils/datas");
 
 const SENHA_PADRAO = "senha123";
@@ -236,56 +237,68 @@ const usuarios = [
   { nome: "João Baptista Mbala", email: "joao.mbala@email.com", telefone: "11943210987", pais: "Angola", idiomas: "pt,fr" },
 ];
 
-function seed(db) {
+// sabado ou domingo, pela data AAAA-MM-DD
+const fimDeSemana = (data) => [0, 6].includes(new Date(`${data}T12:00:00Z`).getUTCDay());
+
+async function seed() {
   const hash = bcrypt.hashSync(SENHA_PADRAO, 10);
 
-  const inserirArea = db.prepare("INSERT INTO areas (nome) VALUES (?)");
-  const inserirUsuario = db.prepare(`
+  const inserir = async (sql, params) => (await consulta(`${sql} RETURNING id`, params)).rows[0].id;
+
+  const inserirArea = (nome) => inserir("INSERT INTO areas (nome) VALUES (?)", [nome]);
+  const inserirUsuario = (...params) => inserir(`
     INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idiomas, aceite_lgpd)
     VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-  `);
-  const inserirVoluntario = db.prepare(`
+  `, params);
+  const inserirVoluntario = (...params) => inserir(`
     INSERT INTO voluntarios (usuario_id, area_id, registro_profissional, idiomas, bio)
     VALUES (?, ?, ?, ?, ?)
-  `);
-  const inserirServico = db.prepare("INSERT INTO servicos (voluntario_id, titulo, descricao) VALUES (?, ?, ?)");
-  const inserirHorario = db.prepare(`
+  `, params);
+  const inserirServico = (...params) => inserir("INSERT INTO servicos (voluntario_id, titulo, descricao) VALUES (?, ?, ?)", params);
+  const inserirHorario = (...params) => inserir(`
     INSERT INTO horarios (voluntario_id, data, hora_inicio, hora_fim, status) VALUES (?, ?, ?, ?, ?)
-  `);
-  const inserirAgendamento = db.prepare(`
+  `, params);
+  const inserirAgendamento = (...params) => inserir(`
     INSERT INTO agendamentos (horario_id, usuario_id, servico_id, descricao, status) VALUES (?, ?, ?, ?, ?)
-  `);
+  `, params);
 
-  const popular = db.transaction(() => {
+  await transacao(async () => {
     const idsAreas = {};
     for (const nome of areas) {
-      idsAreas[nome] = inserirArea.run(nome).lastInsertRowid;
+      idsAreas[nome] = await inserirArea(nome);
     }
 
-    const idsUsuarios = usuarios.map((u) =>
-      inserirUsuario.run(u.nome, u.email, hash, u.telefone, "usuario", u.pais, u.idiomas).lastInsertRowid
-    );
+    const idsUsuarios = [];
+    for (const u of usuarios) {
+      idsUsuarios.push(await inserirUsuario(u.nome, u.email, hash, u.telefone, "usuario", u.pais, u.idiomas));
+    }
 
     // o endereço é opcional; só o usuário de teste já vem com um, para a tela aparecer preenchida
-    db.prepare(`
+    await consulta(`
       UPDATE usuarios SET cep = '01305100', rua = 'Rua Augusta', numero = '1500', complemento = 'Apto 42',
         bairro = 'Consolação', cidade = 'São Paulo', estado = 'SP'
       WHERE email = 'usuario@teste.com'
-    `).run();
+    `);
 
-    // horarios livres de segunda a sexta, de primeiroDia ate daqui a 14 dias
-    function criarAgenda(voluntarioId, horas, primeiroDia) {
-      const horarios = [];
+    // horarios livres de segunda a sexta, de primeiroDia ate daqui a 14 dias.
+    // A agenda de cada voluntario vai num INSERT so: sao mais de mil horarios, e no Supabase cada ida ao banco demora
+    async function criarAgenda(voluntarioId, horas, primeiroDia) {
+      const linhas = [];
       for (let d = primeiroDia; d <= 14; d++) {
-        const data = diaMais(d);
-        const diaSemana = data.getDay();
-        if (diaSemana === 0 || diaSemana === 6) continue;
+        const data = formatarData(diaMais(d));
+        if (fimDeSemana(data)) continue;
 
         for (const [inicio, fim] of horas) {
-          horarios.push(inserirHorario.run(voluntarioId, formatarData(data), inicio, fim, "livre").lastInsertRowid);
+          linhas.push([voluntarioId, data, inicio, fim, "livre"]);
         }
       }
-      return horarios;
+      const { rows } = await consulta(`
+        INSERT INTO horarios (voluntario_id, data, hora_inicio, hora_fim, status)
+        VALUES ${linhas.map(() => "(?, ?, ?, ?, ?)").join(", ")}
+        RETURNING id
+      `, linhas.flat());
+      // os ids crescem na ordem das linhas
+      return rows.map((h) => h.id).sort((a, b) => a - b);
     }
 
     // guarda o primeiro servico e os horarios de cada voluntario para montar os agendamentos
@@ -294,55 +307,58 @@ function seed(db) {
 
     for (const grupo of voluntarios) {
       for (const p of grupo.pessoas) {
-        const usuarioId = inserirUsuario.run(p.nome, p.email, hash, null, "voluntario", "Brasil", "pt").lastInsertRowid;
-        const voluntarioId = inserirVoluntario.run(usuarioId, idsAreas[grupo.area], p.registro, p.idiomas, p.bio).lastInsertRowid;
+        const usuarioId = await inserirUsuario(p.nome, p.email, hash, null, "voluntario", "Brasil", "pt");
+        const voluntarioId = await inserirVoluntario(usuarioId, idsAreas[grupo.area], p.registro, p.idiomas, p.bio);
 
-        const servicos = (p.servicos ?? grupo.servicos).map((s) => inserirServico.run(voluntarioId, s.titulo, s.descricao).lastInsertRowid);
+        const servicos = [];
+        for (const s of p.servicos ?? grupo.servicos) {
+          servicos.push(await inserirServico(voluntarioId, s.titulo, s.descricao));
+        }
 
         // um terco de manha, um a tarde e um a noite; 1 em cada 4 so tem agenda a partir da semana que vem.
         // O Rafael (indice 0) fica de manha e desde amanha: o api.http usa os horarios dele e cria um as 14:00
         const horas = HORAS_POR_TURNO[indice % 3];
         const primeiroDia = indice % 4 === 3 ? 8 : 1;
-        const horarios = criarAgenda(voluntarioId, horas, primeiroDia);
+        const horarios = await criarAgenda(voluntarioId, horas, primeiroDia);
 
         vols.push({ voluntarioId, servicos, horarios, horas });
         indice++;
       }
     }
 
-    const reservar = db.prepare("UPDATE horarios SET status = 'reservado' WHERE id = ?");
+    const reservar = (horarioId) => consulta("UPDATE horarios SET status = 'reservado' WHERE id = ?", [horarioId]);
 
-    function agendar(usuarioIdx, volIdx, horarioIdx, descricao, status = "confirmado") {
+    async function agendar(usuarioIdx, volIdx, horarioIdx, descricao, status = "confirmado") {
       const v = vols[volIdx];
       const horarioId = v.horarios[horarioIdx];
-      if (status !== "cancelado") reservar.run(horarioId);
-      inserirAgendamento.run(horarioId, idsUsuarios[usuarioIdx], v.servicos[0], descricao, status);
+      if (status !== "cancelado") await reservar(horarioId);
+      await inserirAgendamento(horarioId, idsUsuarios[usuarioIdx], v.servicos[0], descricao, status);
     }
 
-    agendar(0, 0, 0, "Meu protocolo de refúgio vence mês que vem e não sei como renovar.");
-    agendar(0, 5, 2, "Estou com muita ansiedade desde que cheguei e não consigo dormir direito.");
-    agendar(0, 15, 3, "Quero aprender o básico de português para conseguir um emprego.", "cancelado");
-    agendar(1, 10, 1, "Preciso de ajuda para fazer o Cadastro Único da minha família.");
-    agendar(2, 18, 0, "Falo árabe e quero começar a estudar português do zero.");
-    agendar(3, 1, 4, "Quero saber como pedir a autorização de residência para meus filhos.");
-    agendar(4, 12, 2, "Procuro orientação para matricular meu filho na escola pública.");
-    agendar(1, 30, 1, "Sou enfermeira formada no Haiti e quero saber como revalidar meu diploma.");
-    agendar(4, 21, 3, "Meu currículo está no modelo de Angola e não estou sendo chamado para entrevistas.");
+    await agendar(0, 0, 0, "Meu protocolo de refúgio vence mês que vem e não sei como renovar.");
+    await agendar(0, 5, 2, "Estou com muita ansiedade desde que cheguei e não consigo dormir direito.");
+    await agendar(0, 15, 3, "Quero aprender o básico de português para conseguir um emprego.", "cancelado");
+    await agendar(1, 10, 1, "Preciso de ajuda para fazer o Cadastro Único da minha família.");
+    await agendar(2, 18, 0, "Falo árabe e quero começar a estudar português do zero.");
+    await agendar(3, 1, 4, "Quero saber como pedir a autorização de residência para meus filhos.");
+    await agendar(4, 12, 2, "Procuro orientação para matricular meu filho na escola pública.");
+    await agendar(1, 30, 1, "Sou enfermeira formada no Haiti e quero saber como revalidar meu diploma.");
+    await agendar(4, 21, 3, "Meu currículo está no modelo de Angola e não estou sendo chamado para entrevistas.");
 
     // um atendimento que ja aconteceu, para testar o status realizado
     const passado = vols[0];
     const [inicio, fim] = passado.horas[0];
-    const horarioPassado = inserirHorario.run(passado.voluntarioId, formatarData(diaMais(-3)), inicio, fim, "reservado").lastInsertRowid;
-    const anotar = db.prepare("UPDATE agendamentos SET anotacao = ? WHERE id = ?");
-    const realizado = inserirAgendamento.run(horarioPassado, idsUsuarios[0], passado.servicos[1], "Recebi uma notificação da Polícia Federal e não entendi o que preciso fazer.", "realizado");
-    anotar.run("Era uma convocação para atualizar o endereço. Orientei a levar comprovante de residência. Próximo passo: ir à Polícia Federal na data marcada.", realizado.lastInsertRowid);
+    const horarioPassado = await inserirHorario(passado.voluntarioId, formatarData(diaMais(-3)), inicio, fim, "reservado");
+    const anotar = (anotacao, agendamentoId) => consulta("UPDATE agendamentos SET anotacao = ? WHERE id = ?", [anotacao, agendamentoId]);
+    const realizado = await inserirAgendamento(horarioPassado, idsUsuarios[0], passado.servicos[1], "Recebi uma notificação da Polícia Federal e não entendi o que preciso fazer.", "realizado");
+    await anotar("Era uma convocação para atualizar o endereço. Orientei a levar comprovante de residência. Próximo passo: ir à Polícia Federal na data marcada.", realizado);
 
     // historico do voluntario de teste (Rafael), para o painel dele ter atendimentos passados e futuros
     const rafael = vols[0];
     const diaUtil = (dias) => {
-      const d = diaMais(dias);
-      while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() - 1);
-      return formatarData(d);
+      let data = formatarData(diaMais(dias));
+      while (fimDeSemana(data)) data = formatarData(diaMais(--dias));
+      return data;
     };
     const historico = [
       [-35, 1, 0, "Cheguei do Haiti e preciso entender qual documento pedir primeiro.", "realizado", "Expliquei a ordem dos documentos: primeiro o CPF, depois a carteira de trabalho. Próximo passo: agendar o CPF na Receita Federal."],
@@ -353,31 +369,29 @@ function seed(db) {
       [-13, 3, 0, "Minha autorização de residência vence em dois meses.", "realizado", "A renovação pode ser pedida 90 dias antes. Próximo passo: agendar na Polícia Federal pelo site."],
       [-10, 4, 1, "Recebi uma intimação e não sei se preciso de advogado.", "realizado", "Expliquei a intimação: por enquanto não precisa de advogado. Recomendei comparecer com os documentos."],
     ];
-    historico.forEach(([dias, usuarioIdx, servicoIdx, descricao, status, anotacao], i) => {
+    for (const [i, [dias, usuarioIdx, servicoIdx, descricao, status, anotacao]] of historico.entries()) {
       const [inicio, fim] = rafael.horas[i % 2];
-      const horarioId = inserirHorario.run(rafael.voluntarioId, diaUtil(dias), inicio, fim, status === "cancelado" ? "livre" : "reservado").lastInsertRowid;
-      const { lastInsertRowid } = inserirAgendamento.run(horarioId, idsUsuarios[usuarioIdx], rafael.servicos[servicoIdx], descricao, status);
-      if (anotacao) anotar.run(anotacao, lastInsertRowid);
-    });
+      const horarioId = await inserirHorario(rafael.voluntarioId, diaUtil(dias), inicio, fim, status === "cancelado" ? "livre" : "reservado");
+      const agendamentoId = await inserirAgendamento(horarioId, idsUsuarios[usuarioIdx], rafael.servicos[servicoIdx], descricao, status);
+      if (anotacao) await anotar(anotacao, agendamentoId);
+    }
 
     // proximos do Rafael, fora dos horarios 2 a 5 que o api.http usa nos testes
-    agendar(3, 0, 6, "Tenho entrevista na Polícia Federal e quero saber o que levar.");
-    agendar(2, 0, 9, "Minha carteira de trabalho ainda não saiu e o protocolo vence logo.");
+    await agendar(3, 0, 6, "Tenho entrevista na Polícia Federal e quero saber o que levar.");
+    await agendar(2, 0, 9, "Minha carteira de trabalho ainda não saiu e o protocolo vence logo.");
 
     // conta de teste do Jesus; fica no fim para nao mudar os ids que o api.http usa
-    const jesusUsuario = inserirUsuario.run("Jesus Voluntario", "jesus@jesus.com", hash, null, "voluntario", "Brasil", "pt").lastInsertRowid;
-    const jesus = inserirVoluntario.run(
+    const jesusUsuario = await inserirUsuario("Jesus Voluntario", "jesus@jesus.com", hash, null, "voluntario", "Brasil", "pt");
+    const jesus = await inserirVoluntario(
       jesusUsuario,
       idsAreas["Assistência social"],
       null,
       "pt",
       "Assistente social, ajudo quem acabou de chegar a encontrar documentos, benefícios e serviços públicos."
-    ).lastInsertRowid;
-    inserirServico.run(jesus, "Primeiros passos no Brasil", "Orientação sobre CPF, cartão do SUS e onde pedir cada documento.");
-    criarAgenda(jesus, HORAS_POR_TURNO[0], 1);
+    );
+    await inserirServico(jesus, "Primeiros passos no Brasil", "Orientação sobre CPF, cartão do SUS e onde pedir cada documento.");
+    await criarAgenda(jesus, HORAS_POR_TURNO[0], 1);
   });
-
-  popular();
 }
 
 module.exports = seed;

@@ -1,29 +1,40 @@
 const fs = require("fs");
 const path = require("path");
-const db = require("./conexao");
+const { pool, consulta, transacao } = require("./conexao");
 const seed = require("./seed");
-const { DB_PATH } = require("../config/env");
+const { DATABASE_URL } = require("../config/env");
 
-// apaga as tabelas em vez do arquivo, porque no Windows o .db fica travado se o servidor estiver rodando
-const tabelas = db
-  .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
-  .all();
-
-db.pragma("foreign_keys = OFF");
-for (const { name } of tabelas) {
-  db.exec(`DROP TABLE IF EXISTS "${name}"`);
-}
-db.pragma("foreign_keys = ON");
-
-const schema = fs.readFileSync(path.join(__dirname, "schema.sql"), "utf8");
-db.exec(schema);
-seed(db);
-
-const contar = (tabela) => db.prepare(`SELECT COUNT(*) AS total FROM ${tabela}`).get().total;
-
-console.log("Banco recriado em", DB_PATH);
-for (const tabela of ["usuarios", "areas", "voluntarios", "servicos", "horarios", "agendamentos"]) {
-  console.log(`  ${tabela}: ${contar(tabela)}`);
+if (!DATABASE_URL) {
+  console.error("Falta a DATABASE_URL no backend/.env (o endereço do Postgres, veja o README)");
+  process.exit(1);
 }
 
-db.close();
+const TABELAS = ["usuarios", "areas", "voluntarios", "servicos", "horarios", "agendamentos"];
+
+// tudo numa transação: se algo falhar no meio, o banco continua como estava
+async function resetar() {
+  await transacao(async () => {
+    const { rows } = await consulta("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
+    for (const { tablename } of rows) {
+      await consulta(`DROP TABLE IF EXISTS "${tablename}" CASCADE`);
+    }
+
+    await consulta(fs.readFileSync(path.join(__dirname, "schema.sql"), "utf8"));
+    await seed();
+  });
+
+  // o endereço sem o usuário e a senha
+  const { host, pathname } = new URL(DATABASE_URL);
+  console.log(`Banco recriado em ${host}${pathname}`);
+  for (const tabela of TABELAS) {
+    const { rows } = await consulta(`SELECT COUNT(*)::int AS total FROM ${tabela}`);
+    console.log(`  ${tabela}: ${rows[0].total}`);
+  }
+}
+
+resetar()
+  .catch((erro) => {
+    console.error("Não foi possível recriar o banco:", erro.message);
+    process.exitCode = 1;
+  })
+  .finally(() => pool.end());
