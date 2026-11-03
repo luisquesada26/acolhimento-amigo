@@ -1,6 +1,5 @@
-const fs = require("fs");
-const path = require("path");
-const { pool, consulta, transacao } = require("./conexao");
+const { pool, transacao } = require("./conexao");
+const { TABELAS, recriarTabelas, contar } = require("./recriarTabelas");
 const seed = require("./seed");
 const { DATABASE_URL } = require("../config/env");
 
@@ -9,17 +8,10 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const TABELAS = ["usuarios", "areas", "voluntarios", "servicos", "horarios", "agendamentos"];
-
 // tudo numa transação: se algo falhar no meio, o banco continua como estava
 async function resetar() {
   await transacao(async () => {
-    const { rows } = await consulta("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
-    for (const { tablename } of rows) {
-      await consulta(`DROP TABLE IF EXISTS "${tablename}" CASCADE`);
-    }
-
-    await consulta(fs.readFileSync(path.join(__dirname, "schema.sql"), "utf8"));
+    await recriarTabelas();
     await seed();
   });
 
@@ -27,8 +19,7 @@ async function resetar() {
   const { host, pathname } = new URL(DATABASE_URL);
   console.log(`Banco recriado em ${host}${pathname}`);
   for (const tabela of TABELAS) {
-    const { rows } = await consulta(`SELECT COUNT(*)::int AS total FROM ${tabela}`);
-    console.log(`  ${tabela}: ${rows[0].total}`);
+    console.log(`  ${tabela}: ${await contar(tabela)}`);
   }
 }
 

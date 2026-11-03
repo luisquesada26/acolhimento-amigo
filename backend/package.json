@@ -8,6 +8,7 @@
     "dev": "node --env-file-if-exists=.env --watch src/server.js",
     "start": "node --env-file-if-exists=.env src/server.js",
     "db:reset": "node --env-file-if-exists=.env src/database/reset.js",
+    "db:copiar-sqlite": "node --env-file-if-exists=.env scripts/copiar-sqlite-para-postgres.js",
     "google:autorizar": "node --env-file-if-exists=.env scripts/autorizar-google.js .env"
   },
   "dependencies": {
