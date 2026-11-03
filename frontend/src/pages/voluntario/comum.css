@@ -224,12 +224,26 @@
   list-style: none;
 }
 
+/* a pergunta à esquerda e os botões à direita; o painel aberto desce para a linha de baixo, na largura toda */
 .vol-aguardando li {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
   color: #4a3a17;
   line-height: 1.5;
+}
+
+.vol-aguardando li > p {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+/* com mais de um atendimento esperando, uma linha separa cada um */
+.vol-aguardando li + li {
+  padding-top: 12px;
+  border-top: 1px solid #f3d9a4;
 }
 
 /* próximo atendimento */
@@ -360,20 +374,76 @@
   content: "”";
 }
 
-.vol-proximo-acoes > .vol-confirmar {
-  flex-basis: 100%;
+/* na janela do atendimento, a videochamada e os botões de concluir/cancelar dividem a linha */
+.vol-proximo-acoes {
+  align-items: flex-start;
+}
+
+/* concluir ou cancelar (AcoesAtendimento): fechado, dois botões do tamanho do texto, nunca esticados */
+.vol-atendimento-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.vol-atendimento-botoes > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .vol-botao-concluir {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  border-color: #b9d7c5;
+  background: var(--verde-claro);
   color: var(--verde-escuro);
+}
+
+.vol-botao-concluir:hover:not(:disabled) {
+  border-color: var(--verde);
+  background: #dcf1e4;
 }
 
 .vol-confirmar-concluir {
   background: var(--verde-claro);
   color: #0d4f29;
+}
+
+/* aberto, o painel escolhido ocupa a linha inteira, numa coluna ou numa linha que quebra */
+.vol-atendimento-painel {
+  width: 100%;
+  border: 1px solid #f0b4ae;
+}
+
+.vol-atendimento-painel.vol-confirmar-concluir {
+  border-color: #b9d7c5;
+}
+
+.vol-atendimento-painel .vol-acoes {
+  align-items: center;
+}
+
+/* celular: os dois botões meio a meio embaixo da pergunta; os do painel dividem a linha ou empilham */
+@media (max-width: 560px) {
+  .vol-atendimento-botoes {
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .vol-atendimento-botoes > button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 48px;
+    padding: 6px 10px;
+    overflow-wrap: break-word;
+  }
+
+  .vol-atendimento-painel .vol-acoes > button {
+    flex: 1 1 auto;
+  }
 }
 
 .vol-proximo-acoes .botao {

@@ -160,71 +160,86 @@ export function useAcao(acao) {
   return { executar, ocupado, erro };
 }
 
-// concluir marca como realizado: sai dos próximos e vai para o histórico, com a anotação do voluntário
-export function ConcluirAtendimento({ id, marcarRealizado, rotulo }) {
+// as duas saídas de um atendimento: concluir (vai para o histórico, com a anotação) ou cancelar.
+// fechado, mostra os dois botões; escolhido um, o outro some e o painel abre na largura toda.
+// "Voltar" desfaz a escolha e devolve o foco ao botão de onde o painel saiu
+export function AcoesAtendimento({ id, marcarRealizado, cancelar, rotuloConcluir, rotuloCancelar, rotuloSimCancelar, perguntaCancelar }) {
   const t = useTextos(traducoes);
-  const [confirmando, setConfirmando] = useState(false);
+  const [aberto, setAberto] = useState(null); // null, "concluir" ou "cancelar"
+  const [voltouDe, setVoltouDe] = useState(null);
   const [anotacao, setAnotacao] = useState("");
+  const concluir = useAcao(() => marcarRealizado(id, anotacao));
+  const desmarcar = useAcao(() => cancelar(id));
   const campo = useId();
-  const { executar, ocupado, erro } = useAcao(() => marcarRealizado(id, anotacao));
+  const pergunta = useId();
+  // a cada troca, o foco vai para o campo da anotação, para a pergunta ou de volta ao botão
+  const foco = useRef(null);
 
-  if (!confirmando) {
+  useEffect(() => {
+    foco.current?.focus();
+  }, [aberto]);
+
+  function voltar() {
+    setVoltouDe(aberto);
+    setAberto(null);
+  }
+
+  if (aberto === "concluir") {
     return (
-      <button type="button" className="vol-botao-secundario vol-botao-concluir" onClick={() => setConfirmando(true)}>
-        <Svg nome="check" tamanho={18} /> {rotulo ?? t.concluirAtendimento}
-      </button>
+      <div className="vol-confirmar vol-confirmar-concluir vol-atendimento-painel">
+        <label htmlFor={campo}>{t.anotacaoOpcional}</label>
+        <textarea
+          ref={foco}
+          id={campo}
+          rows={3}
+          maxLength={1000}
+          value={anotacao}
+          onChange={(e) => setAnotacao(e.target.value)}
+          placeholder={t.anotacaoPlaceholder}
+        />
+        <div className="vol-acoes">
+          <button type="button" className="botao botao-primario botao-voluntario vol-botao-pequeno" onClick={concluir.executar} disabled={concluir.ocupado}>
+            {concluir.ocupado ? t.concluindo : t.concluirAtendimento}
+          </button>
+          <button type="button" className="vol-botao-secundario" onClick={voltar} disabled={concluir.ocupado}>
+            {t.voltar}
+          </button>
+        </div>
+        {concluir.erro && <p className="vol-erro" role="alert">{concluir.erro}</p>}
+      </div>
+    );
+  }
+
+  if (aberto === "cancelar") {
+    return (
+      <div ref={foco} className="vol-confirmar vol-atendimento-painel" role="group" aria-labelledby={pergunta} tabIndex={-1}>
+        <p id={pergunta}>{perguntaCancelar ?? t.cancelarMesmo}</p>
+        <div className="vol-acoes">
+          <button type="button" className="vol-botao-perigo vol-botao-cheio" onClick={desmarcar.executar} disabled={desmarcar.ocupado}>
+            {desmarcar.ocupado ? t.cancelando : (rotuloSimCancelar ?? t.simCancelar)}
+          </button>
+          <button type="button" className="vol-botao-secundario" onClick={voltar} disabled={desmarcar.ocupado}>
+            {t.voltar}
+          </button>
+        </div>
+        {desmarcar.erro && <p className="vol-erro" role="alert">{desmarcar.erro}</p>}
+      </div>
     );
   }
 
   return (
-    <div className="vol-confirmar vol-confirmar-concluir">
-      <label htmlFor={campo}>{t.anotacaoOpcional}</label>
-      <textarea
-        id={campo}
-        rows={3}
-        maxLength={1000}
-        value={anotacao}
-        onChange={(e) => setAnotacao(e.target.value)}
-        placeholder={t.anotacaoPlaceholder}
-      />
-      <div className="vol-acoes">
-        <button type="button" className="botao botao-primario botao-voluntario vol-botao-pequeno" onClick={executar} disabled={ocupado}>
-          {ocupado ? t.concluindo : t.concluirAtendimento}
-        </button>
-        <button type="button" className="vol-botao-secundario" onClick={() => setConfirmando(false)} disabled={ocupado}>
-          {t.voltar}
-        </button>
-      </div>
-      {erro && <p className="vol-erro" role="alert">{erro}</p>}
-    </div>
-  );
-}
-
-export function CancelarAtendimento({ id, cancelar, rotulo }) {
-  const t = useTextos(traducoes);
-  const [confirmando, setConfirmando] = useState(false);
-  const { executar, ocupado, erro } = useAcao(() => cancelar(id));
-
-  if (!confirmando) {
-    return (
-      <button type="button" className="vol-botao-perigo" onClick={() => setConfirmando(true)}>
-        {rotulo ?? t.cancelarAtendimento}
+    <div className="vol-atendimento-botoes">
+      <button
+        ref={voltouDe === "concluir" ? foco : null}
+        type="button"
+        className="vol-botao-secundario vol-botao-concluir"
+        onClick={() => setAberto("concluir")}
+      >
+        <Svg nome="check" tamanho={18} /> {rotuloConcluir ?? t.concluirAtendimento}
       </button>
-    );
-  }
-
-  return (
-    <div className="vol-confirmar">
-      <span>{t.cancelarMesmo}</span>
-      <div className="vol-acoes">
-        <button type="button" className="vol-botao-perigo vol-botao-cheio" onClick={executar} disabled={ocupado}>
-          {ocupado ? t.cancelando : t.simCancelar}
-        </button>
-        <button type="button" className="vol-botao-secundario" onClick={() => setConfirmando(false)} disabled={ocupado}>
-          {t.nao}
-        </button>
-      </div>
-      {erro && <p className="vol-erro" role="alert">{erro}</p>}
+      <button ref={voltouDe === "cancelar" ? foco : null} type="button" className="vol-botao-perigo" onClick={() => setAberto("cancelar")}>
+        {rotuloCancelar ?? t.cancelarAtendimento}
+      </button>
     </div>
   );
 }
@@ -349,10 +364,15 @@ function ItemAguardando({ atendimento, marcarRealizado, cancelar }) {
           <strong key="nome">{atendimento.usuario.nome}</strong>
         )}
       </p>
-      <div className="vol-acoes">
-        <ConcluirAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} rotulo={t.marcarRealizado} />
-        <CancelarAtendimento id={atendimento.id} cancelar={cancelar} rotulo={t.naoAconteceu} />
-      </div>
+      <AcoesAtendimento
+        id={atendimento.id}
+        marcarRealizado={marcarRealizado}
+        cancelar={cancelar}
+        rotuloConcluir={t.marcarRealizado}
+        rotuloCancelar={t.naoAconteceu}
+        rotuloSimCancelar={t.simNaoAconteceu}
+        perguntaCancelar={t.naoAconteceuMesmo}
+      />
     </li>
   );
 }
@@ -391,10 +411,8 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoA
       <blockquote className="vol-caso">
         <p>{atendimento.descricao}</p>
       </blockquote>
-      <div className="vol-acoes vol-proximo-acoes">
-        <ConcluirAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} />
-        <CancelarAtendimento id={atendimento.id} cancelar={cancelar} />
-      </div>
+      {/* a chave zera o painel quando este sai e o próximo da fila entra no lugar */}
+      <AcoesAtendimento key={atendimento.id} id={atendimento.id} marcarRealizado={marcarRealizado} cancelar={cancelar} />
     </section>
   );
 }
