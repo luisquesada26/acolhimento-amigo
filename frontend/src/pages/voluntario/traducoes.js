@@ -67,17 +67,13 @@ export const traducoes = {
     suaConta: "Sua conta",
 
     // painel (PainelVoluntario.jsx)
-    boasVindas: (nome) => `Que bom ter você de volta, ${nome}!`,
     // saudação do painel (Saudacao.jsx); dia e nome chegam já em negrito
     saudacao: {
       titulo: (nome) => ["Que bom ter você de volta, ", nome, "!"],
       resumoProximo: (dia, hora, nome) => ["Seu próximo atendimento é ", dia, `, às ${hora}, com `, nome, "."],
       resumoVazio: "Nenhum atendimento marcado por enquanto. Abra horários para as pessoas encontrarem você.",
-      marcados: (n) => (n === 1 ? "1 atendimento marcado" : `${n} atendimentos marcados`),
-      aguardando: (n) => (n === 1 ? "1 aguardando conclusão" : `${n} aguardando conclusão`),
       naBusca: "Aparecendo na busca",
       pausado: "Fora da busca",
-      verAgenda: "Ver agenda",
       seuDia: "Seu dia",
       hoje: "Hoje",
       hojeN: (n) => (n === 0 ? "Nenhum atendimento" : n === 1 ? "1 atendimento" : `${n} atendimentos`),
@@ -311,16 +307,12 @@ export const traducoes = {
     trilha: "You are here",
     suaConta: "Your account",
 
-    boasVindas: (nome) => `Good to have you back, ${nome}!`,
     saudacao: {
       titulo: (nome) => ["Good to have you back, ", nome, "!"],
       resumoProximo: (dia, hora, nome) => ["Your next appointment is ", dia, ` at ${hora}, with `, nome, "."],
       resumoVazio: "No appointments booked yet. Open time slots so people can find you.",
-      marcados: (n) => (n === 1 ? "1 appointment booked" : `${n} appointments booked`),
-      aguardando: (n) => `${n} awaiting wrap-up`,
       naBusca: "Showing in search",
       pausado: "Hidden from search",
-      verAgenda: "View schedule",
       seuDia: "Your day",
       hoje: "Today",
       hojeN: (n) => (n === 0 ? "No appointments" : n === 1 ? "1 appointment" : `${n} appointments`),
@@ -546,16 +538,12 @@ export const traducoes = {
     trilha: "Estás en",
     suaConta: "Tu cuenta",
 
-    boasVindas: (nome) => `¡Qué bueno tenerte de vuelta, ${nome}!`,
     saudacao: {
       titulo: (nome) => ["¡Qué bueno tenerte de vuelta, ", nome, "!"],
       resumoProximo: (dia, hora, nome) => ["Tu próxima cita es ", dia, `, a las ${hora}, con `, nome, "."],
       resumoVazio: "Aún no hay citas reservadas. Abre horarios para que las personas te encuentren.",
-      marcados: (n) => (n === 1 ? "1 cita reservada" : `${n} citas reservadas`),
-      aguardando: (n) => (n === 1 ? "1 pendiente de concluir" : `${n} pendientes de concluir`),
       naBusca: "Apareces en la búsqueda",
       pausado: "Fuera de la búsqueda",
-      verAgenda: "Ver agenda",
       seuDia: "Tu día",
       hoje: "Hoy",
       hojeN: (n) => (n === 0 ? "Ninguna cita" : n === 1 ? "1 cita" : `${n} citas`),
@@ -780,16 +768,12 @@ export const traducoes = {
     trilha: "Vous êtes ici",
     suaConta: "Votre compte",
 
-    boasVindas: (nome) => `Ravi de vous revoir, ${nome} !`,
     saudacao: {
       titulo: (nome) => ["Ravi de vous revoir, ", nome, " !"],
       resumoProximo: (dia, hora, nome) => ["Votre prochain rendez-vous est ", dia, `, à ${hora}, avec `, nome, "."],
       resumoVazio: "Aucun rendez-vous pour le moment. Ouvrez des créneaux pour que l’on vous trouve.",
-      marcados: (n) => (n <= 1 ? `${n} rendez-vous prévu` : `${n} rendez-vous prévus`),
-      aguardando: (n) => `${n} à clôturer`,
       naBusca: "Visible dans la recherche",
       pausado: "Hors de la recherche",
-      verAgenda: "Voir l’agenda",
       seuDia: "Votre journée",
       hoje: "Aujourd’hui",
       hojeN: (n) => (n === 0 ? "Aucun rendez-vous" : `${n} rendez-vous`),

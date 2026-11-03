@@ -4,6 +4,7 @@
 }
 
 .painel-menu-topo {
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,11 +46,6 @@
 
 a.painel-item {
   text-decoration: none;
-}
-
-a.painel-item:hover:not(.painel-item-atual) {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
 }
 
 /* recolhido: só os ícones; os textos continuam para o leitor de tela */
@@ -1305,7 +1301,7 @@ textarea.perfil-input {
 .painel-menu nav {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 26px;
 }
 
 .painel-menu-grupo {
@@ -1315,20 +1311,20 @@ textarea.perfil-input {
 }
 
 .painel-menu-rotulo {
-  padding: 0 14px 4px;
-  color: #8fa6cf;
-  font-size: 11px;
+  padding: 0 12px 8px;
+  color: #7f95bd;
+  font-size: 10.5px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-/* item aberto sem caixa: texto branco, ícone verde e um traço fino à esquerda */
+/* item aberto: fundo claro, ícone verde e um traço encostado na borda do menu */
 .painel-item.painel-item-atual {
   position: relative;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .painel-item.painel-item-atual svg {
@@ -1340,15 +1336,20 @@ textarea.perfil-input {
   position: absolute;
   top: 10px;
   bottom: 10px;
-  left: 0;
-  width: 3px;
+  left: -14px;
+  width: 4px;
   border-radius: 0 3px 3px 0;
   background: #5fd38d;
 }
 
 a.painel-item:hover:not(.painel-item-atual) {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
+}
+
+a.painel-item:focus-visible {
+  outline: 2px solid #9cc0ff;
+  outline-offset: 2px;
 }
 
 .painel-contador {

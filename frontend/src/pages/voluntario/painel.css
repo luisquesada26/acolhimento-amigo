@@ -9,25 +9,33 @@
   color: var(--texto-2);
 }
 
+/* menu e conteúdo como painéis, com respiro até a borda da tela */
 .painel {
   min-height: 100vh;
+  box-sizing: border-box;
   display: flex;
+  gap: 16px;
+  padding: 16px;
   background: var(--fundo);
 }
 
+/* fica acima da barra de cima, para o botão de recolher não passar por baixo dela */
 .painel-menu {
   position: sticky;
-  top: 0;
+  top: 16px;
+  z-index: 25;
   width: 250px;
-  height: 100vh;
+  height: calc(100vh - 32px);
   flex-shrink: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  padding: 26px 16px;
+  gap: 28px;
+  padding: 22px 14px;
+  border-radius: 24px;
   background: var(--marinho);
   color: #fff;
+  box-shadow: 0 24px 50px rgba(8, 33, 82, 0.22);
 }
 
 .painel-menu .logo {
@@ -45,20 +53,25 @@
 
 .painel-item {
   width: 100%;
-  min-height: 46px;
+  min-height: 42px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 14px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   background: transparent;
-  color: #c3d2ec;
+  color: #b7c6e2;
   font: inherit;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
   text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.painel-item svg {
+  flex-shrink: 0;
 }
 
 .painel-item:disabled {
@@ -80,7 +93,7 @@
   display: flex;
   flex-direction: column;
   gap: 22px;
-  padding: 32px clamp(16px, 3vw, 40px) 32px;
+  padding: 28px clamp(8px, 2vw, 24px) 32px;
 }
 
 .painel-cabecalho {

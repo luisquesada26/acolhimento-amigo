@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
 import { useTextos } from "../../context/IdiomaContext";
@@ -102,19 +101,13 @@ function MenuConta({ perfil, sair }) {
 }
 
 // barra de cima das telas do voluntário: onde a pessoa está, o idioma e a conta
-export default function BarraTopo({ perfil, sair, comLogo = false }) {
+export default function BarraTopo({ perfil, sair }) {
   const { pathname } = useLocation();
   const t = useTextos(traducoes);
   const pagina = paginaAtual(pathname);
 
   return (
     <header className="painel-barra">
-      {comLogo && (
-        <Link to="/voluntario" className="painel-barra-logo" aria-label={t.menu.painel}>
-          <Logo />
-        </Link>
-      )}
-
       <nav className="painel-trilha" aria-label={t.trilha}>
         <ol>
           <li>

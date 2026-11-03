@@ -20,7 +20,7 @@ export default function PainelVoluntario() {
 
   return (
     <>
-      <Saudacao painel={painel} opcao={painel.opcaoLayout} />
+      <Saudacao painel={painel} />
 
       {!painel.perfilCompleto && <Pendencias pendencias={painel.pendencias} />}
 

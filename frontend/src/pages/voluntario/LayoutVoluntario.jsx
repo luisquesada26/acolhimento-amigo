@@ -5,7 +5,6 @@ import RodapeApp from "../../components/RodapeApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import usePainel from "./usePainel";
 import BarraTopo from "./BarraTopo";
-import { BarraOpcoes, useOpcaoLayout } from "./OpcoesLayout";
 import { NAVEGACAO, Svg } from "./comum";
 import { traducoes } from "./traducoes";
 import "./painel.css";
@@ -26,7 +25,6 @@ function lerMenuRecolhido() {
 export default function LayoutVoluntario() {
   const painel = usePainel();
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido);
-  const [opcao, setOpcao] = useOpcaoLayout();
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
 
@@ -63,10 +61,9 @@ export default function LayoutVoluntario() {
 
   const { perfil } = painel;
   const grupos = [...new Set(NAVEGACAO.map((item) => item.grupo))];
-  const classes = ["painel", `layout-${opcao}`, recolhido ? "painel-recolhido" : ""].filter(Boolean).join(" ");
 
   return (
-    <div className={classes} lang={LANG[idioma]}>
+    <div className={recolhido ? "painel painel-recolhido" : "painel"} lang={LANG[idioma]}>
       <aside className="painel-menu">
         <div className="painel-menu-topo">
           <Logo claro />
@@ -112,16 +109,13 @@ export default function LayoutVoluntario() {
         </nav>
       </aside>
 
-      {/* na opção B a coluna some (display: contents) e a barra e o rodapé ocupam a largura toda */}
       <div className="painel-coluna">
-        <BarraTopo perfil={perfil} sair={painel.sair} comLogo={opcao === "b"} />
+        <BarraTopo perfil={perfil} sair={painel.sair} />
         <main className="painel-conteudo">
-          <Outlet context={{ ...painel, opcaoLayout: opcao }} />
+          <Outlet context={painel} />
         </main>
-        <RodapeApp claro={opcao === "a"} />
+        <RodapeApp />
       </div>
-
-      <BarraOpcoes opcao={opcao} aoMudar={setOpcao} />
     </div>
   );
 }
