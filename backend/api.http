@@ -242,6 +242,21 @@ GET {{api}}/voluntarios?area=4&idioma=en
 ### Quem tem horario livre nos proximos 7 dias e fala frances
 GET {{api}}/voluntarios?idioma=fr&disponivel=semana
 
+### Quem atende a tarde (o proximo_horario de cada um tambem vem a tarde)
+GET {{api}}/voluntarios?turno=tarde
+
+### Quem tem horario livre amanha (sabado e domingo vem vazio, o seed so cria horario em dia util)
+GET {{api}}/voluntarios?data={{amanha}}
+
+### A noite e nos proximos 7 dias (o mesmo horario precisa atender os dois filtros)
+GET {{api}}/voluntarios?turno=noite&disponivel=semana
+
+### Turno que nao existe (400, so manha, tarde ou noite)
+GET {{api}}/voluntarios?turno=xyz
+
+### Data fora do formato (400, AAAA-MM-DD)
+GET {{api}}/voluntarios?data=31-12
+
 ### Perfil publico com servicos e horarios livres
 GET {{api}}/voluntarios/1
 

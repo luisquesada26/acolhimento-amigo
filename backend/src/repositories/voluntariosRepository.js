@@ -3,6 +3,35 @@ const { agora, formatarData, diaMais } = require("../utils/datas");
 
 const HORARIO_FUTURO = "(h.data > @hoje OR (h.data = @hoje AND h.hora_inicio > @hora))";
 
+// inicio e fim (fora) de cada turno, comparando o texto HH:MM
+const TURNOS = {
+  manha: ["06:00", "12:00"],
+  tarde: ["12:00", "18:00"],
+  noite: ["18:00", "24:00"],
+};
+
+// condicoes de um horario livre e futuro que atende a todos os filtros de horario ao mesmo tempo
+function horarioQueAtende({ disponivel, data, turno }, params) {
+  const condicoes = ["h.status = 'livre'", HORARIO_FUTURO];
+
+  if (disponivel === "semana") {
+    condicoes.push("h.data <= @limite");
+    params.limite = formatarData(diaMais(7));
+  }
+
+  if (data) {
+    condicoes.push("h.data = @data");
+    params.data = data;
+  }
+
+  if (turno) {
+    condicoes.push("h.hora_inicio >= @turnoInicio AND h.hora_inicio < @turnoFim");
+    [params.turnoInicio, params.turnoFim] = TURNOS[turno];
+  }
+
+  return condicoes.join(" AND ");
+}
+
 const SELECT_VOLUNTARIO = `
   SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
          v.registro_profissional, v.idiomas, v.bio, v.ativo
@@ -12,7 +41,7 @@ const SELECT_VOLUNTARIO = `
 `;
 
 // busca: so aparece quem esta ativo e tem pelo menos um servico ativo
-function listar({ q, area, idioma, disponivel }) {
+function listar({ q, area, idioma, disponivel, data, turno }) {
   const filtros = [
     "v.ativo = 1",
     "EXISTS (SELECT 1 FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1)",
@@ -39,12 +68,11 @@ function listar({ q, area, idioma, disponivel }) {
     params.idioma = `%,${idioma},%`;
   }
 
-  if (disponivel === "semana") {
+  if (disponivel === "semana" || data || turno) {
     filtros.push(`EXISTS (
       SELECT 1 FROM horarios h
-      WHERE h.voluntario_id = v.id AND h.status = 'livre' AND ${HORARIO_FUTURO} AND h.data <= @limite
+      WHERE h.voluntario_id = v.id AND ${horarioQueAtende({ disponivel, data, turno }, params)}
     )`);
-    params.limite = formatarData(diaMais(7));
   }
 
   return db.prepare(`${SELECT_VOLUNTARIO} WHERE ${filtros.join(" AND ")} ORDER BY u.nome`).all(params);
@@ -92,8 +120,19 @@ function horariosLivres(voluntarioId) {
     .all({ id: voluntarioId, ...agora() });
 }
 
-function proximoHorario(voluntarioId) {
-  return horariosLivres(voluntarioId)[0] ?? null;
+// com os mesmos filtros de horario da busca, para o cartao mostrar o horario que a pessoa procurou
+function proximoHorario(voluntarioId, filtros = {}) {
+  const params = { id: voluntarioId, ...agora() };
+  return (
+    db
+      .prepare(`
+        SELECT h.id, h.data, h.hora_inicio, h.hora_fim FROM horarios h
+        WHERE h.voluntario_id = @id AND ${horarioQueAtende(filtros, params)}
+        ORDER BY h.data, h.hora_inicio
+        LIMIT 1
+      `)
+      .get(params) ?? null
+  );
 }
 
 module.exports = {
