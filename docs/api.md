@@ -80,10 +80,12 @@ Ainda não existe perfil de administrador, então quem cuida das áreas são os 
 
 | Método | Rota | Quem | Descrição |
 | --- | --- | --- | --- |
-| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana` | público | Busca. Só aparece quem está ativo e tem serviço ativo |
+| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana&data=&turno=` | público | Busca. Só aparece quem está ativo e tem serviço ativo |
 | GET | `/voluntarios/:id` | público | Perfil com serviços ativos e horários livres futuros |
 
 `q` procura no nome, na bio e no título e descrição dos serviços. O voluntário edita os próprios dados pelo `PUT /me`.
+
+Filtros de horário: `disponivel=semana` (próximos 7 dias), `data=AAAA-MM-DD` (um dia) e `turno=manha` (06:00 a 11:59), `tarde` (12:00 a 17:59) ou `noite` (18:00 a 23:59). Juntos, valem para o mesmo horário livre, e o `proximo_horario` de cada voluntário já vem dentro deles. Turno ou data inválidos respondem `400`.
 
 ## Serviços
 

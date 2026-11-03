@@ -11,7 +11,7 @@ function listar(filtros) {
   return repo.listar(filtros).map((v) => ({
     ...formatar(v),
     servicos: repo.servicosAtivos(v.id).map(({ id, titulo }) => ({ id, titulo })),
-    proximo_horario: repo.proximoHorario(v.id),
+    proximo_horario: repo.proximoHorario(v.id, filtros),
   }));
 }
 

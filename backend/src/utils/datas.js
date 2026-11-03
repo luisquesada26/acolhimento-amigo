@@ -1,3 +1,6 @@
+const { data: dataSchema } = require("../schemas/horariosSchema");
+const { ErroApp } = require("../middlewares/erros");
+
 // as datas ficam no horario de Brasilia (horario do computador), sem UTC
 
 function formatarData(data) {
@@ -19,4 +22,11 @@ function agora() {
   return { hoje: formatarData(d), hora };
 }
 
-module.exports = { formatarData, diaMais, agora };
+// data que chega na query string
+function lerData(valor) {
+  if (!valor) return undefined;
+  if (!dataSchema.safeParse(valor).success) throw new ErroApp(400, "Data deve estar no formato AAAA-MM-DD");
+  return valor;
+}
+
+module.exports = { formatarData, diaMais, agora, lerData };
