@@ -1,3 +1,5 @@
+-- schema inicial: o banco do site nasceu deste arquivo. Mudança nova vai numa migration nova, nunca aqui.
+--
 -- as datas e horas ficam em texto ('AAAA-MM-DD', 'HH:MM') e os campos de sim ou não em 0 e 1,
 -- no mesmo formato que o frontend já recebia do SQLite.
 -- COLLATE "C" ordena e compara letra por letra, como o SQLite: assim a ordem dos nomes
