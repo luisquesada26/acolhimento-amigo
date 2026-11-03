@@ -8,7 +8,8 @@ import { nomeDaArea, visualDaArea } from "../../dados/areas";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
 import { Esqueleto, IconeArea, momento, totalPorArea, useTodos } from "./comum";
-import useBusca, { proximosDias } from "./useBusca";
+import FiltroQuando from "./FiltroQuando";
+import useBusca from "./useBusca";
 import { traducoes } from "./traducoes";
 import "./busca.css";
 
@@ -88,7 +89,6 @@ export default function Buscar() {
   // a API já manda por nome, mas o SQLite põe "Élodie" e nome em minúscula depois do "Z"
   const lista = useMemo(() => [...busca.voluntarios].sort((a, b) => a.nome.localeCompare(b.nome, localeAtual())), [busca.voluntarios, idioma]);
 
-  const dias = proximosDias(localeAtual());
   const areaEscolhida = busca.areas.find((a) => String(a.id) === filtros.area);
 
   function irParaResultados() {
@@ -236,20 +236,7 @@ export default function Buscar() {
             </div>
           </div>
 
-          <div className="bus-filtro">
-            <label htmlFor="bus-dia" className="bus-filtro-rotulo">
-              {t.quando}
-            </label>
-            <select id="bus-dia" className={filtros.quando ? "bus-select bus-select-ligado" : "bus-select"} value={filtros.quando} onChange={(e) => busca.mudar("quando", e.target.value)}>
-              <option value="">{t.qualquerDia}</option>
-              <option value="semana">{t.proximos7}</option>
-              {dias.map((dia) => (
-                <option key={dia.valor} value={dia.valor}>
-                  {dia.rotulo}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FiltroQuando valor={filtros.quando} aoMudar={(valor) => busca.mudar("quando", valor)} />
         </div>
 
         {busca.erro ? (
