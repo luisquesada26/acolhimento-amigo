@@ -23,14 +23,15 @@ function voltarAoTopo() {
 }
 
 // rodapé das áreas do usuário e do voluntário; a faixa azul é a mesma da página inicial
-export default function RodapeApp() {
+// claro: fundo branco e logo azul, para não encostar azul no azul do menu
+export default function RodapeApp({ claro = false }) {
   const t = useTextos(traducoes);
 
   return (
-    <footer className="rodape-inicio rod">
+    <footer className={claro ? "rodape-inicio rod rod-claro" : "rodape-inicio rod"}>
       <div className="rod-linha">
         <div className="rod-marca">
-          <img src="/images/logo-branco.svg" alt="Acolhimento Amigo" className="rod-logo" />
+          <img src={claro ? "/images/logo.svg" : "/images/logo-branco.svg"} alt="Acolhimento Amigo" className="rod-logo" />
           <span>{t.descricao}</span>
         </div>
 
