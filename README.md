@@ -44,12 +44,12 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 ## Tecnologias
 
 - Backend: Node.js, Express, Zod, bcrypt e JWT
-- Banco: SQLite com better-sqlite3
+- Banco: PostgreSQL (no Supabase) com o pacote pg
 - Frontend: React + Vite, React Router e Axios
 
 ## Arquitetura
 
-O frontend em React roda no navegador e conversa com a API só por HTTP, em JSON. A API em Node.js e Express é a única parte que mexe no banco SQLite.
+O frontend em React roda no navegador e conversa com a API só por HTTP, em JSON. A API em Node.js e Express é a única parte que mexe no banco, um Postgres que fica no Supabase.
 
 ```mermaid
 flowchart TD
@@ -65,9 +65,10 @@ flowchart TD
         mid --> ctrl["controllers<br/>recebem o pedido e devolvem a resposta"]
         ctrl --> serv["services<br/>regras do negócio"]
         serv --> repo["repositories<br/>consultas SQL"]
+        repo --> conexao["database/conexao.js<br/>consultas e transações pelo pg"]
     end
 
-    repo --> banco[("SQLite<br/>backend/data/acolhimento.db")]
+    conexao --> banco[("Postgres no Supabase<br/>endereço na DATABASE_URL")]
 ```
 
 Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` sem token, `403` com o perfil errado, `400` com dados inválidos e `409` quando uma regra não deixa (por exemplo, horário que acabou de ser reservado).
@@ -77,7 +78,7 @@ Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` 
 1. O voluntário cria a conta escolhendo a área, cadastra os serviços que oferece e abre os horários em que pode atender.
 2. O usuário cria a conta e busca voluntários por palavra-chave, área, idioma e disponibilidade.
 3. No perfil do voluntário, escolhe um horário livre e um serviço e conta o que precisa.
-4. A API confere se o horário ainda está livre, se o serviço é daquele voluntário e se a pessoa não tem outro atendimento no mesmo horário. Numa única transação no SQLite, cria o agendamento como `confirmado` e muda o horário para `reservado`. Depois, com o Google configurado, cria a sala do Google Meet do atendimento.
+4. A API confere se o horário ainda está livre, se o serviço é daquele voluntário e se a pessoa não tem outro atendimento no mesmo horário. Numa única transação no Postgres, cria o agendamento como `confirmado` e muda o horário para `reservado`. Depois, com o Google configurado, cria a sala do Google Meet do atendimento.
 5. O voluntário vê o atendimento no painel e na agenda, com o caso e o contato da pessoa. Os dois entram pelo botão **Entrar na videochamada**, que libera 10 minutos antes do horário.
 6. Depois da conversa, o voluntário conclui o atendimento (`realizado`) e escreve a anotação, que o usuário também lê.
 7. Se um dos dois cancelar antes, o agendamento vira `cancelado` e o horário volta a ficar `livre` para outra pessoa.
@@ -93,6 +94,7 @@ git clone https://github.com/luisquesada26/acolhimento-amigo.git
 cd acolhimento-amigo
 npm run install:all
 cp backend/.env.example backend/.env    # no Windows: copy backend\.env.example backend\.env
+# preencha a DATABASE_URL no backend/.env (veja "O banco de cada um", logo abaixo)
 npm run db:reset
 npm run dev
 ```
@@ -105,6 +107,15 @@ O `npm run dev` sobe as duas partes juntas:
 | API (Express) | `http://localhost:3000/api` (teste em `/api/saude`) |
 
 Para entrar, use um dos usuários de teste abaixo ou crie uma conta nova como usuário ou como voluntário.
+
+### O banco de cada um (DATABASE_URL)
+
+A API precisa de um Postgres. Para programar, cada pessoa usa o seu, porque o `npm run db:reset` apaga tudo o que está no banco da `DATABASE_URL`.
+
+- **Supabase (o mais fácil):** crie um projeto grátis em [supabase.com](https://supabase.com), clique em **Connect**, copie a URI do **Transaction pooler** e troque `[YOUR-PASSWORD]` pela senha do banco. Se a senha tiver símbolos como `@`, `#` ou `/`, escreva-os codificados (o `@` vira `%40`). Não acrescente `?sslmode=` no fim: a API liga o SSL sozinha quando o banco não está na própria máquina.
+- **Postgres na própria máquina:** `postgresql://postgres:suasenha@localhost:5432/acolhimento`, com o banco `acolhimento` já criado.
+
+O banco do site publicado é outro, e só o Luis roda comandos nele.
 
 ### Dia a dia
 
@@ -133,11 +144,21 @@ No Meet, entra direto quem está convidado e logado no Google com aquele e-mail,
 
 ## Banco de dados
 
-O arquivo `.db` não vai para o GitHub. Cada pessoa gera o seu com `npm run db:reset`, que apaga as tabelas, recria tudo pelo `schema.sql` e roda o `seed.js`. Pode rodar com o servidor ligado.
+O banco é um PostgreSQL, e a `DATABASE_URL` do `backend/.env` diz qual: no dia a dia, o seu (veja **Como rodar**); no site publicado, o do Supabase do projeto.
+
+O `npm run db:reset` apaga todas as tabelas desse banco, recria tudo pelo `schema.sql` e roda o `seed.js`, numa transação só: se algo falhar no meio, o banco fica como estava. Pode rodar com o servidor ligado.
 
 O seed cria 12 áreas, 5 voluntários por área (cada um com 2 serviços e horários nas próximas 2 semanas), 5 usuários e alguns agendamentos.
 
+Para levar ao Postgres os dados de um banco SQLite de antes da mudança (`backend/data/acolhimento.db`), com os mesmos ids, rode `npm run db:copiar-sqlite` na pasta `backend` (ou `npm run db:copiar-sqlite -- caminho/do/arquivo.db`). Ele também apaga as tabelas do Postgres antes de copiar, só lê o SQLite e, no fim, mostra quantas linhas cada tabela tem nos dois bancos.
+
 As senhas são salvas com bcrypt, nunca em texto puro.
+
+Algumas escolhas do `schema.sql`:
+
+- datas e horas ficam em texto (`'2026-11-04'`, `'14:00'`) e os campos de sim ou não em `0` e `1`, do jeito que o frontend já recebia do SQLite
+- os nomes e os textos da busca usam `COLLATE "C"`, para a ordem e a busca serem as mesmas em qualquer servidor
+- a RLS fica ligada em todas as tabelas, sem nenhuma regra: a API entra como dona das tabelas e não é barrada, e a API automática do Supabase (Data API) fica fechada para quem tiver a chave pública
 
 Só quem cuida do banco altera o `schema.sql`. Toda mudança vai em um pull request próprio e, depois do merge, todos rodam `npm run db:reset`.
 
@@ -284,21 +305,26 @@ O que fica para depois da entrega:
 - Avaliação do atendimento
 - Avisos por e-mail e WhatsApp
 - Painel para aprovar os voluntários
-- Publicar na internet, com o frontend no Vercel e o banco no Postgres do Supabase
+- Publicar na internet (o que falta está logo abaixo)
 
 ### Publicar na internet
 
-O frontend vira um site estático no `npm run build` e pode ir direto para o Vercel. O banco não pode ir junto do jeito que está: no Vercel a API roda em funções que não guardam arquivo, e o SQLite é um arquivo (`backend/data/acolhimento.db`). Cada acesso poderia cair numa cópia diferente do banco, e o que foi gravado se perderia.
+O plano é o frontend e a API no Vercel e o banco no Postgres do Supabase. No Vercel a API roda em funções que não guardam arquivo, e por isso o SQLite, que é um arquivo, deu lugar ao Postgres.
 
-Por isso o banco passaria para o Postgres do Supabase. O que muda:
+Já feito:
 
-- **Conexão:** sai o `better-sqlite3` e entra o `pg`, com a `DATABASE_URL` do Supabase
-- **Consultas assíncronas:** o `better-sqlite3` responde na hora e o Postgres responde depois, então os repositories, services e controllers passam a usar `async`/`await`, e as transações (`db.transaction`) viram `BEGIN` e `COMMIT`
-- **SQL do SQLite:** `INTEGER PRIMARY KEY AUTOINCREMENT` vira `GENERATED BY DEFAULT AS IDENTITY`, `datetime('now', 'localtime')` vira `now()` e os parâmetros `?` viram `$1`, `$2`...
-- **API:** com o banco fora do arquivo, a API também pode ir para o Vercel
-- **Rotas do React:** um `frontend/vercel.json` mandando toda rota para o `index.html`, senão um F5 em `/login` dá 404
-- **Variáveis:** no frontend, `VITE_API_URL` com o endereço da API; na API, `DATABASE_URL`, um `JWT_SECRET` novo e `CORS_ORIGIN` com o endereço do site
-- **Fuso horário:** o servidor do Vercel roda em UTC e não deixa trocar o `TZ`. Como o `backend/src/utils/datas.js` usa o horário da máquina, ele passa a calcular a data e a hora com `timeZone: "America/Sao_Paulo"`. Sem isso, o `agora()` fica 3 horas adiantado e os horários das próximas 3 horas aparecem como já passados
+- **Conexão:** o `pg` no lugar do `better-sqlite3`, com a `DATABASE_URL`. O `backend/src/database/conexao.js` tem a `consulta(sql, params)`, que troca os `?` por `$1`, `$2`..., e a `transacao(fn)`, que faz `BEGIN`, `COMMIT` e, se der erro, `ROLLBACK`
+- **Consultas assíncronas:** o Postgres responde depois, então repositories, services e controllers usam `async`/`await`
+- **SQL do Postgres:** `GENERATED BY DEFAULT AS IDENTITY` no lugar do `AUTOINCREMENT`, `RETURNING id` no lugar do `lastInsertRowid`, `ILIKE` na busca (o `LIKE` do Postgres diferencia maiúsculas) e `COUNT(*)::int` (o `pg` devolve a contagem como texto)
+- **Fuso horário:** o servidor do Vercel roda em UTC e não deixa trocar o `TZ`, então o `backend/src/utils/datas.js` calcula a data e a hora com `timeZone: "America/Sao_Paulo"`. Sem isso, o `agora()` ficaria 3 horas adiantado e os horários das próximas 3 horas apareceriam como já passados
+- **Rotas do React:** o `frontend/vercel.json` manda toda rota para o `index.html`, senão um F5 em `/login` dá 404
+
+Falta:
+
+1. Criar o projeto no Supabase e pôr a `DATABASE_URL` dele no `backend/.env`
+2. Na pasta `backend`, rodar `npm run db:reset` (banco com o seed) ou `npm run db:copiar-sqlite` (com os dados do SQLite)
+3. Publicar o frontend no Vercel (pasta `frontend`), com a `VITE_API_URL` apontando para a API
+4. Publicar a API no Vercel (pasta `backend`), com a `DATABASE_URL`, um `JWT_SECRET` novo, o `CORS_ORIGIN` com o endereço do site e, para a videochamada, as chaves `GOOGLE_*`
 
 ## Integrantes
 
