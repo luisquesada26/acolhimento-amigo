@@ -297,7 +297,7 @@
   box-shadow: 0 1px 2px rgba(11, 27, 58, 0.1), 0 1px 1px rgba(11, 27, 58, 0.04);
 }
 
-/* "Quando": o botão "Escolher dia" abre, sempre para baixo, o calendário dos próximos 14 dias */
+/* "Quando": o botão "Escolher dia" abre, sempre para baixo, o calendário do mês */
 .bus-filtro-quando {
   position: relative;
 }
@@ -328,12 +328,45 @@
   outline: 0;
 }
 
+/* ‹ Novembro de 2026 › */
+.bus-cal-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 .bus-cal-mes {
-  display: block;
-  margin: 0 4px 10px;
+  min-width: 0;
   color: var(--texto);
   font-size: 14px;
   font-weight: 800;
+  text-align: center;
+}
+
+.bus-cal-seta {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.bus-cal-seta:not([aria-disabled="true"]):hover {
+  background: #e9eef7;
+}
+
+.bus-cal-seta[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .bus-cal-semana,
@@ -341,6 +374,11 @@
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
+}
+
+/* linhas de altura fixa: as casas vazias seguram a sexta semana e o calendário não muda de altura entre os meses */
+.bus-cal-dias {
+  grid-auto-rows: 38px;
 }
 
 .bus-cal-semana {
@@ -354,7 +392,6 @@
 
 .bus-cal-dias button {
   position: relative;
-  height: 38px;
   padding: 0;
   border: 0;
   border-radius: 8px;
@@ -745,8 +782,11 @@
     width: auto;
   }
 
+  .bus-cal-dias {
+    grid-auto-rows: 42px;
+  }
+
   .bus-cal-dias button {
-    height: 42px;
     font-size: 15px;
   }
 }

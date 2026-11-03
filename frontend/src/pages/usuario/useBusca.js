@@ -9,7 +9,7 @@ const FILTROS_VAZIOS = { q: "", area: "", idioma: "", turno: "", quando: "" };
 const doisDigitos = (n) => String(n).padStart(2, "0");
 
 // AAAA-MM-DD pela data local: toISOString() usa UTC e, às 22h no Brasil, já devolve o dia seguinte
-function dataLocal(dia) {
+export function dataLocal(dia) {
   return `${dia.getFullYear()}-${doisDigitos(dia.getMonth() + 1)}-${doisDigitos(dia.getDate())}`;
 }
 
@@ -19,17 +19,35 @@ export function lerDataLocal(valor) {
   return new Date(ano, mes - 1, dia);
 }
 
-// a grade do "Escolher dia": semanas de segunda a domingo, da semana de hoje até cobrir os próximos 14 dias.
-// Os dias antes de hoje e depois do 14º só completam a semana e vêm com livre: false
-export function diasDoCalendario(agora = new Date(), quantos = 14) {
+// a grade do "Escolher dia" para um mês AAAA-MM: de segunda a domingo, sempre 6 semanas (42 casas)
+// para o calendário não mudar de altura. As casas fora do mês vêm null e os dias antes de hoje, livre: false
+export function diasDoMes(mes, agora = new Date()) {
+  const [ano, numero] = mes.split("-").map(Number);
   // getDay() conta a partir do domingo; aqui a segunda é a coluna 0
-  const recuo = (agora.getDay() + 6) % 7;
-  const semanas = Math.ceil((recuo + quantos) / 7);
-  return Array.from({ length: semanas * 7 }, (_, i) => {
-    const data = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - recuo + i);
-    const distancia = i - recuo;
-    return { valor: dataLocal(data), data, hoje: distancia === 0, livre: distancia >= 0 && distancia < quantos };
+  const recuo = (new Date(ano, numero - 1, 1).getDay() + 6) % 7;
+  const total = new Date(ano, numero, 0).getDate();
+  const hoje = dataLocal(agora);
+  return Array.from({ length: 42 }, (_, i) => {
+    const dia = i - recuo + 1;
+    if (dia < 1 || dia > total) return null;
+    const data = new Date(ano, numero - 1, dia);
+    const valor = dataLocal(data);
+    return { valor, data, hoje: valor === hoje, livre: valor >= hoje };
   });
+}
+
+// anda n dias a partir de um AAAA-MM-DD; o Date resolve a virada de mês e de ano
+export function somarDias(valor, n) {
+  const data = lerDataLocal(valor);
+  data.setDate(data.getDate() + n);
+  return dataLocal(data);
+}
+
+// o mesmo dia n meses depois ou, se o mês for mais curto, o último dia dele: 31/01 mais um mês vira 28/02
+export function somarMeses(valor, n) {
+  const [ano, mes, dia] = valor.split("-").map(Number);
+  const ultimo = new Date(ano, mes + n, 0).getDate();
+  return dataLocal(new Date(ano, mes - 1 + n, Math.min(dia, ultimo)));
 }
 
 // na tela o "Quando" é um campo só; para a API vira disponivel=semana ou data=AAAA-MM-DD
