@@ -16,6 +16,11 @@ import "./busca.css";
 const IDIOMAS = ["pt", "en", "es", "fr"];
 const TURNOS = ["manha", "tarde", "noite"];
 
+// o número só aparece quando a API respondeu; antes disso, um esqueleto no lugar
+function Numero({ valor }) {
+  return <strong>{valor ?? <Esqueleto className="bus-esq-numero" />}</strong>;
+}
+
 function Cartao({ voluntario, ordem }) {
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
@@ -32,7 +37,7 @@ function Cartao({ voluntario, ordem }) {
           <Avatar nome={voluntario.nome} foto={voluntario.foto} className="bus-avatar" />
           <span>
             <strong>{voluntario.nome}</strong>
-            <span className="bus-bandeiras" aria-label={t.fala(voluntario.idiomas.map(nomeDoIdioma))}>
+            <span className="bus-bandeiras" aria-label={voluntario.idiomas.length ? t.fala(voluntario.idiomas.map(nomeDoIdioma)) : undefined}>
               {voluntario.idiomas.map((i) => (
                 <Bandeira key={i} codigo={i} />
               ))}
@@ -74,12 +79,12 @@ export default function Buscar() {
   const { idioma } = useIdioma();
   const t = useTextos(traducoes).busca;
   const todos = useTodos();
-  const total = totalPorArea(todos);
+  const total = todos && totalPorArea(todos);
   const resultados = useRef(null);
 
   const maisCedo = useMemo(
     () =>
-      todos
+      (todos ?? [])
         .map((v) => v.proximo_horario)
         .filter(Boolean)
         .sort((a, b) => momento(a) - momento(b))[0],
@@ -125,20 +130,21 @@ export default function Buscar() {
 
         <ul className="bus-numeros" aria-label={t.numerosRotulo}>
           <li>
-            <strong>{todos.length || "–"}</strong>
+            <Numero valor={todos?.length} />
             <span>{t.voluntariosProntos}</span>
           </li>
           <li>
-            <strong>{busca.areas.length || "–"}</strong>
+            <Numero valor={busca.areasCarregadas ? busca.areas.length : null} />
             <span>{t.areasAtendimento}</span>
           </li>
           <li>
             <strong>4</strong>
             <span>{t.idiomasPlataforma}</span>
           </li>
+          {/* sem nenhum horário livre o destaque vira "0 horários livres agora" */}
           <li className="bus-numero-destaque">
-            <strong>{maisCedo ? `${quando(momento(maisCedo))}, ${maisCedo.hora_inicio}` : "–"}</strong>
-            <span>{t.proximoLivre}</span>
+            <Numero valor={maisCedo ? `${quando(momento(maisCedo))}, ${maisCedo.hora_inicio}` : todos && 0} />
+            <span>{maisCedo || !todos ? t.proximoLivre : t.semLivreAgora}</span>
           </li>
         </ul>
       </section>
@@ -172,7 +178,7 @@ export default function Buscar() {
                     <IconeArea nome={a.nome} tamanho={22} />
                   </span>
                   <strong>{nomeDaArea(a.nome, idioma)}</strong>
-                  <small>{total.has(a.id) ? t.voluntarios(total.get(a.id)) : "–"}</small>
+                  <small>{total ? t.voluntarios(total.get(a.id) ?? 0) : <Esqueleto className="bus-esq-linha" />}</small>
                 </button>
               </li>
             );

@@ -94,10 +94,11 @@ export default function CalendarioHorarios({ horarios, aoEscolher }) {
     setVisao(nova);
   }
 
-  const fimDaSemana = somarDias(inicio, 6);
+  // o intervalo da semana sai das traduções, sem travessão: "1 a 7 de nov. de 2026"
+  const partes = (dia) => ({ dia: dia.getDate(), mes: dia.toLocaleDateString(locale, { month: "short" }), ano: dia.getFullYear() });
   const titulo =
     visao === "semana"
-      ? `${inicio.toLocaleDateString(locale, { day: "numeric", month: "short" })} – ${fimDaSemana.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" })}`
+      ? t.periodo(partes(inicio), partes(somarDias(inicio, 6)))
       : maiuscula(referencia.toLocaleDateString(locale, { month: "long", year: "numeric" }));
 
   const maisCedo = horarios[0];
@@ -129,7 +130,7 @@ export default function CalendarioHorarios({ horarios, aoEscolher }) {
         <div className="cal-opcoes">
           {maisCedo && (
             <button type="button" className="cal-mais-cedo" onClick={() => aoEscolher(maisCedo)}>
-              <Svg nome="relogio" tamanho={15} /> {t.maisCedo}: {quando(diaDe(maisCedo.data))}, {maisCedo.hora_inicio}
+              <Svg nome="relogio" tamanho={15} /> {t.maisCedo(quando(diaDe(maisCedo.data)), maisCedo.hora_inicio)}
             </button>
           )}
           <div className="cal-visao" role="group" aria-label={t.visao}>
