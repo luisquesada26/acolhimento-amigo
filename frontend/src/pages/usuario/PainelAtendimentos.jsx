@@ -161,13 +161,11 @@ function useFecharFora(ancora, aoFecharTeclado, aoFechar) {
   atual.current = { aoFecharTeclado, aoFechar };
 
   useEffect(() => {
-    const abertoEm = performance.now();
     function tecla(e) {
       if (e.key === "Escape") atual.current.aoFecharTeclado();
     }
     function clique(e) {
-      // o clique que abriu o painel ainda está subindo quando ele aparece
-      if (e.timeStamp < abertoEm || e.composedPath().includes(ancora.current)) return;
+      if (e.composedPath().includes(ancora.current)) return;
       // clique que já trocou de tela (logo, Meu perfil, sair): o painel fecha sozinho
       if (!window.location.search.includes("atendimentos=1")) return;
       atual.current.aoFechar();
