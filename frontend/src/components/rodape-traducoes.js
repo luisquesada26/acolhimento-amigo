@@ -3,7 +3,6 @@ export const traducoes = {
   pt: {
     descricao: "Apoio e orientação para pessoas imigrantes.",
     direitos: "Todos os direitos reservados.",
-    projeto: "Projeto final Toti, turma 58, grupo 5",
     emergencia: "Em emergência",
     gratuito: "Ligação gratuita, de qualquer telefone, 24 horas.",
     ligarPara: (numero, nome) => `Ligar para ${numero}, ${nome}`,
@@ -18,7 +17,6 @@ export const traducoes = {
   en: {
     descricao: "Support and guidance for immigrants.",
     direitos: "All rights reserved.",
-    projeto: "Toti final project, class 58, group 5",
     emergencia: "In an emergency",
     gratuito: "Free call from any phone, 24 hours a day.",
     ligarPara: (numero, nome) => `Call ${numero}, ${nome}`,
@@ -33,7 +31,6 @@ export const traducoes = {
   es: {
     descricao: "Apoyo y orientación para personas inmigrantes.",
     direitos: "Todos los derechos reservados.",
-    projeto: "Proyecto final Toti, clase 58, grupo 5",
     emergencia: "En una emergencia",
     gratuito: "Llamada gratuita desde cualquier teléfono, las 24 horas.",
     ligarPara: (numero, nome) => `Llamar al ${numero}, ${nome}`,
@@ -48,7 +45,6 @@ export const traducoes = {
   fr: {
     descricao: "Soutien et orientation pour les personnes immigrées.",
     direitos: "Tous droits réservés.",
-    projeto: "Projet final Toti, promo 58, groupe 5",
     emergencia: "En cas d'urgence",
     gratuito: "Appel gratuit depuis n'importe quel téléphone, 24 h sur 24.",
     ligarPara: (numero, nome) => `Appeler le ${numero}, ${nome}`,

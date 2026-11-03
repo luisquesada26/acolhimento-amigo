@@ -1,4 +1,5 @@
-/* rodapé da área logada; vale no usuário (.usu) e no voluntário (.painel-conteudo) */
+/* rodapé da área logada; vale no usuário (.usu) e no voluntário (.painel-conteudo).
+   A faixa azul vem do .rodape-inicio; o resto usa só classes rod-* para não mexer na página inicial */
 
 /* o layout ocupa a altura da tela e o rodapé desce até o fim, mesmo em página curta */
 .usu {
@@ -20,158 +21,140 @@
   margin-bottom: -32px;
 }
 
-/* B: fino */
-.rod-fino {
+.rod-linha {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 18px;
-  padding: 14px 28px;
-  border-top: 1px solid var(--borda);
-  background: #fff;
-  color: var(--texto-3);
-  font-size: 0.85rem;
+  justify-content: space-between;
+  gap: 20px 32px;
 }
 
-.rod-fino-logo {
-  display: block;
-  width: auto;
-  height: 26px;
-}
-
-.rod-fino-projeto {
-  margin-left: auto;
-}
-
-/* C: ajuda */
-.rod-ajuda {
-  padding: 24px 28px 16px;
-  border-top: 1px solid var(--borda);
-  background: #fff;
-}
-
-.rod-ajuda-emergencia {
+.rod-marca {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.rod-ajuda-cabeca {
+.rod-logo {
+  display: block;
+  width: auto;
+  height: 30px;
+}
+
+.rod-marca span {
+  color: #c9d6ef;
+  font-size: 0.8rem;
+}
+
+/* telefones à direita */
+.rod-emergencia {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.rod-emergencia-cabeca {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 14px;
+  justify-content: flex-end;
+  gap: 2px 12px;
+  text-align: right;
 }
 
-.rod-ajuda-cabeca h2 {
+.rod-emergencia-cabeca h2 {
   margin: 0;
-  color: var(--texto);
-  font-size: 1rem;
+  color: #fff;
+  font-size: 0.95rem;
 }
 
-.rod-ajuda-cabeca p {
+.rod-emergencia-cabeca p {
   margin: 0;
-  color: var(--texto-3);
-  font-size: 0.85rem;
+  color: #c9d6ef;
+  font-size: 0.8rem;
 }
 
-.rod-ajuda-lista {
+.rod-telefones {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.rod-ajuda-lista a {
+.rod-telefones a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 14px;
-  border: 1px solid var(--borda);
+  padding: 7px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: var(--fundo);
-  color: var(--texto);
-  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.82rem;
   text-decoration: none;
 }
 
-.rod-ajuda-lista a:hover,
-.rod-ajuda-lista a:focus-visible {
-  border-color: var(--azul);
+.rod-telefones a:hover,
+.rod-telefones a:focus-visible {
+  border-color: #fcd34d;
+  background: rgba(255, 255, 255, 0.14);
 }
 
-.rod-ajuda-lista strong {
-  color: #b42318;
-  font-size: 1rem;
+.rod-telefones strong {
+  color: #fcd34d;
+  font-size: 0.95rem;
 }
 
-.rod-ajuda-copy {
-  margin: 18px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--borda);
-  color: var(--texto-3);
-  font-size: 0.8rem;
-}
-
-/* barra provisória para trocar as opções; sai depois da escolha */
-.rod-opcoes {
-  position: fixed;
-  bottom: 16px;
-  left: 16px;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px;
-  border-radius: 999px;
-  background: var(--marinho);
-  box-shadow: 0 10px 30px rgba(8, 33, 82, 0.25);
-  color: #fff;
-  font-size: 0.8rem;
-}
-
-/* no voluntário, à direita do menu lateral para não cobrir o botão de sair */
-.painel .rod-opcoes {
-  left: 266px;
-}
-
-.rod-opcoes > span {
-  padding: 0 8px;
+/* linha fina e copyright no centro */
+.rod-copy {
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   color: #c9d6ef;
+  font-size: 0.8rem;
+  text-align: center;
 }
 
-.rod-opcoes button {
-  padding: 6px 12px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  cursor: pointer;
-}
-
-.rod-opcoes button.rod-opcoes-ligada {
-  background: #fff;
-  color: var(--marinho);
-}
-
-@media (max-width: 760px) {
-  .painel .rod-opcoes {
-    left: 16px;
-  }
-}
-
+/* no celular empilha: logo, telefones e copyright, tudo no centro */
 @media (max-width: 640px) {
-  .rod-fino,
-  .rod-ajuda {
-    padding-right: 16px;
-    padding-left: 16px;
+  .rod-linha {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .rod-fino-projeto {
+  .rod-marca,
+  .rod-emergencia {
+    align-items: center;
     width: 100%;
-    margin-left: 0;
+  }
+
+  .rod-emergencia-cabeca {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .rod-telefones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  /* o quinto telefone ocupa a linha inteira */
+  .rod-telefones li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .rod-telefones a {
+    width: 100%;
+    height: 100%;
+    text-align: center;
   }
 }
