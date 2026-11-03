@@ -1,5 +1,6 @@
 # Requisicoes para testar a API com a extensao REST Client do VS Code.
-# Rode npm run db:reset e npm run dev, e clique em "Send Request" em cima de cada uma, na ordem.
+# Rode npm run dev e clique em "Send Request" em cima de cada uma, na ordem.
+# Atencao: o banco e o do site. O que estas requisicoes criam, editam e apagam fica la de verdade.
 # Rode primeiro os logins: o token de cada um fica guardado e as outras requisicoes usam sozinhas.
 
 @api = http://localhost:3000/api
