@@ -1,4 +1,4 @@
-const db = require("../database/conexao");
+const { consulta } = require("../database/conexao");
 
 const SELECT_AGENDAMENTO = `
   SELECT a.id, a.status, a.descricao, a.anotacao, a.criado_em, a.link_video, a.google_evento_id,
@@ -16,7 +16,7 @@ const SELECT_AGENDAMENTO = `
   JOIN usuarios u ON u.id = a.usuario_id
 `;
 
-function listar({ usuario_id, voluntario_id, status }) {
+async function listar({ usuario_id, voluntario_id, status }) {
   const filtros = [];
   const params = {};
 
@@ -34,59 +34,63 @@ function listar({ usuario_id, voluntario_id, status }) {
   }
 
   const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
-  return db.prepare(`${SELECT_AGENDAMENTO} ${where} ORDER BY h.data, h.hora_inicio`).all(params);
+  return (await consulta(`${SELECT_AGENDAMENTO} ${where} ORDER BY h.data, h.hora_inicio`, params)).rows;
 }
 
-function buscarPorId(id) {
-  return db.prepare(`${SELECT_AGENDAMENTO} WHERE a.id = ?`).get(id);
+async function buscarPorId(id) {
+  return (await consulta(`${SELECT_AGENDAMENTO} WHERE a.id = ?`, [id])).rows[0];
 }
 
 // outro atendimento confirmado do mesmo usuário que se sobrepõe a este horário
-function temConflito(usuarioId, horario, ignorarId = 0) {
-  return Boolean(db.prepare(`
+async function temConflito(usuarioId, horario, ignorarId = 0) {
+  const { rows } = await consulta(`
     SELECT 1 FROM agendamentos a
     JOIN horarios h ON h.id = a.horario_id
     WHERE a.usuario_id = ? AND a.status = 'confirmado' AND a.id <> ?
       AND h.data = ? AND h.hora_inicio < ? AND h.hora_fim > ?
-  `).get(usuarioId, ignorarId, horario.data, horario.hora_fim, horario.hora_inicio));
+  `, [usuarioId, ignorarId, horario.data, horario.hora_fim, horario.hora_inicio]);
+  return rows.length > 0;
 }
 
 // salas do Meet que somem junto com um horário ou com uma conta (como usuário ou como voluntário)
-function salasDoHorario(horarioId) {
-  return db.prepare("SELECT google_evento_id FROM agendamentos WHERE horario_id = ? AND google_evento_id IS NOT NULL")
-    .all(horarioId).map((a) => a.google_evento_id);
+async function salasDoHorario(horarioId) {
+  const { rows } = await consulta(
+    "SELECT google_evento_id FROM agendamentos WHERE horario_id = ? AND google_evento_id IS NOT NULL",
+    [horarioId]
+  );
+  return rows.map((a) => a.google_evento_id);
 }
 
-function salasDaConta(usuarioId) {
-  return db.prepare(`
+async function salasDaConta(usuarioId) {
+  const { rows } = await consulta(`
     SELECT a.google_evento_id FROM agendamentos a
     JOIN horarios h ON h.id = a.horario_id
     JOIN voluntarios v ON v.id = h.voluntario_id
     WHERE a.status = 'confirmado' AND a.google_evento_id IS NOT NULL AND (a.usuario_id = ? OR v.usuario_id = ?)
-  `).all(usuarioId, usuarioId).map((a) => a.google_evento_id);
+  `, [usuarioId, usuarioId]);
+  return rows.map((a) => a.google_evento_id);
 }
 
-function criar(a) {
-  const { lastInsertRowid } = db
-    .prepare(`
-      INSERT INTO agendamentos (horario_id, usuario_id, servico_id, descricao)
-      VALUES (@horario_id, @usuario_id, @servico_id, @descricao)
-    `)
-    .run(a);
-  return lastInsertRowid;
+async function criar(a) {
+  const { rows } = await consulta(`
+    INSERT INTO agendamentos (horario_id, usuario_id, servico_id, descricao)
+    VALUES (@horario_id, @usuario_id, @servico_id, @descricao)
+    RETURNING id
+  `, a);
+  return rows[0].id;
 }
 
-function atualizar(id, campos) {
+async function atualizar(id, campos) {
   const sets = Object.keys(campos).map((c) => `${c} = @${c}`).join(", ");
-  db.prepare(`UPDATE agendamentos SET ${sets} WHERE id = @id`).run({ ...campos, id });
+  await consulta(`UPDATE agendamentos SET ${sets} WHERE id = @id`, { ...campos, id });
 }
 
 // devolve os horarios dos agendamentos confirmados do usuario para a agenda do voluntario
-function liberarHorariosDoUsuario(usuarioId) {
-  db.prepare(`
+async function liberarHorariosDoUsuario(usuarioId) {
+  await consulta(`
     UPDATE horarios SET status = 'livre'
     WHERE id IN (SELECT horario_id FROM agendamentos WHERE usuario_id = ? AND status = 'confirmado')
-  `).run(usuarioId);
+  `, [usuarioId]);
 }
 
 module.exports = { listar, buscarPorId, temConflito, salasDoHorario, salasDaConta, criar, atualizar, liberarHorariosDoUsuario };

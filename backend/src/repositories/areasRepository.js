@@ -1,33 +1,33 @@
-const db = require("../database/conexao");
+const { consulta } = require("../database/conexao");
 
-function listar() {
-  return db.prepare("SELECT * FROM areas ORDER BY nome").all();
+async function listar() {
+  return (await consulta("SELECT * FROM areas ORDER BY nome")).rows;
 }
 
-function buscarPorId(id) {
-  return db.prepare("SELECT * FROM areas WHERE id = ?").get(id);
+async function buscarPorId(id) {
+  return (await consulta("SELECT * FROM areas WHERE id = ?", [id])).rows[0];
 }
 
-function buscarPorNome(nome) {
-  return db.prepare("SELECT * FROM areas WHERE nome = ?").get(nome);
+async function buscarPorNome(nome) {
+  return (await consulta("SELECT * FROM areas WHERE nome = ?", [nome])).rows[0];
 }
 
-function criar({ nome }) {
-  const { lastInsertRowid } = db.prepare("INSERT INTO areas (nome) VALUES (?)").run(nome);
-  return buscarPorId(lastInsertRowid);
+async function criar({ nome }) {
+  return (await consulta("INSERT INTO areas (nome) VALUES (?) RETURNING *", [nome])).rows[0];
 }
 
-function atualizar(id, { nome }) {
-  db.prepare("UPDATE areas SET nome = ? WHERE id = ?").run(nome, id);
+async function atualizar(id, { nome }) {
+  await consulta("UPDATE areas SET nome = ? WHERE id = ?", [nome, id]);
   return buscarPorId(id);
 }
 
-function excluir(id) {
-  db.prepare("DELETE FROM areas WHERE id = ?").run(id);
+async function excluir(id) {
+  await consulta("DELETE FROM areas WHERE id = ?", [id]);
 }
 
-function contarVoluntarios(id) {
-  return db.prepare("SELECT COUNT(*) AS total FROM voluntarios WHERE area_id = ?").get(id).total;
+// o COUNT do Postgres vem como texto no pg: o ::int devolve número
+async function contarVoluntarios(id) {
+  return (await consulta("SELECT COUNT(*)::int AS total FROM voluntarios WHERE area_id = ?", [id])).rows[0].total;
 }
 
 module.exports = { listar, buscarPorId, buscarPorNome, criar, atualizar, excluir, contarVoluntarios };

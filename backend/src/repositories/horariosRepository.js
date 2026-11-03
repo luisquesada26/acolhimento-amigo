@@ -1,4 +1,4 @@
-const db = require("../database/conexao");
+const { consulta } = require("../database/conexao");
 
 const SELECT_HORARIO = `
   SELECT h.*, a.id AS agendamento_id, a.status AS agendamento_status,
@@ -10,7 +10,7 @@ const SELECT_HORARIO = `
   LEFT JOIN servicos s ON s.id = a.servico_id
 `;
 
-function listar({ voluntario_id, status, de, ate }) {
+async function listar({ voluntario_id, status, de, ate }) {
   const filtros = [];
   const params = {};
 
@@ -32,46 +32,49 @@ function listar({ voluntario_id, status, de, ate }) {
   }
 
   const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
-  return db.prepare(`${SELECT_HORARIO} ${where} ORDER BY h.data, h.hora_inicio`).all(params);
+  return (await consulta(`${SELECT_HORARIO} ${where} ORDER BY h.data, h.hora_inicio`, params)).rows;
 }
 
-function buscarPorId(id) {
-  return db.prepare(`${SELECT_HORARIO} WHERE h.id = ?`).get(id);
+async function buscarPorId(id) {
+  return (await consulta(`${SELECT_HORARIO} WHERE h.id = ?`, [id])).rows[0];
 }
 
 // dois horarios se sobrepoem quando um comeca antes do outro terminar
-function existeConflito({ voluntario_id, data, hora_inicio, hora_fim }, ignorarId = 0) {
-  return Boolean(
-    db
-      .prepare(`
-        SELECT 1 FROM horarios
-        WHERE voluntario_id = ? AND data = ? AND hora_inicio < ? AND hora_fim > ? AND id <> ?
-      `)
-      .get(voluntario_id, data, hora_fim, hora_inicio, ignorarId)
-  );
+async function existeConflito({ voluntario_id, data, hora_inicio, hora_fim }, ignorarId = 0) {
+  const { rows } = await consulta(`
+    SELECT 1 FROM horarios
+    WHERE voluntario_id = ? AND data = ? AND hora_inicio < ? AND hora_fim > ? AND id <> ?
+  `, [voluntario_id, data, hora_fim, hora_inicio, ignorarId]);
+  return rows.length > 0;
 }
 
-function criar(h) {
-  const { lastInsertRowid } = db
-    .prepare(`
-      INSERT INTO horarios (voluntario_id, data, hora_inicio, hora_fim)
-      VALUES (@voluntario_id, @data, @hora_inicio, @hora_fim)
-    `)
-    .run(h);
-  return buscarPorId(lastInsertRowid);
+async function criar(h) {
+  const { rows } = await consulta(`
+    INSERT INTO horarios (voluntario_id, data, hora_inicio, hora_fim)
+    VALUES (@voluntario_id, @data, @hora_inicio, @hora_fim)
+    RETURNING id
+  `, h);
+  return buscarPorId(rows[0].id);
 }
 
-function atualizar(id, { data, hora_inicio, hora_fim }) {
-  db.prepare("UPDATE horarios SET data = ?, hora_inicio = ?, hora_fim = ? WHERE id = ?").run(data, hora_inicio, hora_fim, id);
+async function atualizar(id, { data, hora_inicio, hora_fim }) {
+  await consulta("UPDATE horarios SET data = ?, hora_inicio = ?, hora_fim = ? WHERE id = ?", [data, hora_inicio, hora_fim, id]);
   return buscarPorId(id);
 }
 
-function mudarStatus(id, status) {
-  db.prepare("UPDATE horarios SET status = ? WHERE id = ?").run(status, id);
+async function mudarStatus(id, status) {
+  await consulta("UPDATE horarios SET status = ? WHERE id = ?", [status, id]);
 }
 
-function excluir(id) {
-  db.prepare("DELETE FROM horarios WHERE id = ?").run(id);
+// reserva só se ainda estiver livre. Dois pedidos ao mesmo tempo podem ter lido "livre":
+// o segundo espera o primeiro terminar e não reserva nada (devolve false)
+async function reservar(id) {
+  const { rowCount } = await consulta("UPDATE horarios SET status = 'reservado' WHERE id = ? AND status = 'livre'", [id]);
+  return rowCount > 0;
 }
 
-module.exports = { listar, buscarPorId, existeConflito, criar, atualizar, mudarStatus, excluir };
+async function excluir(id) {
+  await consulta("DELETE FROM horarios WHERE id = ?", [id]);
+}
+
+module.exports = { listar, buscarPorId, existeConflito, criar, atualizar, mudarStatus, reservar, excluir };
