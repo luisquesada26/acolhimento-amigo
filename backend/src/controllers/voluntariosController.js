@@ -3,7 +3,7 @@ const { lerId } = require("../utils/id");
 const { lerData } = require("../utils/datas");
 const { ErroApp } = require("../middlewares/erros");
 
-function listar(req, res) {
+async function listar(req, res) {
   const { q, area, idioma, disponivel, data, turno } = req.query;
 
   if (turno && !["manha", "tarde", "noite"].includes(turno)) {
@@ -11,7 +11,7 @@ function listar(req, res) {
   }
 
   res.json(
-    service.listar({
+    await service.listar({
       q: q?.trim(),
       area: area ? lerId(area) : undefined,
       idioma: idioma?.trim(),
@@ -22,8 +22,8 @@ function listar(req, res) {
   );
 }
 
-function buscar(req, res) {
-  res.json(service.buscar(lerId(req.params.id)));
+async function buscar(req, res) {
+  res.json(await service.buscar(lerId(req.params.id)));
 }
 
 module.exports = { listar, buscar };

@@ -7,21 +7,25 @@ function formatar(v) {
   return { ...v, idiomas: v.idiomas ? v.idiomas.split(",") : [], ativo: Boolean(v.ativo) };
 }
 
-function listar(filtros) {
-  return repo.listar(filtros).map((v) => ({
-    ...formatar(v),
-    servicos: repo.servicosAtivos(v.id).map(({ id, titulo }) => ({ id, titulo })),
-    proximo_horario: repo.proximoHorario(v.id, filtros),
-  }));
+// as consultas de cada voluntario saem juntas, e nao uma depois da outra: cada ida ao Supabase demora
+async function listar(filtros) {
+  const voluntarios = await repo.listar(filtros);
+  return Promise.all(
+    voluntarios.map(async (v) => ({
+      ...formatar(v),
+      servicos: (await repo.servicosAtivos(v.id)).map(({ id, titulo }) => ({ id, titulo })),
+      proximo_horario: await repo.proximoHorario(v.id, filtros),
+    }))
+  );
 }
 
-function buscar(id) {
-  const v = repo.buscarPorId(id);
+async function buscar(id) {
+  const v = await repo.buscarPorId(id);
   if (!v) throw new ErroApp(404, "Voluntário não encontrado");
   return {
     ...formatar(v),
-    servicos: repo.servicosAtivos(id),
-    horarios: repo.horariosLivres(id),
+    servicos: await repo.servicosAtivos(id),
+    horarios: await repo.horariosLivres(id),
   };
 }
 
