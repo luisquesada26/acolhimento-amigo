@@ -163,6 +163,8 @@ const cancelar = db.transaction((usuario, id) => {
 // e o botão da videochamada cria a sala depois (garantirSala)
 async function abrirSala(id) {
   const a = repo.buscarPorId(id);
+  // sobrou um evento sem link (falhou no meio do caminho): sai da agenda antes de criar o novo
+  if (a.google_evento_id) await videochamada.apagarSalas([a.google_evento_id]);
   const sala = await videochamada.criarSala(a);
   repo.atualizar(id, { link_video: sala.link, google_evento_id: sala.eventoId });
 }
