@@ -1,4 +1,5 @@
 const { z } = require("zod");
+const { idDoBanco } = require("../utils/id");
 
 // idiomas da plataforma: o voluntário atende neles e o usuário diz em quais pode ser atendido
 const IDIOMAS = ["pt", "en", "es", "fr"];
@@ -9,7 +10,7 @@ const idiomas = z
 
 // no cadastro só a área é obrigatória; os idiomas vêm depois, ao completar o perfil
 const dadosVoluntario = z.object({
-  area_id: z.number().int().positive("Área inválida"),
+  area_id: z.number().int().positive("Área inválida").transform(idDoBanco),
   registro_profissional: z.string().trim().max(40).nullish(),
   idiomas: idiomas.optional(),
   bio: z.string().trim().max(500).nullish(),
