@@ -145,6 +145,15 @@
   font-weight: 600;
 }
 
+/* telefone e e-mail com 40px de toque no celular */
+@media (max-width: 760px), (pointer: coarse) {
+  .vol-contato a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
 /* números do painel */
 .vol-numeros {
   margin: 0;
@@ -740,11 +749,18 @@
   padding: 22px 24px 24px;
 }
 
+/* em tela baixa a janela rola por dentro: o título e o fechar ficam presos em cima */
 .vol-janela-topo {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin: -22px -24px 0;
+  padding: 22px 24px 0;
+  background: #fff;
 }
 
 .vol-janela-topo h2 {
