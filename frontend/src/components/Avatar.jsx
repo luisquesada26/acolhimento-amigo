@@ -1,6 +1,5 @@
-import { textosAtuais } from "../context/IdiomaContext";
-
-const ERROS_FOTO = {
+// o erro da foto leva só a chave (tipo ou abrir); a tela traduz com estes textos na hora de mostrar
+export const ERROS_FOTO = {
   pt: { tipo: "Escolha um arquivo de imagem (JPG, PNG ou WEBP).", abrir: "Não deu para abrir essa imagem." },
   en: { tipo: "Choose an image file (JPG, PNG or WEBP).", abrir: "Couldn’t open this image." },
   es: { tipo: "Elige un archivo de imagen (JPG, PNG o WEBP).", abrir: "No se pudo abrir esta imagen." },
@@ -22,11 +21,15 @@ export default function Avatar({ nome, foto, className = "", children }) {
   );
 }
 
+function erroDaFoto(chave) {
+  return Object.assign(new Error(ERROS_FOTO.pt[chave]), { chave });
+}
+
 // corta no meio em quadrado e reduz para a foto ir leve para a API
 export function reduzirFoto(arquivo, lado = 256) {
   return new Promise((pronto, falhou) => {
     if (!arquivo.type.startsWith("image/")) {
-      falhou(new Error(textosAtuais(ERROS_FOTO).tipo));
+      falhou(erroDaFoto("tipo"));
       return;
     }
     const leitor = new FileReader();
@@ -40,7 +43,7 @@ export function reduzirFoto(arquivo, lado = 256) {
         tela.getContext("2d").drawImage(imagem, (imagem.width - menor) / 2, (imagem.height - menor) / 2, menor, menor, 0, 0, lado, lado);
         pronto(tela.toDataURL("image/jpeg", 0.85));
       };
-      imagem.onerror = () => falhou(new Error(textosAtuais(ERROS_FOTO).abrir));
+      imagem.onerror = () => falhou(erroDaFoto("abrir"));
       imagem.src = leitor.result;
     };
     leitor.readAsDataURL(arquivo);

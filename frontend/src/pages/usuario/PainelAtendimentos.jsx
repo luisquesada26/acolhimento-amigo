@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
+import { traduzirErroApi } from "../../services/errosApi";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
 import { Svg, quando } from "../voluntario/comum";
@@ -37,7 +38,7 @@ function ConfirmarCancelamento({ atendimento, aoCancelar, aoManter }) {
       const { data } = await api.delete(`/agendamentos/${atendimento.id}`);
       aoCancelar(data);
     } catch (problema) {
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
       setEnviando(false);
     }
   }
@@ -51,7 +52,7 @@ function ConfirmarCancelamento({ atendimento, aoCancelar, aoManter }) {
   return (
     <div className="ma-confirmar" role="alertdialog" aria-labelledby={`ma-confirmar-${atendimento.id}`} onKeyDown={tecla}>
       <p id={`ma-confirmar-${atendimento.id}`}>{t.cancelarConfirmar}</p>
-      {erro && <span className="campo-erro">{erro}</span>}
+      {erro && <span className="campo-erro">{traduzirErroApi(erro)}</span>}
       <div className="ma-confirmar-acoes">
         <button ref={manter} type="button" className="ma-botao" onClick={aoManter} disabled={enviando}>
           {t.manter}
@@ -142,7 +143,7 @@ function useEstadoLista() {
     return (
       <div className="usu-estado">
         <p className="aviso" role="alert">
-          {erro}
+          {traduzirErroApi(erro)}
         </p>
         <button type="button" className="botao botao-primario" onClick={carregar}>
           {t.tentarDeNovo}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Interruptor, Janela, Svg, useAcao } from "./comum";
 import { useTextos } from "../../context/IdiomaContext";
+import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
 const DURACOES = [30, 45, 60, 90];
@@ -13,10 +14,11 @@ function FormServico({ id, inicial, aoSalvar, aoCancelar, rotulo }) {
   const [enviando, setEnviando] = useState(false);
   const t = useTextos(traducoes);
 
+  // o erro fica como chave das traduções ou como a API mandou, e é traduzido na hora de mostrar
   async function enviar(evento) {
     evento.preventDefault();
-    if (titulo.trim().length < 3) return setErro(t.erroTitulo);
-    if (descricao.trim().length < 10) return setErro(t.erroDescricao);
+    if (titulo.trim().length < 3) return setErro("erroTitulo");
+    if (descricao.trim().length < 10) return setErro("erroDescricao");
 
     setEnviando(true);
     setErro("");
@@ -54,7 +56,7 @@ function FormServico({ id, inicial, aoSalvar, aoCancelar, rotulo }) {
       </div>
       {erro && (
         <p className="vol-erro" role="alert">
-          {erro}
+          {traduzirMensagem(erro, t)}
         </p>
       )}
       <div className="vol-acoes">
@@ -72,12 +74,12 @@ function FormServico({ id, inicial, aoSalvar, aoCancelar, rotulo }) {
 function CartaoServico({ servico, editarServico, excluirServico }) {
   const [editando, setEditando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
-  const [aviso, setAviso] = useState("");
+  const [desativou, setDesativou] = useState(false);
   const t = useTextos(traducoes);
   const ativar = useAcao(() => editarServico(servico.id, { ativo: !servico.ativo }));
   const excluir = useAcao(async () => {
     const { erro, desativado } = await excluirServico(servico.id);
-    if (desativado) setAviso(t.jaTeveAtendimentos);
+    if (desativado) setDesativou(true);
     setConfirmando(false);
     return erro;
   });
@@ -133,9 +135,9 @@ function CartaoServico({ servico, editarServico, excluirServico }) {
           </div>
         </div>
       )}
-      {aviso && (
+      {desativou && (
         <p className="dica" role="status">
-          {aviso}
+          {t.jaTeveAtendimentos}
         </p>
       )}
       {(ativar.erro || excluir.erro) && (

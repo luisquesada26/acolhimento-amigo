@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { OrdenarPorData, Status, Svg, dataComAno } from "./comum";
 import DetalheAtendimento from "./DetalheAtendimento";
 import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { chaveDoPais, nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 
 // busca sem diferenciar maiúscula nem acento ("maria" acha "María")
@@ -13,6 +14,17 @@ const normalizar = (texto) =>
     .toLowerCase();
 
 const unicos = (lista) => [...new Set(lista)].sort((a, b) => a.localeCompare(b, localeAtual()));
+
+// o mesmo país escrito de jeitos diferentes ("Colômbia", "colombia") vira uma opção só,
+// com o nome no idioma da bandeira; o valor da opção é a chave do país
+function paisesDe(atendimentos) {
+  const porChave = new Map();
+  for (const a of atendimentos) {
+    const texto = a.usuario.pais_origem;
+    if (texto?.trim() && !porChave.has(chaveDoPais(texto))) porChave.set(chaveDoPais(texto), nomeDoPais(texto).trim());
+  }
+  return [...porChave].map(([chave, nome]) => ({ chave, nome })).sort((a, b) => a.nome.localeCompare(b.nome, localeAtual()));
+}
 
 export default function Relatorios() {
   const painel = useOutletContext();
@@ -27,7 +39,7 @@ export default function Relatorios() {
 
   const todos = [...painel.todos].sort((a, b) => (ordem === "desc" ? b.inicio - a.inicio : a.inicio - b.inicio));
   const servicos = unicos(todos.map((a) => a.servico.titulo));
-  const paises = unicos(todos.map((a) => a.usuario.pais_origem).filter(Boolean));
+  const paises = paisesDe(todos);
 
   const filtrados = todos.filter(
     (a) =>
@@ -35,7 +47,7 @@ export default function Relatorios() {
       (!de || a.horario.data >= de) &&
       (!ate || a.horario.data <= ate) &&
       (!servico || a.servico.titulo === servico) &&
-      (!pais || a.usuario.pais_origem === pais)
+      (!pais || chaveDoPais(a.usuario.pais_origem) === pais)
   );
   const pessoas = new Set(filtrados.map((a) => a.usuario.id)).size;
   const temFiltro = busca || de || ate || servico || pais;
@@ -91,8 +103,8 @@ export default function Relatorios() {
             <select id="relatorio-pais" value={pais} onChange={(e) => setPais(e.target.value)}>
               <option value="">{t.todas}</option>
               {paises.map((p) => (
-                <option key={p} value={p}>
-                  {p}
+                <option key={p.chave} value={p.chave}>
+                  {p.nome}
                 </option>
               ))}
             </select>
@@ -135,7 +147,7 @@ export default function Relatorios() {
                       </button>
                       <small>{t.fala(a.usuario.idiomas)}</small>
                     </td>
-                    <td>{a.usuario.pais_origem}</td>
+                    <td>{nomeDoPais(a.usuario.pais_origem)}</td>
                     <td>{a.servico.titulo}</td>
                     <td>
                       <time dateTime={`${a.horario.data}T${a.horario.hora_inicio}`}>

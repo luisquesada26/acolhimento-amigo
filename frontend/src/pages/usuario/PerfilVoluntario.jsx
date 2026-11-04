@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
+import { traduzirErroApi, traduzirMensagem } from "../../services/errosApi";
 import Avatar from "../../components/Avatar";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Janela, Svg, dataComAno } from "../voluntario/comum";
@@ -21,10 +22,11 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
 
   const faltam = MINIMO_DESCRICAO - descricao.trim().length;
 
+  // o erro fica como chave (com o número, se tiver) ou como a API mandou, e é traduzido na hora de mostrar
   async function enviar(evento) {
     evento.preventDefault();
-    if (!servicoId) return setErro(t.escolhaServico);
-    if (faltam > 0) return setErro(t.conteMais(faltam));
+    if (!servicoId) return setErro("escolhaServico");
+    if (faltam > 0) return setErro(["conteMais", faltam]);
 
     setEnviando(true);
     setErro("");
@@ -36,7 +38,7 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
       });
       aoMarcado();
     } catch (problema) {
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
     } finally {
       setEnviando(false);
     }
@@ -82,7 +84,7 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
 
       {erro && (
         <p className="vol-erro" role="alert">
-          {erro}
+          {traduzirMensagem(erro, t)}
         </p>
       )}
 
@@ -115,7 +117,7 @@ export default function PerfilVoluntario() {
       setVoluntario(data);
       setErro("");
     } catch (problema) {
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
     } finally {
       setCarregando(false);
     }
@@ -143,7 +145,7 @@ export default function PerfilVoluntario() {
     return (
       <div className="usu-estado">
         <p className="aviso" role="alert">
-          {erro}
+          {traduzirErroApi(erro)}
         </p>
         <Link to="/usuario" className="botao botao-primario">
           {t.voltar}

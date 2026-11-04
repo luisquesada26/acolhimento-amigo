@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
+import { traduzirMensagem } from "../../services/errosApi";
+import { nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 import Avatar from "../../components/Avatar";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
@@ -135,8 +137,10 @@ const ONDE_RESOLVER = {
   horario: "/voluntario/perfil?aba=agenda",
 };
 
-// botão que chama a API, mostra o erro ao lado e fica travado enquanto espera
+// botão que chama a API, mostra o erro ao lado e fica travado enquanto espera.
+// O erro fica guardado como a API mandou e sai traduzido a cada render, junto com a bandeira
 export function useAcao(acao) {
+  const t = useTextos(traducoes);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -148,7 +152,7 @@ export function useAcao(acao) {
     if (mensagem) setErro(mensagem);
   }
 
-  return { executar, ocupado, erro };
+  return { executar, ocupado, erro: traduzirMensagem(erro, t) };
 }
 
 // as duas saídas de um atendimento: concluir (vai para o histórico, com a anotação) ou cancelar.
@@ -278,7 +282,7 @@ export function Pessoa({ usuario }) {
       </span>
       <ul className="vol-contato">
         <li>
-          <Svg nome="globo" tamanho={15} /> {usuario.pais_origem || t.semNacionalidade}
+          <Svg nome="globo" tamanho={15} /> {nomeDoPais(usuario.pais_origem) || t.semNacionalidade}
         </li>
         <li>
           <Svg nome="idioma" tamanho={15} /> {fala[0].toUpperCase() + fala.slice(1)}

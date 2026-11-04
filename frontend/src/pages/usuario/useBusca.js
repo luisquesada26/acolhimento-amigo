@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
 
 const ESPERA_DIGITANDO = 350;
 
@@ -86,7 +86,8 @@ export default function useBusca() {
       setErro("");
     } catch (problema) {
       if (meu !== pedido.current) return;
-      setErro(lerErro(problema).mensagem);
+      // como a API mandou: a tela traduz na hora de mostrar
+      setErro(lerErroSemTraduzir(problema).mensagem);
       setVoluntarios([]);
     } finally {
       if (meu === pedido.current) setCarregando(false);
