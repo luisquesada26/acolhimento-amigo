@@ -1165,7 +1165,7 @@ textarea.perfil-input {
 }
 
 /* celular: o mês inteiro cabe na tela. Dias abreviados, atendimentos e horários livres
-   viram bolinhas na cor da legenda, e tocar no número abre a visão Dia com os detalhes */
+   viram bolinhas na cor da legenda, e tocar no dia abre a visão Dia com os detalhes */
 @media (max-width: 640px) {
   .agenda-grade-mes {
     min-width: 0;
@@ -1190,21 +1190,38 @@ textarea.perfil-input {
   }
 
   .agenda-grade-mes .agenda-celula {
+    position: relative;
     align-items: center;
     padding: 4px 2px;
   }
 
+  /* as bolinhas descem para baixo do número */
   .agenda-grade-mes .agenda-celula-topo {
     flex-direction: column;
     gap: 4px;
+    margin-top: 34px;
   }
 
+  /* o número cobre a casa inteira: o dedo acerta o dia em qualquer ponto, não só no
+     círculo de 26px. Hoje continua com o círculo verde atrás do número */
   .agenda-grade-mes .agenda-numero {
-    align-self: center;
-    min-width: 26px;
-    height: 26px;
-    padding: 0 4px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px 2px 0;
+    border-radius: 0;
     font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .agenda-grade-mes .agenda-hoje .agenda-numero {
+    background: radial-gradient(circle 13px at 50% 15px, var(--verde-escuro) 12.5px, transparent 13px);
   }
 
   .agenda-grade-mes .agenda-celula ul {
@@ -1214,8 +1231,11 @@ textarea.perfil-input {
     gap: 3px;
   }
 
+  /* as bolinhas ficam por cima do número, mas o toque passa para ele */
   .agenda-grade-mes .agenda-etiqueta,
   .agenda-grade-mes .agenda-celula-topo .agenda-vaga {
+    position: relative;
+    z-index: 2;
     width: 8px;
     height: 8px;
     min-height: 0;
@@ -1224,10 +1244,70 @@ textarea.perfil-input {
     border-radius: 50%;
     font-size: 0;
     overflow: hidden;
+    pointer-events: none;
   }
 
   .agenda-grade-mes .agenda-mais {
     display: none;
+  }
+
+  /* semana em lista, um dia por linha com o nome do dia ao lado: na grade de 640px só três
+     dias apareciam e o resto ficava escondido à direita. Os 7 nomes vêm antes dos 7 dias no
+     HTML; a ordem intercala nome e dia */
+  .agenda-grade-semana {
+    min-width: 0;
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .agenda-pagina .agenda-grade-semana {
+    grid-auto-rows: auto;
+  }
+
+  .agenda-grade-semana > :nth-child(1) { order: 1; }
+  .agenda-grade-semana > :nth-child(8) { order: 2; }
+  .agenda-grade-semana > :nth-child(2) { order: 3; }
+  .agenda-grade-semana > :nth-child(9) { order: 4; }
+  .agenda-grade-semana > :nth-child(3) { order: 5; }
+  .agenda-grade-semana > :nth-child(10) { order: 6; }
+  .agenda-grade-semana > :nth-child(4) { order: 7; }
+  .agenda-grade-semana > :nth-child(11) { order: 8; }
+  .agenda-grade-semana > :nth-child(5) { order: 9; }
+  .agenda-grade-semana > :nth-child(12) { order: 10; }
+  .agenda-grade-semana > :nth-child(6) { order: 11; }
+  .agenda-grade-semana > :nth-child(13) { order: 12; }
+  .agenda-grade-semana > :nth-child(7) { order: 13; }
+  .agenda-grade-semana > :nth-child(14) { order: 14; }
+
+  .agenda-grade-semana .agenda-cabeca {
+    display: flex;
+    align-items: center;
+    padding: 10px 8px;
+    font-size: 12.5px;
+  }
+
+  .agenda-grade-semana .agenda-celula {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 56px;
+    overflow: visible;
+  }
+
+  .agenda-grade-semana .agenda-numero {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .agenda-grade-semana .agenda-celula ul {
+    flex: 1 1 180px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .agenda-grade-semana .agenda-celula li {
+    max-width: 100%;
   }
 }
 
