@@ -7,16 +7,9 @@ function formatar(v) {
   return { ...v, idiomas: v.idiomas ? v.idiomas.split(",") : [], ativo: Boolean(v.ativo) };
 }
 
-// as consultas de cada voluntario saem juntas, e nao uma depois da outra: cada ida ao Supabase demora
+// cada voluntario ja vem com os servicos ({ id, titulo }) e o proximo_horario
 async function listar(filtros) {
-  const voluntarios = await repo.listar(filtros);
-  return Promise.all(
-    voluntarios.map(async (v) => ({
-      ...formatar(v),
-      servicos: (await repo.servicosAtivos(v.id)).map(({ id, titulo }) => ({ id, titulo })),
-      proximo_horario: await repo.proximoHorario(v.id, filtros),
-    }))
-  );
+  return (await repo.listar(filtros)).map(formatar);
 }
 
 async function buscar(id) {

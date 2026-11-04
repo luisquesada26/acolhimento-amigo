@@ -79,7 +79,29 @@ async function listar({ q, area, idioma, disponivel, data, turno }) {
     )`);
   }
 
-  return (await consulta(`${SELECT_VOLUNTARIO} WHERE ${filtros.join(" AND ")} ORDER BY u.nome`, params)).rows;
+  // os servicos e o proximo horario de cada um vem na mesma consulta, e nao numa ida ao banco por voluntario.
+  // O proximo horario usa os mesmos filtros de horario da busca, para o cartao mostrar o que a pessoa procurou
+  const { rows } = await consulta(`
+    SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
+           v.registro_profissional, v.idiomas, v.bio, v.ativo,
+           COALESCE((
+             SELECT json_agg(json_build_object('id', s.id, 'titulo', s.titulo) ORDER BY s.titulo)
+             FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1
+           ), '[]') AS servicos,
+           (
+             SELECT json_build_object('id', h.id, 'data', h.data, 'hora_inicio', h.hora_inicio, 'hora_fim', h.hora_fim)
+             FROM horarios h
+             WHERE h.voluntario_id = v.id AND ${horarioQueAtende({ disponivel, data, turno }, params)}
+             ORDER BY h.data, h.hora_inicio
+             LIMIT 1
+           ) AS proximo_horario
+    FROM voluntarios v
+    JOIN usuarios u ON u.id = v.usuario_id
+    JOIN areas a ON a.id = v.area_id
+    WHERE ${filtros.join(" AND ")}
+    ORDER BY u.nome
+  `, params);
+  return rows;
 }
 
 async function buscarPorId(id) {
@@ -124,18 +146,6 @@ async function horariosLivres(voluntarioId) {
   return rows;
 }
 
-// com os mesmos filtros de horario da busca, para o cartao mostrar o horario que a pessoa procurou
-async function proximoHorario(voluntarioId, filtros = {}) {
-  const params = { id: voluntarioId, ...agora() };
-  const { rows } = await consulta(`
-    SELECT h.id, h.data, h.hora_inicio, h.hora_fim FROM horarios h
-    WHERE h.voluntario_id = @id AND ${horarioQueAtende(filtros, params)}
-    ORDER BY h.data, h.hora_inicio
-    LIMIT 1
-  `, params);
-  return rows[0] ?? null;
-}
-
 module.exports = {
   listar,
   buscarPorId,
@@ -144,5 +154,4 @@ module.exports = {
   atualizar,
   servicosAtivos,
   horariosLivres,
-  proximoHorario,
 };
