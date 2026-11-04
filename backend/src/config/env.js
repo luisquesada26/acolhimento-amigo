@@ -14,4 +14,13 @@ module.exports = {
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
     enviarConvites: process.env.GOOGLE_ENVIAR_CONVITES === "true",
   },
+  // tradução da bio e dos serviços pelo MyMemory, gratuito e sem chave. Com o e-mail, o limite
+  // sobe de 5 mil para 50 mil caracteres por dia; a URL só muda nos testes
+  TRADUCAO: {
+    url: process.env.TRADUCAO_URL || "https://api.mymemory.translated.net/get",
+    email: process.env.TRADUCAO_EMAIL,
+    desligada: process.env.TRADUCAO_DESLIGADA === "1",
+    // quanto cada pedido espera; passou disso, o texto fica sem tradução
+    esperaMs: 4000,
+  },
 };
