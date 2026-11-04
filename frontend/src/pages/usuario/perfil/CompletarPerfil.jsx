@@ -6,6 +6,7 @@ import { useTextos } from "../../../context/IdiomaContext";
 import { nomeDoPais } from "../../../dados/paises";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
+import { limparTelefone, mascaraTelefone } from "../../voluntario/telefone";
 import { traducoes } from "../traducoes";
 import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
@@ -19,7 +20,7 @@ export default function CompletarPerfil() {
   const tp = tudo.perfil;
   const traduzir = useErros();
   const [dados, setDados] = useState({
-    telefone: usuario.telefone ?? "",
+    telefone: limparTelefone(usuario.telefone),
     pais_origem: nomeDoPais(usuario.pais_origem ?? ""),
     idiomas: usuario.idiomas ?? ["pt"],
     foto: usuario.foto ?? null,
@@ -102,8 +103,8 @@ export default function CompletarPerfil() {
             autoComplete="tel"
             placeholder="(11) 98765-4321"
             maxLength={20}
-            value={dados.telefone}
-            onChange={(e) => mudar("telefone", e.target.value)}
+            value={mascaraTelefone(dados.telefone)}
+            onChange={(e) => mudar("telefone", limparTelefone(e.target.value))}
             erro={traduzir(erros.telefone)}
           />
           <Campo
