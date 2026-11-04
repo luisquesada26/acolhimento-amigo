@@ -150,18 +150,18 @@
 
   .cabecalho-navegacao {
     grid-column: 1 / -1;
-    justify-content: space-between;
     gap: 4px;
   }
 
   .cabecalho-navegacao a {
     min-height: 44px;
-    padding-inline: 6px;
+    padding-inline: 10px;
     font-size: 0.9rem;
   }
 }
 
-/* só a bandeira no botão de idioma, como nas áreas logadas; o logo já leva ao início */
+/* só a bandeira no botão de idioma, como nas áreas logadas; o logo já leva ao início.
+   Os três links vão de ponta a ponta, alinhados com o logo e com o "Entrar" */
 @media (max-width: 480px) {
   .cabecalho .idioma-botao {
     gap: 6px;
@@ -173,7 +173,12 @@
     display: none;
   }
 
+  .cabecalho-navegacao {
+    justify-content: space-between;
+  }
+
   .cabecalho-navegacao a {
+    padding-inline: 6px;
     font-size: clamp(0.8rem, 4vw, 0.875rem);
   }
 }
