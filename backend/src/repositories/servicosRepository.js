@@ -1,4 +1,5 @@
 const { consulta } = require("../database/conexao");
+const { JUNTAR_TRADUCOES, NOVAS_TRADUCOES } = require("../utils/traducoes");
 
 async function listar({ voluntario_id, somenteAtivos = false } = {}) {
   const filtros = [];
@@ -24,18 +25,19 @@ async function buscarPorId(id, { trava } = {}) {
 
 async function criar(s) {
   const { rows } = await consulta(`
-    INSERT INTO servicos (voluntario_id, titulo, descricao, duracao_min)
-    VALUES (@voluntario_id, @titulo, @descricao, @duracao_min)
+    INSERT INTO servicos (voluntario_id, titulo, descricao, duracao_min, traducoes)
+    VALUES (@voluntario_id, @titulo, @descricao, @duracao_min, ${NOVAS_TRADUCOES})
     RETURNING *
-  `, s);
+  `, { ...s, traducoes: JSON.stringify(s.traducoes ?? {}) });
   return rows[0];
 }
 
-async function atualizar(id, campos) {
-  const nomes = Object.keys(campos);
-  if (nomes.length > 0) {
-    const sets = nomes.map((c) => `${c} = @${c}`).join(", ");
-    await consulta(`UPDATE servicos SET ${sets} WHERE id = @id`, { ...campos, id });
+// traducoes: só as dos campos que mudaram ({ titulo, descricao: tradução ou null }); as outras ficam como estão
+async function atualizar(id, campos, traducoes = {}) {
+  const sets = Object.keys(campos).map((c) => `${c} = @${c}`);
+  if (Object.keys(traducoes).length) sets.push(JUNTAR_TRADUCOES);
+  if (sets.length > 0) {
+    await consulta(`UPDATE servicos SET ${sets.join(", ")} WHERE id = @id`, { ...campos, traducoes: JSON.stringify(traducoes), id });
   }
   return buscarPorId(id);
 }

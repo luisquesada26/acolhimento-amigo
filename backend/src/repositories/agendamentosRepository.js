@@ -1,10 +1,11 @@
 const { consulta } = require("../database/conexao");
 
+// do serviço vem só o título, então a tradução da descrição fica de fora
 const SELECT_AGENDAMENTO = `
   SELECT a.id, a.status, a.descricao, a.anotacao, a.criado_em, a.link_video, a.google_evento_id,
          h.id AS horario_id, h.data, h.hora_inicio, h.hora_fim,
          v.id AS voluntario_id, uv.nome AS voluntario_nome, uv.foto AS voluntario_foto, uv.email AS voluntario_email, ar.nome AS voluntario_area,
-         s.id AS servico_id, s.titulo AS servico_titulo,
+         s.id AS servico_id, s.titulo AS servico_titulo, s.traducoes - 'descricao' AS servico_traducoes,
          u.id AS usuario_id, u.nome AS usuario_nome, u.pais_origem AS usuario_pais, u.idiomas AS usuario_idiomas,
          u.email AS usuario_email, u.telefone AS usuario_telefone, u.foto AS usuario_foto
   FROM agendamentos a

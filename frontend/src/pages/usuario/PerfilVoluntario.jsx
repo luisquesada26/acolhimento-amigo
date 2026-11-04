@@ -6,7 +6,8 @@ import Avatar from "../../components/Avatar";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Janela, Svg, dataComAno } from "../voluntario/comum";
 import { EtiquetaArea, momento } from "./comum";
-import { useTextos } from "../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 import CalendarioHorarios from "./CalendarioHorarios";
 import { useAbertura, useAtendimentos } from "./useAtendimentos";
@@ -15,6 +16,7 @@ const MINIMO_DESCRICAO = 20;
 
 function FormMarcar({ voluntario, horario, aoMarcado }) {
   const t = useTextos(traducoes).voluntario;
+  const { idioma } = useIdioma();
   const [servicoId, setServicoId] = useState(String(voluntario.servicos[0]?.id ?? ""));
   const [descricao, setDescricao] = useState("");
   const [erro, setErro] = useState("");
@@ -61,7 +63,7 @@ function FormMarcar({ voluntario, horario, aoMarcado }) {
         <select id="marcar-servico" value={servicoId} onChange={(e) => setServicoId(e.target.value)}>
           {voluntario.servicos.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.titulo} ({s.duracao_min} min)
+              {traduzido(s, "titulo", idioma)} ({s.duracao_min} min)
             </option>
           ))}
         </select>
@@ -101,6 +103,7 @@ export default function PerfilVoluntario() {
   const { id } = useParams();
   const tudo = useTextos(traducoes);
   const t = tudo.voluntario;
+  const { idioma } = useIdioma();
   const [voluntario, setVoluntario] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -189,7 +192,7 @@ export default function PerfilVoluntario() {
         </div>
       </header>
 
-      {voluntario.bio && <p className="usu-perfil-bio">{voluntario.bio}</p>}
+      {voluntario.bio && <p className="usu-perfil-bio">{traduzido(voluntario, "bio", idioma)}</p>}
 
       {marcado && (
         <div className="usu-confirmado" role="status" ref={avisoMarcado}>
@@ -213,8 +216,8 @@ export default function PerfilVoluntario() {
         <ul className="usu-servicos">
           {voluntario.servicos.map((s) => (
             <li key={s.id}>
-              <h3>{s.titulo}</h3>
-              <p>{s.descricao}</p>
+              <h3>{traduzido(s, "titulo", idioma)}</h3>
+              <p>{traduzido(s, "descricao", idioma)}</p>
               <span className="usu-duracao">
                 <Svg nome="relogio" tamanho={15} /> {s.duracao_min} min
               </span>

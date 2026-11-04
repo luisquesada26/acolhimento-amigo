@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { OrdenarPorData, Status, dataComAno } from "./comum";
-import { useTextos } from "../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 
@@ -13,6 +14,7 @@ export default function Historico({ passados, aoAbrir }) {
   const [filtro, setFiltro] = useState("todos");
   const [ordem, setOrdem] = useState("desc");
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
   const itens = (filtro === "todos" ? passados : passados.filter((a) => a.status === filtro))
     .slice()
     .sort((a, b) => (ordem === "desc" ? b.inicio - a.inicio : a.inicio - b.inicio));
@@ -65,7 +67,7 @@ export default function Historico({ passados, aoAbrir }) {
                     )}
                     <small>{nomeDoPais(a.usuario.pais_origem)}</small>
                   </td>
-                  <td>{a.servico.titulo}</td>
+                  <td>{traduzido(a.servico, "titulo", idioma)}</td>
                   <td>
                     <Status status={a.status} />
                   </td>

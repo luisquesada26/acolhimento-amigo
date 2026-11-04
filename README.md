@@ -199,6 +199,22 @@ Enquanto o app do Google estiver em modo de teste, a autorização vence em 7 di
 
 No Meet, entra direto quem está convidado e logado no Google com aquele e-mail, ou a própria conta do projeto. Os e-mails do seed são de mentira, então na demonstração uma pessoa abre a sala logada com `acolhimentoamigo@gmail.com`. O convite por e-mail fica desligado (`GOOGLE_ENVIAR_CONVITES=false`), para não mandar e-mail para endereços que não existem.
 
+### Tradução da bio e dos serviços
+
+Quando o voluntário salva a bio, ou o título ou a descrição de um serviço, a API manda só esse texto para o [MyMemory](https://mymemory.translated.net) (gratuito e sem chave), recebe a versão em português, inglês, espanhol e francês e grava na coluna `traducoes`, junto com o texto que foi traduzido (`origem`). O site mostra a versão do idioma da bandeira, mas só enquanto `origem` for igual ao texto atual: se o voluntário editou e a tradução nova não chegou, aparece o que ele escreveu. A busca também procura nas traduções, então "visa" acha "Visto e residência".
+
+O tradutor é chamado antes de gravar e espera no máximo uns 4 segundos. Se ele falhar, demorar ou a cota do dia acabar, o salvamento continua igual e o campo fica sem tradução até a próxima vez que for salvo. A descrição do caso que o usuário escreve e a anotação do voluntário nunca são traduzidas, nem pelo tradutor do navegador.
+
+Variáveis opcionais no `backend/.env`:
+
+| Variável | Para que serve |
+| --- | --- |
+| `TRADUCAO_EMAIL` | um e-mail de contato, que vai no parâmetro `de`. Sem ele o limite é de 5 mil caracteres por dia; com ele, 50 mil |
+| `TRADUCAO_DESLIGADA` | com `1`, nada vai para o tradutor e tudo aparece como foi escrito |
+| `TRADUCAO_URL` | troca o endereço do tradutor. Só para testes, com um servidor falso no mesmo formato |
+
+Os testes do serviço de tradução rodam com `npm test` na pasta `backend`, sem internet e sem banco.
+
 ## Banco de dados
 
 O banco é o PostgreSQL do Supabase, o mesmo do site, e a `DATABASE_URL` do `backend/.env` aponta para ele. Não existe comando para recriar o banco: o `npm run dev` de todo mundo grava nos dados de verdade, e o plano Free não tem backup.
@@ -221,8 +237,8 @@ Só quem cuida do banco cria migration. Toda migration vai em um pull request pr
 | --- | --- | --- |
 | `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idiomas`, `foto`, `cep`, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário. O endereço é opcional e só a própria pessoa vê |
 | `areas` | `nome` | As áreas de atendimento: Jurídico, Psicologia, Moradia e as outras |
-| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca |
-| `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `ativo` | O que cada voluntário oferece |
+| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `traducoes`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca. `traducoes` guarda a bio nos 4 idiomas |
+| `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `traducoes`, `ativo` | O que cada voluntário oferece. `traducoes` guarda o título e a descrição nos 4 idiomas |
 | `horarios` | `voluntario_id`, `data`, `hora_inicio`, `hora_fim`, `status` | A agenda do voluntário: cada horário está `livre` ou `reservado` |
 | `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao`, `link_video`, `google_evento_id` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |
 
@@ -269,6 +285,7 @@ erDiagram
         text registro_profissional
         text idiomas
         text bio
+        jsonb traducoes "a bio nos 4 idiomas"
         int ativo
     }
 
@@ -278,6 +295,7 @@ erDiagram
         text titulo
         text descricao
         int duracao_min
+        jsonb traducoes "título e descrição nos 4 idiomas"
         int ativo
     }
 
@@ -359,6 +377,7 @@ Variáveis do projeto no Vercel:
 | `JWT_SECRET` | um segredo só da produção, diferente do de desenvolvimento |
 | `VITE_API_URL` | `/api`, porque o site e a API ficam no mesmo endereço |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` | as chaves da videochamada |
+| `TRADUCAO_EMAIL` | opcional: o e-mail que sobe o limite do tradutor para 50 mil caracteres por dia |
 
 O `CORS_ORIGIN` não precisa: no mesmo endereço o navegador não confere o CORS.
 

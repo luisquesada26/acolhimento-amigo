@@ -8,6 +8,7 @@ import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea } from "../../dados/areas";
+import { traduzido } from "../../dados/conteudo";
 import { nomeDoPais } from "../../dados/paises";
 import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
@@ -289,12 +290,13 @@ function AbaDados({ painel }) {
         />
       </section>
 
+      {/* a bio aparece no idioma da bandeira; para editar, volta o texto que o voluntário escreveu */}
       <CampoEditavel
           id="campo-bio"
           icone="texto"
           rotulo={t.sobreVoce}
           largo
-          mostrar={voluntario.bio}
+          mostrar={traduzido(voluntario, "bio", idioma)}
           vazio={t.bioVazia}
           inicial={voluntario.bio ?? ""}
           aoSalvar={(v) => salvar({ voluntario: { bio: v.trim() || null } })}

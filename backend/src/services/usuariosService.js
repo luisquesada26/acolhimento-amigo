@@ -6,6 +6,7 @@ const areasRepo = require("../repositories/areasRepository");
 const agendamentosRepo = require("../repositories/agendamentosRepository");
 const { ErroApp } = require("../middlewares/erros");
 const videochamada = require("./videochamada");
+const traducao = require("./traducao");
 
 async function montar(usuario) {
   const resultado = { ...usuario, idiomas: usuario.idiomas.split(","), aceite_lgpd: Boolean(usuario.aceite_lgpd) };
@@ -19,6 +20,7 @@ async function montar(usuario) {
         registro_profissional: v.registro_profissional,
         idiomas: v.idiomas ? v.idiomas.split(",") : [],
         bio: v.bio,
+        traducoes: v.traducoes,
         ativo: Boolean(v.ativo),
       };
     }
@@ -41,6 +43,8 @@ async function criar(dados) {
   }
 
   const senha_hash = await bcrypt.hash(dados.senha, 10);
+  // a bio vai para o tradutor antes da transação, e o cadastro não espera nada dele para valer
+  const traducoes = dados.perfil === "voluntario" ? await traducao.traduzirCampos({ bio: dados.voluntario.bio }) : {};
 
   const salvar = () => transacao(async () => {
     const id = await repo.criar({
@@ -61,6 +65,7 @@ async function criar(dados) {
         registro_profissional: dados.voluntario.registro_profissional ?? null,
         idiomas: (dados.voluntario.idiomas ?? []).join(","),
         bio: dados.voluntario.bio ?? null,
+        traducoes,
       });
     }
     return id;
@@ -92,10 +97,12 @@ async function atualizar(id, dados) {
   const camposVoluntario = { ...voluntario };
   if (camposVoluntario.idiomas) camposVoluntario.idiomas = camposVoluntario.idiomas.join(",");
   if (camposVoluntario.ativo !== undefined) camposVoluntario.ativo = camposVoluntario.ativo ? 1 : 0;
+  // só a bio nova ou mudada vai para o tradutor, antes da transação
+  const traducoes = voluntario ? await traducao.traduzirCampos({ bio: voluntario.bio }, usuario.voluntario.traducoes) : {};
 
   await transacao(async () => {
     await repo.atualizar(id, campos);
-    if (voluntario) await voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario);
+    if (voluntario) await voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario, traducoes);
   });
 
   return buscar(id);

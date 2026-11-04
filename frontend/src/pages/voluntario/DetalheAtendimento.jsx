@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AcoesAtendimento, Pessoa, Status, Svg, diaExtenso } from "./comum";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
-import { useTextos } from "../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../context/IdiomaContext";
+import { COMO_ESCRITO, traduzido } from "../../dados/conteudo";
 import { traduzirErroApi } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
@@ -44,7 +45,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
           </button>
         </div>
         {atendimento.anotacao ? (
-          <p>{atendimento.anotacao}</p>
+          <p {...COMO_ESCRITO}>{atendimento.anotacao}</p>
         ) : (
           <p className="detalhe-anotacao-vazia">{t.semAnotacao}</p>
         )}
@@ -84,6 +85,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
 export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
   const janela = useRef(null);
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
 
   useEffect(() => {
     const dialogo = janela.current;
@@ -112,11 +114,11 @@ export default function DetalheAtendimento({ atendimento, aoFechar, painel }) {
             {t.das(atendimento.horario.hora_inicio, atendimento.horario.hora_fim)}
           </p>
           <Pessoa usuario={atendimento.usuario} />
-          <p className="vol-servico">{atendimento.servico.titulo}</p>
+          <p className="vol-servico">{traduzido(atendimento.servico, "titulo", idioma)}</p>
 
           <h3 className="detalhe-subtitulo">{t.oQueContou}</h3>
           <blockquote className="vol-caso">
-            <p>{atendimento.descricao}</p>
+            <p {...COMO_ESCRITO}>{atendimento.descricao}</p>
           </blockquote>
 
           {atendimento.status === "realizado" && <Anotacao atendimento={atendimento} salvarAnotacao={painel.salvarAnotacao} />}
