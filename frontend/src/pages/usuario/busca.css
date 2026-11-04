@@ -1,7 +1,8 @@
-/* busca de voluntários (prefixo bus): ocupa a largura toda da tela */
+/* busca de voluntários (prefixo bus): ocupa a largura da tela até 1700px. No monitor largo o
+   conteúdo fica com 154px de cada lado em 1920, alinhado com o rodapé (8%) */
 
 .usu-conteudo:has(> .bus) {
-  max-width: none;
+  max-width: 1700px;
   padding: 28px clamp(16px, 2.6vw, 44px) 64px;
 }
 

@@ -389,6 +389,12 @@ a.usu-pessoa:hover,
     padding-block: 12px;
     margin-block: -12px;
   }
+
+  /* rodapé: o rodape-app.css só dá 40px aos telefones até 640px; celular deitado e tablet também */
+  .usu .rod-telefones a,
+  .usu .rod-topo {
+    min-height: 40px;
+  }
 }
 
 /* tablet: o nome ao lado da foto quebrava em duas linhas e apertava "Meus atendimentos";
