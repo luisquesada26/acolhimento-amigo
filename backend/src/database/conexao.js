@@ -90,4 +90,13 @@ async function transacao(fn) {
   }
 }
 
-module.exports = { pool, consulta, transacao };
+// trava a agenda de um voluntário ou os atendimentos de um usuário até o fim da transação:
+// quem chega depois espera e confere de novo, como no SQLite, que fazia um pedido por vez.
+// A trava vale por transação, então funciona também no pooler do Supabase
+const TRAVAS = { usuario: 1, voluntario: 2 };
+function travar(tipo, id) {
+  if (!emTransacao.getStore()) throw new Error("travar() só funciona dentro de transacao()");
+  return consulta("SELECT pg_advisory_xact_lock(?, ?)", [TRAVAS[tipo], id]);
+}
+
+module.exports = { pool, consulta, transacao, travar };

@@ -1,4 +1,4 @@
-const { transacao } = require("../database/conexao");
+const { transacao, travar } = require("../database/conexao");
 const repo = require("../repositories/horariosRepository");
 const { voluntarioLogado, garantirDono } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
@@ -44,8 +44,8 @@ async function validarHorario(h, ignorarId) {
   }
 }
 
-async function buscarSimples(id) {
-  const horario = await repo.buscarPorId(id);
+async function buscarSimples(id, opcoes) {
+  const horario = await repo.buscarPorId(id, opcoes);
   if (!horario) throw new ErroApp(404, "Horário não encontrado");
   return horario;
 }
@@ -56,35 +56,44 @@ async function meus(usuario, filtros) {
   return (await repo.listar({ ...filtros, voluntario_id: voluntario.id })).map(formatar);
 }
 
-async function criar(usuario, dados) {
-  const novo = { ...dados, voluntario_id: (await voluntarioLogado(usuario)).id };
-  await validarHorario(novo);
-  return formatar(await repo.criar(novo));
-}
+// a agenda do voluntario fica travada ate o fim da transacao: um segundo pedido igual espera e ve o primeiro
+const criar = (usuario, dados) =>
+  transacao(async () => {
+    const novo = { ...dados, voluntario_id: (await voluntarioLogado(usuario)).id };
+    await travar("voluntario", novo.voluntario_id);
+    await validarHorario(novo);
+    return formatar(await repo.criar(novo));
+  });
 
-async function atualizar(usuario, id, dados) {
-  const atual = await buscarSimples(id);
-  await garantirDono(atual.voluntario_id, usuario);
+const atualizar = (usuario, id, dados) =>
+  transacao(async () => {
+    await travar("voluntario", (await voluntarioLogado(usuario)).id);
+    const atual = await buscarSimples(id);
+    await garantirDono(atual.voluntario_id, usuario);
 
-  if (atual.status === "reservado") {
-    throw new ErroApp(409, "Só é possível editar horários livres");
-  }
+    if (atual.status === "reservado") {
+      throw new ErroApp(409, "Só é possível editar horários livres");
+    }
 
-  const novo = {
-    voluntario_id: atual.voluntario_id,
-    data: dados.data ?? atual.data,
-    hora_inicio: dados.hora_inicio ?? atual.hora_inicio,
-    hora_fim: dados.hora_fim ?? atual.hora_fim,
-  };
-  await validarHorario(novo, id);
+    const novo = {
+      voluntario_id: atual.voluntario_id,
+      data: dados.data ?? atual.data,
+      hora_inicio: dados.hora_inicio ?? atual.hora_inicio,
+      hora_fim: dados.hora_fim ?? atual.hora_fim,
+    };
+    await validarHorario(novo, id);
 
-  return formatar(await repo.atualizar(id, novo));
-}
+    // alguem reservou depois da leitura acima: o horario nao muda
+    const atualizado = await repo.atualizar(id, novo);
+    if (!atualizado) throw new ErroApp(409, "Só é possível editar horários livres");
+    return formatar(atualizado);
+  });
 
-// horario reservado so sai se o front confirmar, porque o agendamento ligado a ele some junto
+// horario reservado so sai se o front confirmar, porque o agendamento ligado a ele some junto.
+// O horario fica travado: uma reserva que chegar no meio espera e depois ve que ele sumiu
 const excluir = (usuario, id, confirmar) =>
   transacao(async () => {
-    const horario = await buscarSimples(id);
+    const horario = await buscarSimples(id, { travar: true });
     await garantirDono(horario.voluntario_id, usuario);
 
     if (horario.status === "reservado" && !confirmar) {

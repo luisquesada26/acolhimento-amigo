@@ -35,8 +35,9 @@ async function listar({ voluntario_id, status, de, ate }) {
   return (await consulta(`${SELECT_HORARIO} ${where} ORDER BY h.data, h.hora_inicio`, params)).rows;
 }
 
-async function buscarPorId(id) {
-  return (await consulta(`${SELECT_HORARIO} WHERE h.id = ?`, [id])).rows[0];
+// travar: ninguém muda nem apaga o horário até a transação acabar (quem tentar, espera)
+async function buscarPorId(id, { travar = false } = {}) {
+  return (await consulta(`${SELECT_HORARIO} WHERE h.id = ? ${travar ? "FOR UPDATE OF h" : ""}`, [id])).rows[0];
 }
 
 // dois horarios se sobrepoem quando um comeca antes do outro terminar
@@ -57,9 +58,13 @@ async function criar(h) {
   return buscarPorId(rows[0].id);
 }
 
+// só muda horário livre: se alguém acabou de reservar, não muda nada e devolve null
 async function atualizar(id, { data, hora_inicio, hora_fim }) {
-  await consulta("UPDATE horarios SET data = ?, hora_inicio = ?, hora_fim = ? WHERE id = ?", [data, hora_inicio, hora_fim, id]);
-  return buscarPorId(id);
+  const { rowCount } = await consulta(
+    "UPDATE horarios SET data = ?, hora_inicio = ?, hora_fim = ? WHERE id = ? AND status = 'livre'",
+    [data, hora_inicio, hora_fim, id]
+  );
+  return rowCount ? buscarPorId(id) : null;
 }
 
 async function mudarStatus(id, status) {

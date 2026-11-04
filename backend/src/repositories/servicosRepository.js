@@ -14,8 +14,12 @@ async function listar({ voluntario_id, somenteAtivos = false } = {}) {
   return (await consulta(`SELECT * FROM servicos ${where} ORDER BY voluntario_id, titulo`, params)).rows;
 }
 
-async function buscarPorId(id) {
-  return (await consulta("SELECT * FROM servicos WHERE id = ?", [id])).rows[0];
+// trava, até o fim da transação: "compartilhada" (quem marca: o serviço não muda nem some no meio)
+// ou "exclusiva" (quem exclui: uma marcação que chegar no meio espera)
+const TRAVAS = { compartilhada: "FOR SHARE", exclusiva: "FOR UPDATE" };
+
+async function buscarPorId(id, { trava } = {}) {
+  return (await consulta(`SELECT * FROM servicos WHERE id = ? ${TRAVAS[trava] ?? ""}`, [id])).rows[0];
 }
 
 async function criar(s) {

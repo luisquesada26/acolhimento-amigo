@@ -37,8 +37,9 @@ async function listar({ usuario_id, voluntario_id, status }) {
   return (await consulta(`${SELECT_AGENDAMENTO} ${where} ORDER BY h.data, h.hora_inicio`, params)).rows;
 }
 
-async function buscarPorId(id) {
-  return (await consulta(`${SELECT_AGENDAMENTO} WHERE a.id = ?`, [id])).rows[0];
+// travar: ninguém mais mexe no agendamento até a transação acabar (quem tentar, espera e lê o novo estado)
+async function buscarPorId(id, { travar = false } = {}) {
+  return (await consulta(`${SELECT_AGENDAMENTO} WHERE a.id = ? ${travar ? "FOR UPDATE OF a" : ""}`, [id])).rows[0];
 }
 
 // outro atendimento confirmado do mesmo usuário que se sobrepõe a este horário

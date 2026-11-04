@@ -1,4 +1,4 @@
-const { transacao } = require("../database/conexao");
+const { transacao, travar } = require("../database/conexao");
 const repo = require("../repositories/agendamentosRepository");
 const horariosRepo = require("../repositories/horariosRepository");
 const servicosRepo = require("../repositories/servicosRepository");
@@ -47,15 +47,16 @@ async function horarioDisponivel(horarioId) {
   return horario;
 }
 
-// outro pedido pode ter reservado o mesmo horário entre a conferência acima e aqui
+// outro pedido pode ter reservado (ou o voluntário excluído) o mesmo horário entre a conferência acima e aqui
 async function reservar(horarioId) {
   if (!(await horariosRepo.reservar(horarioId))) {
+    if (!(await horariosRepo.buscarPorId(horarioId))) throw new ErroApp(404, "Horário não encontrado");
     throw new ErroApp(409, "Este horário acabou de ser reservado. Escolha outro.");
   }
 }
 
-async function buscar(id) {
-  const agendamento = await repo.buscarPorId(id);
+async function buscar(id, opcoes) {
+  const agendamento = await repo.buscarPorId(id, opcoes);
   if (!agendamento) throw new ErroApp(404, "Agendamento não encontrado");
   return formatar(agendamento);
 }
@@ -67,8 +68,8 @@ async function ehParticipante(agendamento, usuario) {
   return Boolean(voluntario) && agendamento.voluntario.id === voluntario.id;
 }
 
-async function buscarPara(usuario, id) {
-  const agendamento = await buscar(id);
+async function buscarPara(usuario, id, opcoes) {
+  const agendamento = await buscar(id, opcoes);
   if (!(await ehParticipante(agendamento, usuario))) {
     throw new ErroApp(403, "Você não tem acesso a este agendamento");
   }
@@ -83,15 +84,18 @@ async function meus(usuario, { status }) {
   return (await repo.listar(filtros)).map(formatar);
 }
 
+// os atendimentos do usuário ficam travados até o fim: dois pedidos dele ao mesmo tempo
+// passam um de cada vez pela conferência de conflito
 const criar = (logado, dados) =>
   transacao(async () => {
+    await travar("usuario", logado.id);
     const usuario = await usuariosRepo.buscarPorId(logado.id);
     if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
     if (usuario.perfil !== "usuario") throw new ErroApp(403, "Só usuários podem marcar atendimentos");
 
     const horario = await horarioDisponivel(dados.horario_id);
 
-    const servico = await servicosRepo.buscarPorId(dados.servico_id);
+    const servico = await servicosRepo.buscarPorId(dados.servico_id, { trava: "compartilhada" });
     if (!servico || !servico.ativo) throw new ErroApp(404, "Serviço não encontrado");
     if (servico.voluntario_id !== horario.voluntario_id) {
       throw new ErroApp(400, "Este serviço não é oferecido pelo voluntário deste horário");
@@ -105,9 +109,11 @@ const criar = (logado, dados) =>
     return buscar(id);
   });
 
+// o agendamento fica travado: remarcar e cancelar ao mesmo tempo (duas abas) passam um de cada vez
 const atualizar = (usuario, id, dados) =>
   transacao(async () => {
-    const atual = await buscarPara(usuario, id);
+    if (dados.horario_id && usuario.perfil === "usuario") await travar("usuario", usuario.id);
+    const atual = await buscarPara(usuario, id, { travar: true });
 
     if ((dados.horario_id || dados.descricao) && usuario.perfil !== "usuario") {
       throw new ErroApp(403, "Só quem marcou o atendimento pode remarcar ou mudar a descrição");
@@ -158,7 +164,7 @@ const atualizar = (usuario, id, dados) =>
 // cancelar nao apaga: muda o status e devolve o horario para a agenda
 const cancelar = (usuario, id) =>
   transacao(async () => {
-    const atual = await buscarPara(usuario, id);
+    const atual = await buscarPara(usuario, id, { travar: true });
 
     if (atual.status !== "confirmado") {
       throw new ErroApp(409, "Só é possível cancelar agendamentos confirmados");
