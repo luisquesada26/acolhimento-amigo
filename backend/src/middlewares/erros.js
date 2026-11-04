@@ -1,3 +1,5 @@
+const { DatabaseError } = require("pg");
+
 class ErroApp extends Error {
   constructor(status, mensagem, extra = {}) {
     super(mensagem);
@@ -19,7 +21,9 @@ function tratarErros(err, req, res, next) {
     return res.status(400).json({ erro: "JSON inválido no corpo da requisição", detalhes: [] });
   }
 
-  console.error(err);
+  // erro do banco: só o código e a mensagem. O detail traz dado da pessoa (o e-mail repetido, por exemplo)
+  if (err instanceof DatabaseError) console.error(`Erro do banco ${err.code}: ${err.message}`);
+  else console.error(err);
   res.status(500).json({ erro: "Erro interno no servidor", detalhes: [] });
 }
 

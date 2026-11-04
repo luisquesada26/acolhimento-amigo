@@ -1,25 +1,38 @@
 const { data: dataSchema } = require("../schemas/horariosSchema");
 const { ErroApp } = require("../middlewares/erros");
 
-// as datas ficam no horario de Brasilia (horario do computador), sem UTC
+// as datas ficam no horario de Brasilia, sem UTC. O servidor do Vercel roda em UTC e nao deixa trocar o TZ,
+// entao a data e a hora sao calculadas no fuso de Sao Paulo, e nao no horario da maquina
+const FUSO = "America/Sao_Paulo";
 
-function formatarData(data) {
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const dia = String(data.getDate()).padStart(2, "0");
-  return `${ano}-${mes}-${dia}`;
+// en-CA escreve a data como AAAA-MM-DD; h23 escreve a meia-noite como 00, e nao 24
+const relogio = new Intl.DateTimeFormat("en-CA", {
+  timeZone: FUSO,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+function emBrasilia(instante) {
+  const p = Object.fromEntries(relogio.formatToParts(instante).map(({ type, value }) => [type, value]));
+  return { data: `${p.year}-${p.month}-${p.day}`, hora: `${p.hour}:${p.minute}` };
 }
 
+function formatarData(data) {
+  return emBrasilia(data).data;
+}
+
+// o Brasil nao tem mais horario de verao, entao somar dias inteiros mantem a hora de Brasilia
 function diaMais(dias) {
-  const data = new Date();
-  data.setDate(data.getDate() + dias);
-  return data;
+  return new Date(Date.now() + dias * 24 * 60 * 60 * 1000);
 }
 
 function agora() {
-  const d = new Date();
-  const hora = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-  return { hoje: formatarData(d), hora };
+  const { data, hora } = emBrasilia(new Date());
+  return { hoje: data, hora };
 }
 
 // data que chega na query string

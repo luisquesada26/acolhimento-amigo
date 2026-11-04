@@ -1,4 +1,5 @@
 const { z } = require("zod");
+const { idDoBanco } = require("../utils/id");
 
 const descricao = z
   .string()
@@ -8,15 +9,15 @@ const descricao = z
 
 // o usuario vem do token, nao do corpo
 const criarAgendamentoSchema = z.object({
-  horario_id: z.number().int().positive("Horário inválido"),
-  servico_id: z.number().int().positive("Serviço inválido"),
+  horario_id: z.number().int().positive("Horário inválido").transform(idDoBanco),
+  servico_id: z.number().int().positive("Serviço inválido").transform(idDoBanco),
   descricao,
 });
 
 // remarcar (horario_id), marcar como realizado (status) ou corrigir a descricao
 const atualizarAgendamentoSchema = z
   .object({
-    horario_id: z.number().int().positive("Horário inválido"),
+    horario_id: z.number().int().positive("Horário inválido").transform(idDoBanco),
     status: z.literal("realizado", { error: "Para cancelar use DELETE. Aqui o status só pode ser realizado" }),
     descricao,
     // o que foi feito, o que o voluntário recomendou e o próximo passo

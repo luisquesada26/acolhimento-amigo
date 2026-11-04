@@ -1,4 +1,4 @@
-const db = require("../database/conexao");
+const { transacao, travar } = require("../database/conexao");
 const repo = require("../repositories/agendamentosRepository");
 const horariosRepo = require("../repositories/horariosRepository");
 const servicosRepo = require("../repositories/servicosRepository");
@@ -37,8 +37,8 @@ function jaComecou(horario) {
   return horario.data < hoje || (horario.data === hoje && horario.hora_inicio <= hora);
 }
 
-function horarioDisponivel(horarioId) {
-  const horario = horariosRepo.buscarPorId(horarioId);
+async function horarioDisponivel(horarioId) {
+  const horario = await horariosRepo.buscarPorId(horarioId);
   if (!horario) throw new ErroApp(404, "Horário não encontrado");
   if (jaComecou(horario)) throw new ErroApp(400, "Este horário já passou. Escolha outro.");
   if (horario.status !== "livre") {
@@ -47,130 +47,146 @@ function horarioDisponivel(horarioId) {
   return horario;
 }
 
-function buscar(id) {
-  const agendamento = repo.buscarPorId(id);
+// outro pedido pode ter reservado (ou o voluntário excluído) o mesmo horário entre a conferência acima e aqui
+async function reservar(horarioId) {
+  if (!(await horariosRepo.reservar(horarioId))) {
+    if (!(await horariosRepo.buscarPorId(horarioId))) throw new ErroApp(404, "Horário não encontrado");
+    throw new ErroApp(409, "Este horário acabou de ser reservado. Escolha outro.");
+  }
+}
+
+async function buscar(id, opcoes) {
+  const agendamento = await repo.buscarPorId(id, opcoes);
   if (!agendamento) throw new ErroApp(404, "Agendamento não encontrado");
   return formatar(agendamento);
 }
 
 // so quem marcou e o voluntario do horario enxergam o agendamento (e a descricao do caso)
-function ehParticipante(agendamento, usuario) {
+async function ehParticipante(agendamento, usuario) {
   if (usuario.perfil === "usuario") return agendamento.usuario.id === usuario.id;
-  const voluntario = voluntariosRepo.buscarPorUsuarioId(usuario.id);
+  const voluntario = await voluntariosRepo.buscarPorUsuarioId(usuario.id);
   return Boolean(voluntario) && agendamento.voluntario.id === voluntario.id;
 }
 
-function buscarPara(usuario, id) {
-  const agendamento = buscar(id);
-  if (!ehParticipante(agendamento, usuario)) {
+async function buscarPara(usuario, id, opcoes) {
+  const agendamento = await buscar(id, opcoes);
+  if (!(await ehParticipante(agendamento, usuario))) {
     throw new ErroApp(403, "Você não tem acesso a este agendamento");
   }
   return agendamento;
 }
 
 // usuario ve os que marcou, voluntario ve os da agenda dele
-function meus(usuario, { status }) {
+async function meus(usuario, { status }) {
   const filtros = usuario.perfil === "usuario"
     ? { usuario_id: usuario.id, status }
-    : { voluntario_id: voluntarioLogado(usuario).id, status };
-  return repo.listar(filtros).map(formatar);
+    : { voluntario_id: (await voluntarioLogado(usuario)).id, status };
+  return (await repo.listar(filtros)).map(formatar);
 }
 
-const criar = db.transaction((logado, dados) => {
-  const usuario = usuariosRepo.buscarPorId(logado.id);
-  if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
-  if (usuario.perfil !== "usuario") throw new ErroApp(403, "Só usuários podem marcar atendimentos");
+// os atendimentos do usuário ficam travados até o fim: dois pedidos dele ao mesmo tempo
+// passam um de cada vez pela conferência de conflito
+const criar = (logado, dados) =>
+  transacao(async () => {
+    await travar("usuario", logado.id);
+    const usuario = await usuariosRepo.buscarPorId(logado.id);
+    if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
+    if (usuario.perfil !== "usuario") throw new ErroApp(403, "Só usuários podem marcar atendimentos");
 
-  const horario = horarioDisponivel(dados.horario_id);
+    const horario = await horarioDisponivel(dados.horario_id);
 
-  const servico = servicosRepo.buscarPorId(dados.servico_id);
-  if (!servico || !servico.ativo) throw new ErroApp(404, "Serviço não encontrado");
-  if (servico.voluntario_id !== horario.voluntario_id) {
-    throw new ErroApp(400, "Este serviço não é oferecido pelo voluntário deste horário");
-  }
-  if (repo.temConflito(usuario.id, horario)) {
-    throw new ErroApp(409, "Você já tem um atendimento nesse horário");
-  }
-
-  const id = repo.criar({ ...dados, usuario_id: usuario.id });
-  horariosRepo.mudarStatus(horario.id, "reservado");
-  return buscar(id);
-});
-
-const atualizar = db.transaction((usuario, id, dados) => {
-  const atual = buscarPara(usuario, id);
-
-  if ((dados.horario_id || dados.descricao) && usuario.perfil !== "usuario") {
-    throw new ErroApp(403, "Só quem marcou o atendimento pode remarcar ou mudar a descrição");
-  }
-  if (dados.status === "realizado" && usuario.perfil !== "voluntario") {
-    throw new ErroApp(403, "Só o voluntário pode marcar o atendimento como realizado");
-  }
-  if (dados.anotacao !== undefined && usuario.perfil !== "voluntario") {
-    throw new ErroApp(403, "Só o voluntário escreve a anotação do atendimento");
-  }
-
-  // a anotação pode ser escrita depois de concluído; o resto só com o atendimento confirmado
-  const soAnotacao = Object.keys(dados).every((campo) => campo === "anotacao");
-  if (atual.status === "cancelado" || (atual.status !== "confirmado" && !soAnotacao)) {
-    throw new ErroApp(409, "Só é possível alterar agendamentos confirmados");
-  }
-
-  if (dados.horario_id && dados.horario_id !== atual.horario.id) {
-    const novo = horarioDisponivel(dados.horario_id);
-    if (novo.voluntario_id !== atual.voluntario.id) {
-      throw new ErroApp(400, "Só é possível remarcar com o mesmo voluntário");
+    const servico = await servicosRepo.buscarPorId(dados.servico_id, { trava: "compartilhada" });
+    if (!servico || !servico.ativo) throw new ErroApp(404, "Serviço não encontrado");
+    if (servico.voluntario_id !== horario.voluntario_id) {
+      throw new ErroApp(400, "Este serviço não é oferecido pelo voluntário deste horário");
     }
-    if (repo.temConflito(atual.usuario.id, novo, id)) {
+    if (await repo.temConflito(usuario.id, horario)) {
       throw new ErroApp(409, "Você já tem um atendimento nesse horário");
     }
 
-    horariosRepo.mudarStatus(atual.horario.id, "livre");
-    horariosRepo.mudarStatus(novo.id, "reservado");
-    repo.atualizar(id, { horario_id: novo.id });
-  }
+    await reservar(horario.id);
+    const id = await repo.criar({ ...dados, usuario_id: usuario.id });
+    return buscar(id);
+  });
 
-  // o voluntário conclui quando a chamada acaba, sem esperar o fim do horário marcado
-  if (dados.status === "realizado") {
-    repo.atualizar(id, { status: "realizado" });
-  }
+// o agendamento fica travado: remarcar e cancelar ao mesmo tempo (duas abas) passam um de cada vez
+const atualizar = (usuario, id, dados) =>
+  transacao(async () => {
+    if (dados.horario_id && usuario.perfil === "usuario") await travar("usuario", usuario.id);
+    const atual = await buscarPara(usuario, id, { travar: true });
 
-  if (dados.descricao) {
-    repo.atualizar(id, { descricao: dados.descricao });
-  }
+    if ((dados.horario_id || dados.descricao) && usuario.perfil !== "usuario") {
+      throw new ErroApp(403, "Só quem marcou o atendimento pode remarcar ou mudar a descrição");
+    }
+    if (dados.status === "realizado" && usuario.perfil !== "voluntario") {
+      throw new ErroApp(403, "Só o voluntário pode marcar o atendimento como realizado");
+    }
+    if (dados.anotacao !== undefined && usuario.perfil !== "voluntario") {
+      throw new ErroApp(403, "Só o voluntário escreve a anotação do atendimento");
+    }
 
-  if (dados.anotacao !== undefined) {
-    repo.atualizar(id, { anotacao: dados.anotacao || null });
-  }
+    // a anotação pode ser escrita depois de concluído; o resto só com o atendimento confirmado
+    const soAnotacao = Object.keys(dados).every((campo) => campo === "anotacao");
+    if (atual.status === "cancelado" || (atual.status !== "confirmado" && !soAnotacao)) {
+      throw new ErroApp(409, "Só é possível alterar agendamentos confirmados");
+    }
 
-  return buscar(id);
-});
+    if (dados.horario_id && dados.horario_id !== atual.horario.id) {
+      const novo = await horarioDisponivel(dados.horario_id);
+      if (novo.voluntario_id !== atual.voluntario.id) {
+        throw new ErroApp(400, "Só é possível remarcar com o mesmo voluntário");
+      }
+      if (await repo.temConflito(atual.usuario.id, novo, id)) {
+        throw new ErroApp(409, "Você já tem um atendimento nesse horário");
+      }
+
+      await horariosRepo.mudarStatus(atual.horario.id, "livre");
+      await reservar(novo.id);
+      await repo.atualizar(id, { horario_id: novo.id });
+    }
+
+    // o voluntário conclui quando a chamada acaba, sem esperar o fim do horário marcado
+    if (dados.status === "realizado") {
+      await repo.atualizar(id, { status: "realizado" });
+    }
+
+    if (dados.descricao) {
+      await repo.atualizar(id, { descricao: dados.descricao });
+    }
+
+    if (dados.anotacao !== undefined) {
+      await repo.atualizar(id, { anotacao: dados.anotacao || null });
+    }
+
+    return buscar(id);
+  });
 
 // cancelar nao apaga: muda o status e devolve o horario para a agenda
-const cancelar = db.transaction((usuario, id) => {
-  const atual = buscarPara(usuario, id);
+const cancelar = (usuario, id) =>
+  transacao(async () => {
+    const atual = await buscarPara(usuario, id, { travar: true });
 
-  if (atual.status !== "confirmado") {
-    throw new ErroApp(409, "Só é possível cancelar agendamentos confirmados");
-  }
+    if (atual.status !== "confirmado") {
+      throw new ErroApp(409, "Só é possível cancelar agendamentos confirmados");
+    }
 
-  repo.atualizar(id, { status: "cancelado" });
-  horariosRepo.mudarStatus(atual.horario.id, "livre");
-  return buscar(id);
-});
+    await repo.atualizar(id, { status: "cancelado" });
+    await horariosRepo.mudarStatus(atual.horario.id, "livre");
+    return buscar(id);
+  });
 
 // a sala do Meet fica fora da transação: o agendamento vale mesmo se o Google falhar,
 // e o botão da videochamada cria a sala depois (garantirSala)
 async function abrirSala(id) {
-  const a = repo.buscarPorId(id);
+  const a = await repo.buscarPorId(id);
   // sobrou um evento sem link (falhou no meio do caminho): sai da agenda antes de criar o novo
   if (a.google_evento_id) await videochamada.apagarSalas([a.google_evento_id]);
   const sala = await videochamada.criarSala(a);
-  repo.atualizar(id, { link_video: sala.link, google_evento_id: sala.eventoId });
+  await repo.atualizar(id, { link_video: sala.link, google_evento_id: sala.eventoId });
 }
 
 async function criarComSala(logado, dados) {
-  const agendamento = criar(logado, dados);
+  const agendamento = await criar(logado, dados);
   if (videochamada.ligado) {
     try {
       await abrirSala(agendamento.id);
@@ -182,8 +198,8 @@ async function criarComSala(logado, dados) {
 }
 
 async function atualizarComSala(usuario, id, dados) {
-  const atualizado = atualizar(usuario, id, dados);
-  const { google_evento_id: eventoId } = repo.buscarPorId(id);
+  const atualizado = await atualizar(usuario, id, dados);
+  const { google_evento_id: eventoId } = await repo.buscarPorId(id);
   if (dados.horario_id && eventoId) {
     try {
       await videochamada.moverSala(eventoId, atualizado.horario);
@@ -195,18 +211,18 @@ async function atualizarComSala(usuario, id, dados) {
 }
 
 async function cancelarComSala(usuario, id) {
-  cancelar(usuario, id);
-  const { google_evento_id: eventoId } = repo.buscarPorId(id);
+  await cancelar(usuario, id);
+  const { google_evento_id: eventoId } = await repo.buscarPorId(id);
   if (eventoId) {
     await videochamada.apagarSalas([eventoId]);
-    repo.atualizar(id, { link_video: null, google_evento_id: null });
+    await repo.atualizar(id, { link_video: null, google_evento_id: null });
   }
   return buscar(id);
 }
 
 // o botão da videochamada chama aqui quando o agendamento ainda não tem sala (os do seed, ou se o Google falhou ao marcar)
 async function garantirSala(usuario, id) {
-  const atual = buscarPara(usuario, id);
+  const atual = await buscarPara(usuario, id);
   if (atual.status !== "confirmado") {
     throw new ErroApp(409, "A videochamada só existe para atendimentos confirmados");
   }

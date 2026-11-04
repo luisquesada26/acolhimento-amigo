@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const db = require("../database/conexao");
+const { transacao } = require("../database/conexao");
 const repo = require("../repositories/usuariosRepository");
 const voluntariosRepo = require("../repositories/voluntariosRepository");
 const areasRepo = require("../repositories/areasRepository");
@@ -7,11 +7,11 @@ const agendamentosRepo = require("../repositories/agendamentosRepository");
 const { ErroApp } = require("../middlewares/erros");
 const videochamada = require("./videochamada");
 
-function montar(usuario) {
+async function montar(usuario) {
   const resultado = { ...usuario, idiomas: usuario.idiomas.split(","), aceite_lgpd: Boolean(usuario.aceite_lgpd) };
 
   if (usuario.perfil === "voluntario") {
-    const v = voluntariosRepo.buscarPorUsuarioId(usuario.id);
+    const v = await voluntariosRepo.buscarPorUsuarioId(usuario.id);
     if (v) {
       resultado.voluntario = {
         id: v.id,
@@ -26,24 +26,24 @@ function montar(usuario) {
   return resultado;
 }
 
-function buscar(id) {
-  const usuario = repo.buscarPorId(id);
+async function buscar(id) {
+  const usuario = await repo.buscarPorId(id);
   if (!usuario) throw new ErroApp(404, "Usuário não encontrado");
   return montar(usuario);
 }
 
 async function criar(dados) {
-  if (repo.buscarPorEmail(dados.email)) {
+  if (await repo.buscarPorEmail(dados.email)) {
     throw new ErroApp(409, "Este e-mail já está cadastrado");
   }
-  if (dados.perfil === "voluntario" && !areasRepo.buscarPorId(dados.voluntario.area_id)) {
+  if (dados.perfil === "voluntario" && !(await areasRepo.buscarPorId(dados.voluntario.area_id))) {
     throw new ErroApp(400, "Área não encontrada");
   }
 
   const senha_hash = await bcrypt.hash(dados.senha, 10);
 
-  const salvar = db.transaction(() => {
-    const id = repo.criar({
+  const salvar = () => transacao(async () => {
+    const id = await repo.criar({
       nome: dados.nome,
       email: dados.email,
       senha_hash,
@@ -55,7 +55,7 @@ async function criar(dados) {
     });
 
     if (dados.perfil === "voluntario") {
-      voluntariosRepo.criar({
+      await voluntariosRepo.criar({
         usuario_id: id,
         area_id: dados.voluntario.area_id,
         registro_profissional: dados.voluntario.registro_profissional ?? null,
@@ -66,23 +66,23 @@ async function criar(dados) {
     return id;
   });
 
-  return buscar(salvar());
+  return buscar(await salvar());
 }
 
 // o voluntario edita tambem os dados profissionais pelo mesmo PUT /me
 async function atualizar(id, dados) {
-  const usuario = buscar(id);
+  const usuario = await buscar(id);
   const { senha, voluntario, ...campos } = dados;
 
   if (campos.email) {
-    const outro = repo.buscarPorEmail(campos.email);
+    const outro = await repo.buscarPorEmail(campos.email);
     if (outro && outro.id !== id) throw new ErroApp(409, "Este e-mail já está cadastrado");
   }
 
   if (voluntario && usuario.perfil !== "voluntario") {
     throw new ErroApp(400, "Só voluntários têm dados profissionais");
   }
-  if (voluntario?.area_id && !areasRepo.buscarPorId(voluntario.area_id)) {
+  if (voluntario?.area_id && !(await areasRepo.buscarPorId(voluntario.area_id))) {
     throw new ErroApp(400, "Área não encontrada");
   }
 
@@ -93,24 +93,25 @@ async function atualizar(id, dados) {
   if (camposVoluntario.idiomas) camposVoluntario.idiomas = camposVoluntario.idiomas.join(",");
   if (camposVoluntario.ativo !== undefined) camposVoluntario.ativo = camposVoluntario.ativo ? 1 : 0;
 
-  db.transaction(() => {
-    repo.atualizar(id, campos);
-    if (voluntario) voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario);
-  })();
+  await transacao(async () => {
+    await repo.atualizar(id, campos);
+    if (voluntario) await voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario);
+  });
 
   return buscar(id);
 }
 
-const excluir = db.transaction((id) => {
-  buscar(id);
-  // antes de apagar a conta, os horarios reservados voltam a ficar livres
-  agendamentosRepo.liberarHorariosDoUsuario(id);
-  repo.excluir(id);
-});
+const excluir = (id) =>
+  transacao(async () => {
+    await buscar(id);
+    // antes de apagar a conta, os horarios reservados voltam a ficar livres
+    await agendamentosRepo.liberarHorariosDoUsuario(id);
+    await repo.excluir(id);
+  });
 
 async function excluirComSalas(id) {
-  const salas = agendamentosRepo.salasDaConta(id);
-  excluir(id);
+  const salas = await agendamentosRepo.salasDaConta(id);
+  await excluir(id);
   await videochamada.apagarSalas(salas);
 }
 

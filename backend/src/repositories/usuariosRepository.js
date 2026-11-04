@@ -1,42 +1,41 @@
-const db = require("../database/conexao");
+const { consulta } = require("../database/conexao");
 
 // senha_hash fica de fora de proposito
 const COLUNAS =
   "id, nome, email, telefone, perfil, pais_origem, idiomas, foto, cep, rua, numero, complemento, bairro, cidade, estado, aceite_lgpd, criado_em";
 
-function buscarPorId(id) {
-  return db.prepare(`SELECT ${COLUNAS} FROM usuarios WHERE id = ?`).get(id);
+async function buscarPorId(id) {
+  return (await consulta(`SELECT ${COLUNAS} FROM usuarios WHERE id = ?`, [id])).rows[0];
 }
 
-function buscarPorEmail(email) {
-  return db.prepare(`SELECT ${COLUNAS} FROM usuarios WHERE email = ?`).get(email);
+async function buscarPorEmail(email) {
+  return (await consulta(`SELECT ${COLUNAS} FROM usuarios WHERE email = ?`, [email])).rows[0];
 }
 
 // unico lugar que le a senha_hash, so para conferir no login
-function buscarSenhaPorEmail(email) {
-  return db.prepare("SELECT id, senha_hash FROM usuarios WHERE email = ?").get(email);
+async function buscarSenhaPorEmail(email) {
+  return (await consulta("SELECT id, senha_hash FROM usuarios WHERE email = ?", [email])).rows[0];
 }
 
-function criar(u) {
-  const { lastInsertRowid } = db
-    .prepare(`
-      INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idiomas, aceite_lgpd)
-      VALUES (@nome, @email, @senha_hash, @telefone, @perfil, @pais_origem, @idiomas, @aceite_lgpd)
-    `)
-    .run(u);
-  return lastInsertRowid;
+async function criar(u) {
+  const { rows } = await consulta(`
+    INSERT INTO usuarios (nome, email, senha_hash, telefone, perfil, pais_origem, idiomas, aceite_lgpd)
+    VALUES (@nome, @email, @senha_hash, @telefone, @perfil, @pais_origem, @idiomas, @aceite_lgpd)
+    RETURNING id
+  `, u);
+  return rows[0].id;
 }
 
-function atualizar(id, campos) {
+async function atualizar(id, campos) {
   const nomes = Object.keys(campos);
   if (nomes.length === 0) return;
 
   const sets = nomes.map((c) => `${c} = @${c}`).join(", ");
-  db.prepare(`UPDATE usuarios SET ${sets} WHERE id = @id`).run({ ...campos, id });
+  await consulta(`UPDATE usuarios SET ${sets} WHERE id = @id`, { ...campos, id });
 }
 
-function excluir(id) {
-  db.prepare("DELETE FROM usuarios WHERE id = ?").run(id);
+async function excluir(id) {
+  await consulta("DELETE FROM usuarios WHERE id = ?", [id]);
 }
 
 module.exports = { buscarPorId, buscarPorEmail, buscarSenhaPorEmail, criar, atualizar, excluir };
