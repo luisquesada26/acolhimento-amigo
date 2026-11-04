@@ -154,6 +154,34 @@ test("corpo vazio (o MyMemory sem cota responde assim) vira null", async () => {
   assert.equal(await traduzir("Visto e residência"), null);
 });
 
+test("autodetect com o corpo vazio: tenta de novo supondo português, e o pt fica o original", async () => {
+  usarFetch((p) => (p.langpair.startsWith("autodetect|") ? new Response("", { status: 200 }) : traducaoOk(p.q, alvoDe(p))));
+
+  const resultado = await traduzir("Visto e residência");
+
+  assert.deepEqual(resultado, {
+    origem: "Visto e residência",
+    pt: "Visto e residência",
+    en: "[en] Visto e residência",
+    es: "[es] Visto e residência",
+    fr: "[fr] Visto e residência",
+  });
+  assert.deepEqual(pedidos.filter((p) => !p.langpair.startsWith("autodetect|")).map((p) => p.langpair).sort(), ["pt-BR|en", "pt-BR|es", "pt-BR|fr"]);
+});
+
+test("timeout no autodetect não tenta de novo", async () => {
+  TRADUCAO.esperaMs = 50;
+  usarFetch(
+    (p) =>
+      new Promise((_, recusar) => {
+        p.opcoes.signal.addEventListener("abort", () => recusar(p.opcoes.signal.reason));
+      })
+  );
+
+  assert.equal(await traduzir("Visto e residência"), null);
+  assert.ok(pedidos.every((p) => p.langpair.startsWith("autodetect|")), "nenhum pedido com o par explícito");
+});
+
 test("idioma detectado igual ao do alvo: fica o texto original", async () => {
   usarFetch((p) => traducaoOk(p.q, alvoDe(p), { detectedLanguage: "pt-BR" }));
 
@@ -220,7 +248,9 @@ test("traduzirCampos: campo que não veio fica de fora, campo apagado perde a tr
   assert.deepEqual(await traduzirCampos({ bio: undefined }, null), {});
   assert.deepEqual(await traduzirCampos({ bio: null }, { bio: { origem: "x" } }), { bio: null });
   assert.deepEqual(await traduzirCampos({ bio: "Advogado" }, null), { bio: null });
-  assert.equal(pedidos.length, 4, "só o terceiro chamou o tradutor");
+  // 4 com autodetect e, como falharam, mais 3 com o par explícito (o pt não precisa)
+  assert.ok(pedidos.length > 0 && pedidos.every((p) => p.q === "Advogado"), "só o terceiro chamou o tradutor");
+  assert.equal(pedidos.length, 7);
 });
 
 test("traduzirCampos: o mesmo texto sem tradução válida (falhou antes ou ficou velha) tenta de novo", async () => {

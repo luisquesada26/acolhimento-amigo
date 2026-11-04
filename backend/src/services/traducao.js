@@ -46,8 +46,19 @@ const decodificar = (texto) =>
 const mesmoIdioma = (a, b) => a.split("-")[0].toLowerCase() === b.split("-")[0].toLowerCase();
 
 // um pedaço num idioma; qualquer problema vira erro, e quem chama desiste da tradução inteira
+// o autodetect do MyMemory às vezes responde com o corpo vazio: aí vai de novo, supondo português,
+// que é a língua de quase todo o conteúdo. Timeout não repete, para o salvar não esperar o dobro
 async function pedir(texto, alvo) {
-  const parametros = new URLSearchParams({ q: texto, langpair: `autodetect|${alvo}` });
+  try {
+    return await pedirPar(texto, "autodetect", alvo);
+  } catch (erro) {
+    if (erro.name === "TimeoutError" || erro.name === "AbortError") throw erro;
+    return alvo === ALVOS.pt ? texto : pedirPar(texto, ALVOS.pt, alvo);
+  }
+}
+
+async function pedirPar(texto, origem, alvo) {
+  const parametros = new URLSearchParams({ q: texto, langpair: `${origem}|${alvo}` });
   if (TRADUCAO.email) parametros.set("de", TRADUCAO.email);
 
   const resposta = await fetch(`${TRADUCAO.url}?${parametros}`, { signal: AbortSignal.timeout(TRADUCAO.esperaMs) });
