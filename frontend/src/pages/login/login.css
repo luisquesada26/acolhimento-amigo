@@ -184,8 +184,13 @@
   padding-left: 14px;
 }
 
+/* "Choisissez votre domaine" quebra em duas linhas no celular: o botão cresce em vez de espremer */
 .login .seletor-botao {
+  height: auto;
+  min-height: 44px;
+  padding-block: 4px;
   padding-left: 8px;
+  line-height: 1.25;
 }
 
 .login .icone-area {
@@ -232,9 +237,23 @@
   color: var(--texto-2);
 }
 
+/* no toque, "Criar conta" continua link de texto, mas com altura de dedo */
+@media (max-width: 1023px), (pointer: coarse) {
+  .login .trocar .link {
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+}
+
 .rodape {
   font-size: 12px;
   color: #dce6f7;
+}
+
+/* no celular a frase quebra em duas linhas: fica centralizada como o resto */
+.login .rodape {
+  max-width: 432px;
+  text-align: center;
 }
 
 /* "Voltar ao site" à esquerda e o idioma à direita, por cima da foto */
@@ -279,8 +298,10 @@
   opacity: 0.9;
 }
 
+/* sobre a foto escura o contorno do foco é branco */
 .login-voltar:focus-visible,
-.login-logo:focus-visible {
+.login-logo:focus-visible,
+.login-topo .idioma-botao:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 3px;
 }
