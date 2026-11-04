@@ -1,5 +1,6 @@
 const { consulta } = require("../database/conexao");
 const { agora, formatarData, diaMais } = require("../utils/datas");
+const { JUNTAR_TRADUCOES, NOVAS_TRADUCOES, buscaNaTraducao } = require("../utils/traducoes");
 
 const HORARIO_FUTURO = "(h.data > @hoje OR (h.data = @hoje AND h.hora_inicio > @hora))";
 
@@ -37,14 +38,15 @@ function horarioQueAtende({ disponivel, data, turno }, params) {
 
 const SELECT_VOLUNTARIO = `
   SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
-         v.registro_profissional, v.idiomas, v.bio, v.ativo
+         v.registro_profissional, v.idiomas, v.bio, v.traducoes, v.ativo
   FROM voluntarios v
   JOIN usuarios u ON u.id = v.usuario_id
   JOIN areas a ON a.id = v.area_id
 `;
 
 // busca: so aparece quem esta ativo e tem pelo menos um servico ativo.
-// ILIKE porque o LIKE do SQLite ignorava maiusculas e o do Postgres nao
+// ILIKE porque o LIKE do SQLite ignorava maiusculas e o do Postgres nao.
+// O texto tambem casa com as traducoes da bio e dos servicos: "visa" acha "Visto e residência"
 async function listar({ q, area, idioma, disponivel, data, turno }) {
   const filtros = [
     "v.ativo = 1",
@@ -54,9 +56,11 @@ async function listar({ q, area, idioma, disponivel, data, turno }) {
 
   if (q) {
     filtros.push(`(
-      u.nome ILIKE @q OR v.bio ILIKE @q OR EXISTS (
+      u.nome ILIKE @q OR v.bio ILIKE @q OR ${buscaNaTraducao("v", "bio")} OR EXISTS (
         SELECT 1 FROM servicos s
-        WHERE s.voluntario_id = v.id AND s.ativo = 1 AND (s.titulo ILIKE @q OR s.descricao ILIKE @q)
+        WHERE s.voluntario_id = v.id AND s.ativo = 1 AND (
+          s.titulo ILIKE @q OR s.descricao ILIKE @q OR ${buscaNaTraducao("s", "titulo")} OR ${buscaNaTraducao("s", "descricao")}
+        )
       )
     )`);
     params.q = `%${semEscape(q)}%`;
@@ -80,12 +84,13 @@ async function listar({ q, area, idioma, disponivel, data, turno }) {
   }
 
   // os servicos e o proximo horario de cada um vem na mesma consulta, e nao numa ida ao banco por voluntario.
-  // O proximo horario usa os mesmos filtros de horario da busca, para o cartao mostrar o que a pessoa procurou
+  // O proximo horario usa os mesmos filtros de horario da busca, para o cartao mostrar o que a pessoa procurou.
+  // O cartao so mostra o titulo do servico, entao a traducao da descricao nao vem
   const { rows } = await consulta(`
     SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
-           v.registro_profissional, v.idiomas, v.bio, v.ativo,
+           v.registro_profissional, v.idiomas, v.bio, v.traducoes, v.ativo,
            COALESCE((
-             SELECT json_agg(json_build_object('id', s.id, 'titulo', s.titulo) ORDER BY s.titulo)
+             SELECT json_agg(json_build_object('id', s.id, 'titulo', s.titulo, 'traducoes', s.traducoes - 'descricao') ORDER BY s.titulo)
              FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1
            ), '[]') AS servicos,
            (
@@ -114,24 +119,25 @@ async function buscarPorUsuarioId(usuarioId) {
 
 async function criar(v) {
   const { rows } = await consulta(`
-    INSERT INTO voluntarios (usuario_id, area_id, registro_profissional, idiomas, bio)
-    VALUES (@usuario_id, @area_id, @registro_profissional, @idiomas, @bio)
+    INSERT INTO voluntarios (usuario_id, area_id, registro_profissional, idiomas, bio, traducoes)
+    VALUES (@usuario_id, @area_id, @registro_profissional, @idiomas, @bio, ${NOVAS_TRADUCOES})
     RETURNING id
-  `, v);
+  `, { ...v, traducoes: JSON.stringify(v.traducoes ?? {}) });
   return rows[0].id;
 }
 
-async function atualizar(id, campos) {
-  const nomes = Object.keys(campos);
-  if (nomes.length === 0) return;
+// traducoes: so as dos campos que mudaram ({ bio: traducao ou null }); as outras ficam como estao
+async function atualizar(id, campos, traducoes = {}) {
+  const sets = Object.keys(campos).map((c) => `${c} = @${c}`);
+  if (Object.keys(traducoes).length) sets.push(JUNTAR_TRADUCOES);
+  if (sets.length === 0) return;
 
-  const sets = nomes.map((c) => `${c} = @${c}`).join(", ");
-  await consulta(`UPDATE voluntarios SET ${sets} WHERE id = @id`, { ...campos, id });
+  await consulta(`UPDATE voluntarios SET ${sets.join(", ")} WHERE id = @id`, { ...campos, traducoes: JSON.stringify(traducoes), id });
 }
 
 async function servicosAtivos(voluntarioId) {
   const { rows } = await consulta(
-    "SELECT id, titulo, descricao, duracao_min FROM servicos WHERE voluntario_id = ? AND ativo = 1 ORDER BY titulo",
+    "SELECT id, titulo, descricao, duracao_min, traducoes FROM servicos WHERE voluntario_id = ? AND ativo = 1 ORDER BY titulo",
     [voluntarioId]
   );
   return rows;
