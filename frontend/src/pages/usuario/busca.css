@@ -487,10 +487,15 @@
   transition: background 0.15s, color 0.15s;
 }
 
+/* "Empreendedorismo" não cabe inteiro no cartão de 320px: quebra com hífen */
 .bus-area strong {
+  max-width: 100%;
   font-size: 15px;
   font-weight: 800;
   line-height: 1.25;
+  overflow-wrap: anywhere;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .bus-area small {
@@ -794,7 +799,7 @@
   /* 44px de altura para o dedo; cada botão parte da largura do próprio texto, então "Après-midi" não estoura */
   .bus-filtro .bus-segmento button {
     flex: auto;
-    min-height: 38px;
+    min-height: 44px;
     padding-inline: 8px;
   }
 
@@ -817,6 +822,53 @@
 
   .bus-cal-dias button {
     font-size: 15px;
+  }
+}
+
+/* tela de toque ou estreita: filtros com 44px de altura; "Ver todas as áreas" e
+   "Limpar filtros" ganham a mesma área de toque sem empurrar o título */
+@media (max-width: 760px), (pointer: coarse) {
+  .bus-segmento button {
+    min-height: 44px;
+  }
+
+  .bus-cal-dias {
+    grid-auto-rows: 42px;
+  }
+
+  .bus-link {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+}
+
+/* celular estreito: menos recuo no topo azul e nos cartões, para o texto não quebrar letra a letra */
+@media (max-width: 420px) {
+  .bus-topo {
+    gap: 28px;
+    padding: 26px 18px;
+    border-radius: 22px;
+  }
+
+  .bus-numeros {
+    gap: 10px;
+  }
+
+  .bus-numeros li {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .bus-numeros span {
+    font-size: 12.5px;
+  }
+
+  .bus-mosaico {
+    gap: 10px;
+  }
+
+  .bus-area {
+    padding: 14px 12px;
   }
 }
 
