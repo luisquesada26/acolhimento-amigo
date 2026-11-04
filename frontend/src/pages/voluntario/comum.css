@@ -728,6 +728,14 @@
   color: var(--texto);
 }
 
+/* "Data ↓" do cabeçalho da tabela: 40px de toque sem mudar a altura do cabeçalho */
+@media (max-width: 760px), (pointer: coarse) {
+  .vol-ordenar {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+}
+
 /* janela (modal) */
 .vol-janela {
   width: min(560px, calc(100vw - 32px));

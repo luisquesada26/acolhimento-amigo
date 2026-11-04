@@ -260,6 +260,95 @@
   font-weight: 600;
 }
 
+/* celular: a tabela de 560px rolava de lado e escondia o serviço e a situação sem nenhum aviso.
+   Cada linha vira um cartão: pessoa e situação em cima, depois os outros dados. Do cabeçalho
+   fica só o "Data ↓", que ordena */
+@media (max-width: 640px) {
+  .historico-rolagem {
+    overflow: visible;
+  }
+
+  .historico-tabela {
+    min-width: 0;
+  }
+
+  .historico-tabela,
+  .historico-tabela thead,
+  .historico-tabela tbody,
+  .historico-tabela tr,
+  .historico-tabela th,
+  .historico-tabela td {
+    display: block;
+  }
+
+  .historico-tabela thead tr {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .historico-tabela th {
+    padding: 0;
+    border: 0;
+  }
+
+  .historico-tabela th:not([aria-sort]) {
+    display: none;
+  }
+
+  .historico-tabela tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 3px 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .historico-tabela tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  /* do segundo dado em diante, a linha inteira do cartão */
+  .historico-tabela td {
+    grid-column: 1 / -1;
+    padding: 0;
+    border: 0;
+    color: var(--texto-2);
+    font-size: 14px;
+  }
+
+  /* a pessoa abre o cartão; a situação fica no canto */
+  .historico-tabela td:has(.historico-abrir) {
+    order: -1;
+    grid-column: 1;
+    color: var(--texto);
+  }
+
+  .historico-tabela td:last-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* no toque o hover fica preso e pintava só pedaços do cartão */
+  .historico-tabela .historico-clicavel:hover td {
+    background: none;
+  }
+
+  /* data e horário na mesma linha */
+  .historico-tabela time {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 8px;
+    color: var(--texto);
+  }
+
+  .historico-tabela time strong,
+  .historico-tabela time small {
+    display: inline;
+  }
+}
+
 @media (max-width: 1080px) {
   .painel-colunas {
     grid-template-columns: minmax(0, 1fr);
