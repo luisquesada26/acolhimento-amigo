@@ -7,21 +7,18 @@ function formatar(v) {
   return { ...v, idiomas: v.idiomas ? v.idiomas.split(",") : [], ativo: Boolean(v.ativo) };
 }
 
-function listar(filtros) {
-  return repo.listar(filtros).map((v) => ({
-    ...formatar(v),
-    servicos: repo.servicosAtivos(v.id).map(({ id, titulo }) => ({ id, titulo })),
-    proximo_horario: repo.proximoHorario(v.id, filtros),
-  }));
+// cada voluntario ja vem com os servicos ({ id, titulo }) e o proximo_horario
+async function listar(filtros) {
+  return (await repo.listar(filtros)).map(formatar);
 }
 
-function buscar(id) {
-  const v = repo.buscarPorId(id);
+async function buscar(id) {
+  const v = await repo.buscarPorId(id);
   if (!v) throw new ErroApp(404, "Voluntário não encontrado");
   return {
     ...formatar(v),
-    servicos: repo.servicosAtivos(id),
-    horarios: repo.horariosLivres(id),
+    servicos: await repo.servicosAtivos(id),
+    horarios: await repo.horariosLivres(id),
   };
 }
 

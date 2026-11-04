@@ -15,7 +15,7 @@ async function cadastrar(dados) {
 }
 
 async function login({ email, senha }) {
-  const encontrado = usuariosRepo.buscarSenhaPorEmail(email);
+  const encontrado = await usuariosRepo.buscarSenhaPorEmail(email);
 
   // mesma mensagem para e-mail e senha errados, para nao revelar quem tem conta
   const senhaCerta = encontrado && (await bcrypt.compare(senha, encontrado.senha_hash));
@@ -23,7 +23,7 @@ async function login({ email, senha }) {
     throw new ErroApp(401, "E-mail ou senha incorretos");
   }
 
-  const usuario = usuariosService.buscar(encontrado.id);
+  const usuario = await usuariosService.buscar(encontrado.id);
   return { token: gerarToken(usuario), usuario };
 }
 

@@ -1,7 +1,7 @@
 const usuariosService = require("../services/usuariosService");
 
-function ver(req, res) {
-  res.json(usuariosService.buscar(req.usuario.id));
+async function ver(req, res) {
+  res.json(await usuariosService.buscar(req.usuario.id));
 }
 
 async function atualizar(req, res) {
