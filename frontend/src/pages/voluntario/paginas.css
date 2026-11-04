@@ -1396,8 +1396,10 @@ textarea.perfil-input {
 @media (max-width: 760px), (pointer: coarse) {
   /* "Ver todos", "Abrir horários", "Gerenciar": a área cresce sem mexer no cartão */
   .painel-cartao-topo a {
+    min-width: 44px;
     padding-block: 12px;
     margin-block: -12px;
+    text-align: center;
   }
 
   .painel-cabecalho .perfil-titulo .vol-interruptor {
