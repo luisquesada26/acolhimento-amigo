@@ -23,8 +23,8 @@ export const traducoes = {
     servicosDescricao:
       "Oferecemos atendimento gratuito, seguro e online em diferentes áreas de apoio.",
     servicosContagem: "{n} serviços disponíveis",
-    verServicos: "Ver serviços ↓",
-    ocultarServicos: "Ocultar serviços ↑",
+    verServicos: "Ver serviços\u00a0↓",
+    ocultarServicos: "Ocultar serviços\u00a0↑",
 
     comoEtiqueta: "É simples e rápido",
     comoTitulo: "Como funciona?",
@@ -56,7 +56,7 @@ export const traducoes = {
       "O Acolhimento Amigo busca aproximar pessoas e facilitar o acesso a informações, serviços e oportunidades, promovendo uma comunidade mais solidária e acolhedora.",
 
     rodapeDescricao: "Apoio e orientação para pessoas imigrantes.",
-    voltarTopo: "Voltar ao topo ↑",
+    voltarTopo: "Voltar ao topo\u00a0↑",
     direitos: "Todos os direitos reservados.",
 
     areas: {
@@ -151,8 +151,8 @@ export const traducoes = {
     servicosDescricao:
       "We offer free, safe online support in many different areas.",
     servicosContagem: "{n} services available",
-    verServicos: "Show services ↓",
-    ocultarServicos: "Hide services ↑",
+    verServicos: "Show services\u00a0↓",
+    ocultarServicos: "Hide services\u00a0↑",
 
     comoEtiqueta: "Quick and simple",
     comoTitulo: "How does it work?",
@@ -184,7 +184,7 @@ export const traducoes = {
       "Acolhimento Amigo brings people together and makes information, services and opportunities easier to reach, helping build a more caring and welcoming community.",
 
     rodapeDescricao: "Support and guidance for immigrants.",
-    voltarTopo: "Back to top ↑",
+    voltarTopo: "Back to top\u00a0↑",
     direitos: "All rights reserved.",
 
     areas: {
@@ -307,8 +307,8 @@ export const traducoes = {
     servicosDescricao:
       "Ofrecemos atención gratuita, segura y en línea en distintas áreas de apoyo.",
     servicosContagem: "{n} servicios disponibles",
-    verServicos: "Ver servicios ↓",
-    ocultarServicos: "Ocultar servicios ↑",
+    verServicos: "Ver servicios\u00a0↓",
+    ocultarServicos: "Ocultar servicios\u00a0↑",
 
     comoEtiqueta: "Es fácil y rápido",
     comoTitulo: "¿Cómo funciona?",
@@ -340,7 +340,7 @@ export const traducoes = {
       "Acolhimento Amigo busca acercar a las personas y facilitar el acceso a información, servicios y oportunidades, promoviendo una comunidad más solidaria y acogedora.",
 
     rodapeDescricao: "Apoyo y orientación para personas inmigrantes.",
-    voltarTopo: "Volver arriba ↑",
+    voltarTopo: "Volver arriba\u00a0↑",
     direitos: "Todos los derechos reservados.",
 
     areas: {
@@ -435,8 +435,8 @@ export const traducoes = {
     servicosDescricao:
       "Nous proposons un accompagnement gratuit, sûr et en ligne dans différents domaines.",
     servicosContagem: "{n} services disponibles",
-    verServicos: "Voir les services ↓",
-    ocultarServicos: "Masquer les services ↑",
+    verServicos: "Voir les services\u00a0↓",
+    ocultarServicos: "Masquer les services\u00a0↑",
 
     comoEtiqueta: "Simple et rapide",
     comoTitulo: "Comment ça marche ?",
@@ -468,7 +468,7 @@ export const traducoes = {
       "Acolhimento Amigo rapproche les personnes et facilite l'accès à l'information, aux services et aux opportunités, pour une communauté plus solidaire et accueillante.",
 
     rodapeDescricao: "Soutien et orientation pour les personnes immigrées.",
-    voltarTopo: "Retour en haut ↑",
+    voltarTopo: "Retour en haut\u00a0↑",
     direitos: "Tous droits réservés.",
 
     areas: {
