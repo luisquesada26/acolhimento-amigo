@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { nomeDoIdioma } from "./usePainel";
 import { Interruptor, Svg, useAcao } from "./comum";
+import { formatarTelefone, limparTelefone, mascaraTelefone } from "./telefone";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../components/Avatar";
 import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
@@ -239,18 +240,18 @@ function AbaDados({ painel }) {
           icone="telefone"
           rotulo={t.telefone}
           plano
-          mostrar={perfil.telefone}
+          mostrar={perfil.telefone && formatarTelefone(perfil.telefone)}
           vazio={t.naoInformadoOpcional}
-          inicial={perfil.telefone ?? ""}
+          inicial={limparTelefone(perfil.telefone)}
           aoSalvar={(v) => salvar({ telefone: v.trim() || null })}
           editor={(v, setV, id) => (
             <input
               id={id}
               className="perfil-input"
               aria-labelledby={`${id}-rotulo`}
-              value={v}
+              value={mascaraTelefone(v)}
               maxLength={20}
-              onChange={(e) => setV(e.target.value)}
+              onChange={(e) => setV(limparTelefone(e.target.value))}
               autoComplete="tel"
               placeholder="(11) 91234-5678"
             />
