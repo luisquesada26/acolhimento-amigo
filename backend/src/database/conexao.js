@@ -28,6 +28,9 @@ const URL_DO_BANCO = DATABASE_URL && semParametrosDoSupabase(DATABASE_URL);
 const pool = new Pool({
   connectionString: URL_DO_BANCO,
   ssl: URL_DO_BANCO && !ehLocal(URL_DO_BANCO) ? { rejectUnauthorized: false } : false,
+  // banco fora do ar ou consulta presa: a requisição falha em segundos, em vez de ficar esperando
+  connectionTimeoutMillis: 10000,
+  query_timeout: 15000,
 });
 
 // conexão parada que o servidor fechou: só registra, sem derrubar a API
@@ -65,16 +68,25 @@ async function transacao(fn) {
   if (emTransacao.getStore()) return fn();
 
   const cliente = await pool.connect();
+  // o pool tira o ouvinte de 'error' do cliente que empresta: sem este, uma conexão que cai
+  // no meio da transação derruba o processo inteiro
+  let erroDeConexao;
+  const aoCair = (erro) => {
+    erroDeConexao = erro;
+  };
+  cliente.on("error", aoCair);
   try {
     await cliente.query("BEGIN");
     const resultado = await emTransacao.run(cliente, fn);
     await cliente.query("COMMIT");
     return resultado;
   } catch (erro) {
-    await cliente.query("ROLLBACK").catch(() => {});
+    if (!erroDeConexao) await cliente.query("ROLLBACK").catch((falha) => (erroDeConexao = falha));
     throw erro;
   } finally {
-    cliente.release();
+    cliente.off("error", aoCair);
+    // com erro de conexão, o pool descarta o cliente em vez de emprestar de novo
+    cliente.release(erroDeConexao);
   }
 }
 
