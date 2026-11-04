@@ -4,6 +4,17 @@ Plataforma web gratuita que conecta migrantes e refugiados a profissionais volun
 
 Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 
+## Acesse online
+
+O site está no ar em **https://acolhimento-amigo.vercel.app**. Para entrar sem criar conta, use um dos usuários de teste (senha de todos: `senha123`):
+
+| Perfil | E-mail |
+| --- | --- |
+| Usuário | `usuario@teste.com` |
+| Voluntário (Jurídico) | `voluntario@teste.com` |
+
+Para ver o projeto, não precisa instalar nada. A seção **Como rodar** é para quem vai programar.
+
 ## User stories
 
 Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que pé está:
@@ -46,10 +57,35 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 - Backend: Node.js, Express, Zod, bcrypt e JWT
 - Banco: PostgreSQL (no Supabase) com o pacote pg
 - Frontend: React + Vite, React Router e Axios
+- Publicação: Vercel (site e API num projeto só) e Supabase (banco)
 
 ## Arquitetura
 
-O frontend em React roda no navegador e conversa com a API só por HTTP, em JSON. A API em Node.js e Express é a única parte que mexe no banco, um Postgres que fica no Supabase.
+### Em produção
+
+O site e a API ficam num projeto só do Vercel, no mesmo endereço: o que começa com `/api/` vai para o Express, e o resto é o site em React. A API roda em São Paulo, perto do banco, que é um Postgres no Supabase.
+
+```mermaid
+flowchart TD
+    navegador["Navegador<br/>acolhimento-amigo.vercel.app"]
+
+    subgraph vercel ["Vercel: um projeto com dois serviços (vercel.json)"]
+        site["frontend<br/>React + Vite, arquivos prontos do build<br/>toda tela cai no index.html"]
+        api["api<br/>Express rodando em funções<br/>região São Paulo (gru1)"]
+    end
+
+    navegador -- "páginas e telas" --> site
+    navegador -- "/api/... (HTTP + JSON)" --> api
+    api -- "pg, pelo pooler do Supabase" --> banco[("Postgres no Supabase<br/>São Paulo (sa-east-1)")]
+    api -- "cria as salas do Meet" --> google["Google Agenda<br/>acolhimentoamigo@gmail.com"]
+
+    github["GitHub: branch main"] -- "cada merge publica o site e a API" --> vercel
+    github -- "migration nova é aplicada no merge" --> banco
+```
+
+### Por dentro do código
+
+O frontend em React roda no navegador e conversa com a API só por HTTP, em JSON. A API em Node.js e Express é a única parte que mexe no banco. É assim no site publicado e no `npm run dev`.
 
 ```mermaid
 flowchart TD
@@ -72,6 +108,29 @@ flowchart TD
 ```
 
 Se algo falha no caminho, a API para ali e responde `{ erro, detalhes }`: `401` sem token, `403` com o perfil errado, `400` com dados inválidos e `409` quando uma regra não deixa (por exemplo, horário que acabou de ser reservado).
+
+### Primeira versão (SQLite, só local)
+
+Até 03/11/2026 o projeto rodava só no computador de cada um, e o banco era um arquivo SQLite (`backend/data/acolhimento.db`), lido pelo `better-sqlite3`. Para publicar, o banco passou para o Postgres do Supabase: no Vercel a API roda em funções que não guardam arquivo, e um banco em arquivo se perderia. Os dados do SQLite foram copiados para o Supabase com os mesmos ids.
+
+```mermaid
+flowchart TD
+    subgraph front ["Frontend: React + Vite"]
+        telas["Telas<br/>pages/"] --> sessao["AuthContext<br/>faz o login e guarda o token"]
+        telas --> axios["Axios<br/>services/api.js manda o token em toda requisição"]
+    end
+
+    axios -- "HTTP + JSON em /api" --> rotas
+
+    subgraph api ["API: Node.js + Express"]
+        rotas["routes<br/>liga cada URL ao seu controller"] --> mid["middlewares<br/>auth confere o token, perfil confere quem pode<br/>e validar confere os dados com Zod"]
+        mid --> ctrl["controllers<br/>recebem o pedido e devolvem a resposta"]
+        ctrl --> serv["services<br/>regras do negócio"]
+        serv --> repo["repositories<br/>consultas SQL"]
+    end
+
+    repo --> banco[("SQLite<br/>backend/data/acolhimento.db")]
+```
 
 ### Fluxo de um atendimento
 
@@ -243,12 +302,7 @@ erDiagram
 
 ### Usuários de teste
 
-Senha de todos: `senha123`
-
-| Perfil | E-mail |
-| --- | --- |
-| Usuário | `usuario@teste.com` |
-| Voluntário (Jurídico) | `voluntario@teste.com` |
+Estão em [Acesse online](#acesse-online), no começo deste README.
 
 ## Organização no GitHub
 
@@ -288,6 +342,31 @@ Os casos de erro (403, 409, dados inválidos) ficam no `api.http`.
 
 **Atenção:** o `npm run dev` grava no banco do site, então o `api.http` e a coleção criam, editam e apagam dados de verdade. O `api.http` usa ids fixos (como `DELETE /servicos/121` e `DELETE /horarios/1?confirmar=true`), que hoje podem ser dados reais.
 
+## Como está publicado
+
+- **Vercel:** o projeto `acolhimento-amigo` usa a raiz do repositório com o preset **Services**. O `vercel.json` da raiz tem dois serviços: o `api` (pasta `backend`, Express, entrada `src/app.js`) recebe o que começa com `/api/`, com o caminho inteiro, e o `frontend` (pasta `frontend`, Vite) recebe o resto. As funções rodam em São Paulo (`gru1`). Cada merge na `main` publica sozinho, e cada pull request ganha um endereço de preview.
+- **Supabase:** o banco fica em São Paulo (`sa-east-1`). A Data API está desligada e a RLS ligada em todas as tabelas, sem regras. A integração com o GitHub aplica no banco cada migration nova de `supabase/migrations/` quando ela entra na `main`.
+
+Variáveis do projeto no Vercel:
+
+| Variável | Valor |
+| --- | --- |
+| `DATABASE_URL` | o endereço do banco no Supabase (Transaction pooler, porta 6543) |
+| `JWT_SECRET` | um segredo só da produção, diferente do de desenvolvimento |
+| `VITE_API_URL` | `/api`, porque o site e a API ficam no mesmo endereço |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` | as chaves da videochamada |
+
+O `CORS_ORIGIN` não precisa: no mesmo endereço o navegador não confere o CORS.
+
+### O que mudou no código para publicar
+
+- **Conexão:** o `pg` no lugar do `better-sqlite3`, com a `DATABASE_URL`. O `backend/src/database/conexao.js` tem a `consulta(sql, params)`, que troca os `?` por `$1`, `$2`..., e a `transacao(fn)`, que faz `BEGIN`, `COMMIT` e, se der erro, `ROLLBACK`
+- **Consultas assíncronas:** o Postgres responde depois, então repositories, services e controllers usam `async`/`await`
+- **SQL do Postgres:** `GENERATED BY DEFAULT AS IDENTITY` no lugar do `AUTOINCREMENT`, `RETURNING id` no lugar do `lastInsertRowid`, `ILIKE` na busca (o `LIKE` do Postgres diferencia maiúsculas) e `COUNT(*)::int` (o `pg` devolve a contagem como texto)
+- **Fuso horário:** o servidor do Vercel roda em UTC e não deixa trocar o `TZ`, então o `backend/src/utils/datas.js` calcula a data e a hora com `timeZone: "America/Sao_Paulo"`. Sem isso, o `agora()` ficaria 3 horas adiantado e os horários das próximas 3 horas apareceriam como já passados
+- **Rotas do React:** no serviço `frontend`, toda rota cai no `index.html`, senão um F5 em `/login` daria 404
+- **Corridas:** no SQLite cada gravação acontecia inteira, sem nada no meio. No Postgres, as gravações que conferem e depois gravam usam travas na transação (`pg_advisory_xact_lock` e `FOR UPDATE`), para dois cliques quase juntos não passarem pela mesma conferência
+
 ## Próximos passos
 
 O que fica para depois da entrega:
@@ -297,31 +376,7 @@ O que fica para depois da entrega:
 - Avaliação do atendimento
 - Avisos por e-mail e WhatsApp
 - Painel para aprovar os voluntários
-- Publicar na internet (o que falta está logo abaixo)
-
-### Publicar na internet
-
-O plano é o site e a API num projeto só do Vercel, com os Services, e o banco no Postgres do Supabase. No Vercel a API roda em funções que não guardam arquivo, e por isso o SQLite, que é um arquivo, deu lugar ao Postgres.
-
-Já feito:
-
-- **Conexão:** o `pg` no lugar do `better-sqlite3`, com a `DATABASE_URL`. O `backend/src/database/conexao.js` tem a `consulta(sql, params)`, que troca os `?` por `$1`, `$2`..., e a `transacao(fn)`, que faz `BEGIN`, `COMMIT` e, se der erro, `ROLLBACK`
-- **Consultas assíncronas:** o Postgres responde depois, então repositories, services e controllers usam `async`/`await`
-- **SQL do Postgres:** `GENERATED BY DEFAULT AS IDENTITY` no lugar do `AUTOINCREMENT`, `RETURNING id` no lugar do `lastInsertRowid`, `ILIKE` na busca (o `LIKE` do Postgres diferencia maiúsculas) e `COUNT(*)::int` (o `pg` devolve a contagem como texto)
-- **Fuso horário:** o servidor do Vercel roda em UTC e não deixa trocar o `TZ`, então o `backend/src/utils/datas.js` calcula a data e a hora com `timeZone: "America/Sao_Paulo"`. Sem isso, o `agora()` ficaria 3 horas adiantado e os horários das próximas 3 horas apareceriam como já passados
-- **Um projeto só no Vercel:** o `vercel.json` da raiz tem dois serviços. O `api` (pasta `backend`, Express, entrada `src/app.js`) recebe o que começa com `/api/`, com o caminho inteiro, e o `frontend` (pasta `frontend`, Vite) recebe o resto. No `frontend`, toda rota cai no `index.html`, senão um F5 em `/login` daria 404
-- **Banco:** o Supabase do site está no ar, com o schema de `supabase/migrations/` e os dados que estavam no SQLite
-
-Falta publicar o projeto no Vercel, com estas variáveis:
-
-| Variável | Valor |
-| --- | --- |
-| `DATABASE_URL` | o endereço do banco do Supabase (ou a `POSTGRES_URL` que a integração com o Supabase cria) |
-| `JWT_SECRET` | um segredo novo, diferente do de desenvolvimento |
-| `VITE_API_URL` | `/api`, porque o site e a API ficam no mesmo endereço |
-| `GOOGLE_*` | opcionais, só para a videochamada |
-
-O `CORS_ORIGIN` não precisa: no mesmo endereço o navegador não confere o CORS.
+- Backup do banco (o plano Free do Supabase não tem)
 
 ## Integrantes
 
