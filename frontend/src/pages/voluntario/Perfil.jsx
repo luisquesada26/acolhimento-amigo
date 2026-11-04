@@ -7,6 +7,7 @@ import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea } from "../../dados/areas";
+import { nomeDoPais } from "../../dados/paises";
 import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
@@ -260,8 +261,8 @@ function AbaDados({ painel }) {
           icone="globo"
           rotulo={t.nacionalidade}
           plano
-          mostrar={perfil.pais_origem}
-          inicial={perfil.pais_origem ?? ""}
+          mostrar={nomeDoPais(perfil.pais_origem)}
+          inicial={nomeDoPais(perfil.pais_origem ?? "")}
           aoSalvar={(v) => salvar({ pais_origem: v.trim() || null })}
           editor={(v, setV, id) => (
             <input id={id} className="perfil-input" aria-labelledby={`${id}-rotulo`} value={v} maxLength={60} onChange={(e) => setV(e.target.value)} placeholder={t.exPais} />

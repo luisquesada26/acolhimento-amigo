@@ -6,12 +6,13 @@ import Avatar from "../../../components/Avatar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { useAuth } from "../../../context/AuthContext";
 import { localeAtual, useTextos } from "../../../context/IdiomaContext";
+import { nomeDoPais } from "../../../dados/paises";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg, formatarTelefone } from "../../voluntario/comum";
 import { nomeDoIdioma } from "../../voluntario/usePainel";
 import { traducoes } from "../traducoes";
 import Endereco, { linhasDoEndereco } from "./Endereco";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 function desde(criadoEm) {
@@ -25,7 +26,8 @@ function dadosDe(usuario) {
     nome: usuario.nome ?? "",
     email: usuario.email ?? "",
     telefone: usuario.telefone ?? "",
-    pais_origem: usuario.pais_origem ?? "",
+    // o país do banco aparece no campo já no idioma da bandeira
+    pais_origem: nomeDoPais(usuario.pais_origem ?? ""),
     idiomas: usuario.idiomas ?? ["pt"],
     foto: usuario.foto ?? null,
   };
@@ -40,6 +42,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
   const [salvo, setSalvo] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const mudou = JSON.stringify(dados) !== JSON.stringify(dadosDe(usuario));
+  usePaisNaBandeira(usuario.pais_origem, setDados);
 
   function mudar(campo, valor) {
     setSalvo(false);
@@ -287,7 +290,7 @@ export default function MeuPerfil() {
           </li>
           <li>
             <Svg nome="globo" tamanho={16} />
-            {usuario.pais_origem || t.nacionalidadeNaoInformada}
+            {nomeDoPais(usuario.pais_origem) || t.nacionalidadeNaoInformada}
           </li>
           {idiomas.length > 0 && (
             <li>

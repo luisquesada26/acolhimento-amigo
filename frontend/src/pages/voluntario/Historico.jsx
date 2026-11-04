@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { OrdenarPorData, Status, dataComAno } from "./comum";
 import { useTextos } from "../../context/IdiomaContext";
+import { nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 
 // o nome de cada filtro vem das traduções (filtrosHistorico)
@@ -62,7 +63,7 @@ export default function Historico({ passados, aoAbrir }) {
                     ) : (
                       <strong>{a.usuario.nome}</strong>
                     )}
-                    <small>{a.usuario.pais_origem}</small>
+                    <small>{nomeDoPais(a.usuario.pais_origem)}</small>
                   </td>
                   <td>{a.servico.titulo}</td>
                   <td>

@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
 import { useTextos } from "../../../context/IdiomaContext";
+import { nomeDoPais } from "../../../dados/paises";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 // primeiro acesso: antes de buscar, a pessoa deixa o contato para o voluntário
@@ -19,10 +20,11 @@ export default function CompletarPerfil() {
   const traduzir = useErros();
   const [dados, setDados] = useState({
     telefone: usuario.telefone ?? "",
-    pais_origem: usuario.pais_origem ?? "",
+    pais_origem: nomeDoPais(usuario.pais_origem ?? ""),
     idiomas: usuario.idiomas ?? ["pt"],
     foto: usuario.foto ?? null,
   });
+  usePaisNaBandeira(usuario.pais_origem, setDados);
   const [erros, setErros] = useState({});
   const [mensagem, setMensagem] = useState("");
   const [enviando, setEnviando] = useState(false);

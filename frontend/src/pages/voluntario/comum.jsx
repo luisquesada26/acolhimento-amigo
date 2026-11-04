@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
 import { traduzirMensagem } from "../../services/errosApi";
+import { nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 import Avatar from "../../components/Avatar";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
@@ -281,7 +282,7 @@ export function Pessoa({ usuario }) {
       </span>
       <ul className="vol-contato">
         <li>
-          <Svg nome="globo" tamanho={15} /> {usuario.pais_origem || t.semNacionalidade}
+          <Svg nome="globo" tamanho={15} /> {nomeDoPais(usuario.pais_origem) || t.semNacionalidade}
         </li>
         <li>
           <Svg nome="idioma" tamanho={15} /> {fala[0].toUpperCase() + fala.slice(1)}

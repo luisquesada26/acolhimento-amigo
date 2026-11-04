@@ -1,7 +1,8 @@
-import { useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../../components/Avatar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { localeAtual, useIdioma, useTextos } from "../../../context/IdiomaContext";
+import { chaveDoPais, nomeDoPais } from "../../../dados/paises";
 import { traduzirMensagem } from "../../../services/errosApi";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
@@ -32,6 +33,15 @@ export function validarPerfil(dados) {
 export function useErros() {
   const erros = useTextos(traducoes).erros;
   return (valor) => traduzirMensagem(valor, erros);
+}
+
+// trocando a bandeira, o país que a pessoa não mexeu no formulário troca de idioma junto
+export function usePaisNaBandeira(salvo, setDados) {
+  const { idioma } = useIdioma();
+  useLayoutEffect(() => {
+    const nome = nomeDoPais(salvo ?? "");
+    setDados((atual) => (atual.pais_origem !== nome && chaveDoPais(atual.pais_origem) === chaveDoPais(salvo ?? "") ? { ...atual, pais_origem: nome } : atual));
+  }, [idioma]); // o idioma muda o locale lido por nomeDoPais
 }
 
 export function FotoPerfil({ nome, foto, aoMudar }) {
