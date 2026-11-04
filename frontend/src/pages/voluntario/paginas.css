@@ -1325,6 +1325,11 @@ textarea.perfil-input {
     grid-column: 1 / -1;
   }
 
+  /* "Livre" e "Reservado" do tamanho do texto, não da linha inteira */
+  .agenda-horario .vol-status {
+    justify-self: start;
+  }
+
   .atend-resumo {
     grid-template-columns: 1fr;
   }
@@ -1356,6 +1361,85 @@ textarea.perfil-input {
 
   .relatorio-busca {
     grid-column: auto;
+  }
+}
+
+/* celular: as três abas do perfil dividem a largura; "Vos informations" quebra em duas linhas
+   em vez de empurrar "Disponibilités" para fora da tela */
+@media (max-width: 640px) {
+  .perfil-abas {
+    align-self: stretch;
+    overflow: visible;
+  }
+
+  .perfil-abas button {
+    flex: 1 1 auto;
+    padding: 6px 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 400px) {
+  .perfil-abas {
+    gap: 2px;
+  }
+
+  .perfil-abas button {
+    padding-inline: 4px;
+    font-size: 13px;
+  }
+}
+
+/* tela de toque ou estreita: 44px para o dedo nos links e botões de texto */
+@media (max-width: 760px), (pointer: coarse) {
+  /* "Ver todos", "Abrir horários", "Gerenciar": a área cresce sem mexer no cartão */
+  .painel-cartao-topo a {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  .painel-cabecalho .perfil-titulo .vol-interruptor {
+    min-height: 44px;
+  }
+
+  .perfil-foto-botao,
+  .perfil-foto-remover {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* o nome na tabela: a linha inteira já abre o atendimento; o botão ganha altura de dedo */
+  .historico-tabela .historico-abrir {
+    padding-block: 11px;
+    margin-block: -11px;
+  }
+}
+
+/* tablet e celular deitado com toque: a grade do mês tem casas de 96px de altura; o número e o
+   "N livres" ganham 40px para o dedo */
+@media (pointer: coarse) and (min-width: 641px) and (max-width: 1023px) {
+  .agenda-grade-mes .agenda-numero {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .agenda-grade-mes .agenda-celula-topo .agenda-vaga,
+  .agenda-grade-mes .agenda-celula-topo .agenda-mais {
+    min-height: 40px;
+  }
+}
+
+/* celular deitado: a barra de abas mais baixa, ícone e nome lado a lado */
+@media (max-width: 1023px) and (max-height: 500px) {
+  .painel-menu .painel-item,
+  .painel-recolhido .painel-menu .painel-item {
+    flex-direction: row;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 12px;
   }
 }
 
