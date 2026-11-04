@@ -266,8 +266,10 @@
   }
 }
 
-/* no celular o menu vira uma barra de abas presa embaixo (regras em paginas.css); o conteúdo deixa espaço para ela */
-@media (max-width: 760px) {
+/* no celular e no tablet o menu vira uma barra de abas presa embaixo (regras em paginas.css);
+   o conteúdo deixa espaço para ela. Com o menu lateral, abaixo de 1024px o conteúdo ficava
+   espremido: a saudação quebrava palavra por palavra e a agenda e as tabelas rolavam de lado */
+@media (max-width: 1023px) {
   .painel {
     flex-direction: column;
     gap: 10px;

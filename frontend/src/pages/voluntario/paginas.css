@@ -1151,7 +1151,8 @@ textarea.perfil-input {
   align-self: flex-start;
 }
 
-@media (max-width: 760px), (max-height: 620px) {
+/* com a barra de abas embaixo (até 1023px) ou em tela baixa, a agenda cresce e a página rola */
+@media (max-width: 1023px), (max-height: 620px) {
   .agenda-pagina {
     height: auto;
   }
@@ -1402,9 +1403,9 @@ a.painel-item:focus-visible {
   position: relative;
 }
 
-/* no celular o menu vira uma barra de abas presa embaixo da tela; o logo vai para a barra de cima
-   e o recolhido não vale */
-@media (max-width: 760px) {
+/* no celular e no tablet o menu vira uma barra de abas presa embaixo da tela; o logo vai para a
+   barra de cima e o recolhido não vale */
+@media (max-width: 1023px) {
   .painel-menu,
   .painel-recolhido .painel-menu {
     position: fixed;
@@ -1486,6 +1487,42 @@ a.painel-item:focus-visible {
     margin: 0;
     padding: 0 5px;
     font-size: 11px;
+  }
+}
+
+/* celular estreito: "Atendimentos" e "Tableau de bord" não cabem em 70px; o nome quebra em
+   duas linhas em vez de virar "Atendiment…" */
+@media (max-width: 420px) {
+  .painel-item,
+  .painel-recolhido .painel-item {
+    padding-inline: 1px;
+  }
+
+  .painel-item-texto,
+  .painel-recolhido .painel-item-texto {
+    display: -webkit-box;
+    line-height: 1.1;
+    white-space: normal;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* tablet: a barra de abas fica no centro, sem esticar de ponta a ponta */
+@media (min-width: 761px) and (max-width: 1023px) {
+  .painel-menu,
+  .painel-recolhido .painel-menu {
+    right: auto;
+    left: 50%;
+    width: min(560px, calc(100% - 20px));
+    transform: translateX(-50%);
+  }
+
+  .painel-item,
+  .painel-recolhido .painel-item {
+    font-size: 12px;
   }
 }
 
