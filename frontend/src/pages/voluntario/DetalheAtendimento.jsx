@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AcoesAtendimento, Pessoa, Status, Svg, diaExtenso } from "./comum";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
 import { useTextos } from "../../context/IdiomaContext";
+import { traduzirErroApi } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
 const maiuscula = (texto) => texto[0].toUpperCase() + texto.slice(1);
@@ -72,7 +73,7 @@ function Anotacao({ atendimento, salvarAnotacao }) {
       </div>
       {erro && (
         <p className="vol-erro" role="alert">
-          {erro}
+          {traduzirErroApi(erro)}
         </p>
       )}
     </form>

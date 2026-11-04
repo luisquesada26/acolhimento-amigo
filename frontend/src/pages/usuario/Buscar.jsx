@@ -5,6 +5,7 @@ import { Bandeira } from "../../components/SeletorIdioma";
 import { useAuth } from "../../context/AuthContext";
 import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea, visualDaArea } from "../../dados/areas";
+import { traduzirErroApi } from "../../services/errosApi";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
 import { Esqueleto, IconeArea, momento, totalPorArea, useTodos } from "./comum";
@@ -248,7 +249,7 @@ export default function Buscar() {
         {busca.erro ? (
           <>
             <p className="aviso" role="alert">
-              {busca.erro}
+              {traduzirErroApi(busca.erro)}
             </p>
             <button type="button" className="botao botao-primario" onClick={busca.recarregar}>
               {t.tentarDeNovo}

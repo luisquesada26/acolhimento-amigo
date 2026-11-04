@@ -55,18 +55,25 @@ function Disponibilidade({ criarHorarios, existentes }) {
     setDias((atuais) => (atuais.includes(numero) ? atuais.filter((d) => d !== numero) : [...atuais, numero]));
   }
 
+  // o resultado guarda a chave do erro ou os números; o texto sai na hora de mostrar, no idioma da bandeira
   async function enviar(evento) {
     evento.preventDefault();
-    if (!dias.length) return setResultado({ erro: true, texto: t.erroDia });
-    if (paraMinutos(fim) <= paraMinutos(inicio)) return setResultado({ erro: true, texto: t.erroFim });
-    if (!horarios.length) return setResultado({ erro: true, texto: t.erroSemHorario });
+    if (!dias.length) return setResultado({ chave: "erroDia" });
+    if (paraMinutos(fim) <= paraMinutos(inicio)) return setResultado({ chave: "erroFim" });
+    if (!horarios.length) return setResultado({ chave: "erroSemHorario" });
 
     setEnviando(true);
     setResultado(null);
     const { criados, erros } = await criarHorarios(horarios);
     setEnviando(false);
-    const texto = t.abertos(criados);
-    setResultado(erros.length ? { erro: true, texto: `${texto} ${t.naoEntraram(erros.length)}` } : { erro: false, texto });
+    setResultado({ criados, falharam: erros.length });
+  }
+
+  const deuErro = Boolean(resultado?.chave || resultado?.falharam);
+  let textoResultado = resultado?.chave ? t[resultado.chave] : "";
+  if (resultado?.criados !== undefined) {
+    textoResultado = t.abertos(resultado.criados);
+    if (resultado.falharam) textoResultado += ` ${t.naoEntraram(resultado.falharam)}`;
   }
 
   return (
@@ -126,8 +133,8 @@ function Disponibilidade({ criarHorarios, existentes }) {
           </button>
         </div>
         {resultado && (
-          <p className={resultado.erro ? "vol-erro" : "pagina-ok"} role={resultado.erro ? "alert" : "status"}>
-            {resultado.texto}
+          <p className={deuErro ? "vol-erro" : "pagina-ok"} role={deuErro ? "alert" : "status"}>
+            {textoResultado}
           </p>
         )}
       </form>

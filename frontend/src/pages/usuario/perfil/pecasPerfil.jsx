@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import Avatar, { reduzirFoto } from "../../../components/Avatar";
+import Avatar, { ERROS_FOTO, reduzirFoto } from "../../../components/Avatar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { localeAtual, useIdioma, useTextos } from "../../../context/IdiomaContext";
+import { traduzirMensagem } from "../../../services/errosApi";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
 
@@ -16,19 +17,26 @@ export const IDIOMAS_PERFIL = [
   { codigo: "fr", nome: "Français" },
 ];
 
-// o que o formulário do perfil confere antes de chamar a API; erros = traducoes[idioma].erros
-export function validarPerfil(dados, erros) {
+// o que o formulário do perfil confere antes de chamar a API; devolve a chave de cada erro em traducoes.erros
+export function validarPerfil(dados) {
   const novos = {};
-  if (dados.nome !== undefined && dados.nome.trim().length < 3) novos.nome = erros.nome;
-  if (dados.email !== undefined && !/^\S+@\S+\.\S+$/.test(dados.email.trim())) novos.email = erros.email;
-  if (dados.telefone.replace(/\D/g, "").length < 10) novos.telefone = erros.telefone;
-  if (!dados.pais_origem.trim()) novos.pais_origem = erros.nacionalidade;
-  if (!dados.idiomas.length) novos.idiomas = erros.idiomas;
+  if (dados.nome !== undefined && dados.nome.trim().length < 3) novos.nome = "nome";
+  if (dados.email !== undefined && !/^\S+@\S+\.\S+$/.test(dados.email.trim())) novos.email = "email";
+  if (dados.telefone.replace(/\D/g, "").length < 10) novos.telefone = "telefone";
+  if (!dados.pais_origem.trim()) novos.pais_origem = "nacionalidade";
+  if (!dados.idiomas.length) novos.idiomas = "idiomas";
   return novos;
+}
+
+// o erro fica guardado como chave da validação ou como a API mandou, e é traduzido aqui, na hora de mostrar
+export function useErros() {
+  const erros = useTextos(traducoes).erros;
+  return (valor) => traduzirMensagem(valor, erros);
 }
 
 export function FotoPerfil({ nome, foto, aoMudar }) {
   const t = useTextos(traducoes).perfil;
+  const errosFoto = useTextos(ERROS_FOTO);
   const entrada = useRef(null);
   const [erro, setErro] = useState("");
 
@@ -40,7 +48,7 @@ export function FotoPerfil({ nome, foto, aoMudar }) {
       setErro("");
       aoMudar(await reduzirFoto(arquivo));
     } catch (problema) {
-      setErro(problema.message);
+      setErro(problema.chave);
     }
   }
 
@@ -57,7 +65,7 @@ export function FotoPerfil({ nome, foto, aoMudar }) {
           </button>
         )}
         <small>{t.fotoDica}</small>
-        {erro && <span className="campo-erro">{erro}</span>}
+        {erro && <span className="campo-erro">{errosFoto[erro]}</span>}
       </div>
       <input ref={entrada} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={escolher} />
     </div>

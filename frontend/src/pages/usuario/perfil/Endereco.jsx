@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
-import api, { lerErro } from "../../../services/api";
+import api, { lerErroSemTraduzir } from "../../../services/api";
 import { useTextos } from "../../../context/IdiomaContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
+import { useErros } from "./pecasPerfil";
 
 const ESTADOS = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
 const CAMPOS = ["cep", "rua", "numero", "complemento", "bairro", "cidade", "estado"];
@@ -27,8 +28,8 @@ export function linhasDoEndereco(u) {
 
 // endereço é opcional e só a própria pessoa vê; salva separado dos dados pessoais
 export default function Endereco({ usuario, aoSalvar }) {
-  const tudo = useTextos(traducoes);
-  const t = tudo.perfil;
+  const t = useTextos(traducoes).perfil;
+  const traduzir = useErros();
   const [dados, setDados] = useState(() => enderecoDe(usuario));
   const [erros, setErros] = useState({});
   const [mensagem, setMensagem] = useState("");
@@ -85,7 +86,7 @@ export default function Endereco({ usuario, aoSalvar }) {
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem("");
-    const novos = dados.cep && dados.cep.length !== 8 ? { cep: tudo.erros.cep } : {};
+    const novos = dados.cep && dados.cep.length !== 8 ? { cep: "cep" } : {};
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -97,7 +98,7 @@ export default function Endereco({ usuario, aoSalvar }) {
       setDados(enderecoDe(data));
       setSalvo(true);
     } catch (problema) {
-      const { mensagem: texto, campos } = lerErro(problema);
+      const { mensagem: texto, campos } = lerErroSemTraduzir(problema);
       setErros(campos);
       setMensagem(texto);
     } finally {
@@ -126,7 +127,7 @@ export default function Endereco({ usuario, aoSalvar }) {
             placeholder="00000-000"
             value={mascaraCep(dados.cep)}
             onChange={(e) => mudarCep(e.target.value)}
-            erro={erros.cep}
+            erro={traduzir(erros.cep)}
           />
           {!erros.cep && (
             <span className={cepEstado === "naoEncontrado" ? "dica pf-dica-alerta" : "dica"} role="status">
@@ -135,10 +136,10 @@ export default function Endereco({ usuario, aoSalvar }) {
           )}
         </div>
         <div className="pf-endereco-rua">
-          <Campo id="pf-rua" rotulo={t.rua} autoComplete="address-line1" maxLength={120} value={dados.rua} onChange={(e) => mudar("rua", e.target.value)} erro={erros.rua} />
+          <Campo id="pf-rua" rotulo={t.rua} autoComplete="address-line1" maxLength={120} value={dados.rua} onChange={(e) => mudar("rua", e.target.value)} erro={traduzir(erros.rua)} />
         </div>
         <div className="pf-endereco-numero">
-          <Campo id="pf-numero" rotulo={t.numero} maxLength={10} value={dados.numero} onChange={(e) => mudar("numero", e.target.value)} erro={erros.numero} />
+          <Campo id="pf-numero" rotulo={t.numero} maxLength={10} value={dados.numero} onChange={(e) => mudar("numero", e.target.value)} erro={traduzir(erros.numero)} />
         </div>
         <div className="pf-endereco-complemento">
           <Campo
@@ -149,14 +150,14 @@ export default function Endereco({ usuario, aoSalvar }) {
             placeholder={t.complementoExemplo}
             value={dados.complemento}
             onChange={(e) => mudar("complemento", e.target.value)}
-            erro={erros.complemento}
+            erro={traduzir(erros.complemento)}
           />
         </div>
         <div className="pf-endereco-bairro">
-          <Campo id="pf-bairro" rotulo={t.bairro} maxLength={60} value={dados.bairro} onChange={(e) => mudar("bairro", e.target.value)} erro={erros.bairro} />
+          <Campo id="pf-bairro" rotulo={t.bairro} maxLength={60} value={dados.bairro} onChange={(e) => mudar("bairro", e.target.value)} erro={traduzir(erros.bairro)} />
         </div>
         <div className="pf-endereco-cidade">
-          <Campo id="pf-cidade" rotulo={t.cidade} autoComplete="address-level2" maxLength={60} value={dados.cidade} onChange={(e) => mudar("cidade", e.target.value)} erro={erros.cidade} />
+          <Campo id="pf-cidade" rotulo={t.cidade} autoComplete="address-level2" maxLength={60} value={dados.cidade} onChange={(e) => mudar("cidade", e.target.value)} erro={traduzir(erros.cidade)} />
         </div>
         <div className="campo pf-endereco-estado">
           <label htmlFor="pf-estado">{t.estado}</label>
@@ -168,11 +169,11 @@ export default function Endereco({ usuario, aoSalvar }) {
               </option>
             ))}
           </select>
-          {erros.estado && <span className="campo-erro">{erros.estado}</span>}
+          {erros.estado && <span className="campo-erro">{traduzir(erros.estado)}</span>}
         </div>
       </div>
 
-      <Aviso texto={mensagem} />
+      <Aviso texto={traduzir(mensagem)} />
 
       <div className="pf-acoes">
         {salvo && !mudou && (

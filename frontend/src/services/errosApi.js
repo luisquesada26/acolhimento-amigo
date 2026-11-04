@@ -84,16 +84,20 @@ const LINHAS = [
   ["Não foi possível criar a sala da videochamada. Tente de novo.", "Couldn’t create the video call room. Please try again.", "No se pudo crear la sala de la videollamada. Inténtalo de nuevo.", "Impossible de créer la salle de l’appel vidéo. Réessayez."],
 ];
 
-// campo sem mensagem própria no schema recebe a mensagem padrão do Zod, que vem em inglês
+// campo sem mensagem própria no schema recebe a mensagem padrão do Zod 4, que vem em inglês.
+// Só os formatos do Zod casam aqui: "Invalid email", que é a nossa tradução, não vira "Invalid value"
 const PADROES_ZOD = [
   [/^Too big: expected string to have <=(\d+) characters$/, (n) => [`Pode ter até ${n} caracteres`, `Must be ${n} characters or fewer`, `Puede tener hasta ${n} caracteres`, `Ne doit pas dépasser ${n} caractères`]],
-  [/^(Invalid|Too big|Too small)\b/, () => ["Valor inválido", "Invalid value", "Valor inválido", "Valeur invalide"]],
+  [
+    /^(Invalid input(: |$)|Invalid option: |Invalid (string|number): |Invalid (key|value) in |Invalid discriminator value\. |Invalid (email address|URL|UUID|ISO (date|datetime|time|duration))$|Too (big|small): expected |Unrecognized keys?: )/,
+    () => ["Valor inválido", "Invalid value", "Valor inválido", "Valeur invalide"],
+  ],
 ];
 
 const COLUNA = { pt: 0, en: 1, es: 2, fr: 3 };
 const MAPA = new Map(LINHAS.map((linha) => [linha[0], linha]));
 
-// mensagem que não está na lista continua como veio
+// recebe só a mensagem como a API mandou; a que não está na lista continua como veio
 export function traduzirErroApi(mensagem) {
   if (!mensagem) return mensagem;
   const coluna = COLUNA[idiomaAtual()] ?? 0;
@@ -104,4 +108,15 @@ export function traduzirErroApi(mensagem) {
     if (achou) return textos(achou[1])[coluna];
   }
   return mensagem;
+}
+
+// a tela guarda a mensagem crua e traduz na hora de mostrar, para ela trocar junto com a bandeira:
+// chave dos textos da tela (validação), [chave, valor] para texto com número, ou o erro como a API mandou
+export function traduzirMensagem(valor, textos) {
+  if (!valor) return valor;
+  if (Array.isArray(valor)) {
+    const [chave, ...valores] = valor;
+    return textos[chave](...valores);
+  }
+  return textos[valor] ?? traduzirErroApi(valor);
 }

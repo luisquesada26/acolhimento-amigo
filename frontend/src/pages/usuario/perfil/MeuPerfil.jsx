@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { lerErro } from "../../../services/api";
+import api, { lerErroSemTraduzir } from "../../../services/api";
+import { traduzirErroApi } from "../../../services/errosApi";
 import Avatar from "../../../components/Avatar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { useAuth } from "../../../context/AuthContext";
@@ -10,7 +11,7 @@ import { Svg, formatarTelefone } from "../../voluntario/comum";
 import { nomeDoIdioma } from "../../voluntario/usePainel";
 import { traducoes } from "../traducoes";
 import Endereco, { linhasDoEndereco } from "./Endereco";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 function desde(criadoEm) {
@@ -31,8 +32,8 @@ function dadosDe(usuario) {
 }
 
 function DadosPessoais({ usuario, aoSalvar }) {
-  const tudo = useTextos(traducoes);
-  const t = tudo.perfil;
+  const t = useTextos(traducoes).perfil;
+  const traduzir = useErros();
   const [dados, setDados] = useState(() => dadosDe(usuario));
   const [erros, setErros] = useState({});
   const [mensagem, setMensagem] = useState("");
@@ -48,7 +49,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem("");
-    const novos = validarPerfil(dados, tudo.erros);
+    const novos = validarPerfil(dados);
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -66,7 +67,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
       setDados(dadosDe(data));
       setSalvo(true);
     } catch (problema) {
-      const { mensagem: texto, campos } = lerErro(problema);
+      const { mensagem: texto, campos } = lerErroSemTraduzir(problema);
       setErros(campos);
       setMensagem(texto);
     } finally {
@@ -86,8 +87,8 @@ function DadosPessoais({ usuario, aoSalvar }) {
       <FotoPerfil nome={dados.nome || usuario.nome} foto={dados.foto} aoMudar={(foto) => mudar("foto", foto)} />
 
       <div className="pf-linha pf-linha-dupla">
-        <Campo id="pf-nome" rotulo={t.nome} autoComplete="name" maxLength={100} value={dados.nome} onChange={(e) => mudar("nome", e.target.value)} erro={erros.nome} />
-        <Campo id="pf-email" rotulo={t.email} type="email" autoComplete="email" value={dados.email} onChange={(e) => mudar("email", e.target.value)} erro={erros.email} />
+        <Campo id="pf-nome" rotulo={t.nome} autoComplete="name" maxLength={100} value={dados.nome} onChange={(e) => mudar("nome", e.target.value)} erro={traduzir(erros.nome)} />
+        <Campo id="pf-email" rotulo={t.email} type="email" autoComplete="email" value={dados.email} onChange={(e) => mudar("email", e.target.value)} erro={traduzir(erros.email)} />
         <Campo
           id="pf-telefone"
           rotulo={t.telefone}
@@ -97,7 +98,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
           maxLength={20}
           value={dados.telefone}
           onChange={(e) => mudar("telefone", e.target.value)}
-          erro={erros.telefone}
+          erro={traduzir(erros.telefone)}
         />
         <Campo
           id="pf-pais"
@@ -107,14 +108,14 @@ function DadosPessoais({ usuario, aoSalvar }) {
           maxLength={60}
           value={dados.pais_origem}
           onChange={(e) => mudar("pais_origem", e.target.value)}
-          erro={erros.pais_origem}
+          erro={traduzir(erros.pais_origem)}
         />
         <ListaPaises id="pf-lista-paises" />
       </div>
 
-      <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={erros.idiomas} />
+      <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={traduzir(erros.idiomas)} />
 
-      <Aviso texto={mensagem} />
+      <Aviso texto={traduzir(mensagem)} />
 
       <div className="pf-acoes">
         {salvo && !mudou && (
@@ -134,8 +135,8 @@ function DadosPessoais({ usuario, aoSalvar }) {
 }
 
 function Senha() {
-  const tudo = useTextos(traducoes);
-  const t = tudo.perfil;
+  const t = useTextos(traducoes).perfil;
+  const traduzir = useErros();
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [salvo, setSalvo] = useState(false);
@@ -144,7 +145,7 @@ function Senha() {
   async function enviar(evento) {
     evento.preventDefault();
     setSalvo(false);
-    if (senha.length < 6) return setErro(tudo.erros.senhaCurta);
+    if (senha.length < 6) return setErro("senhaCurta");
     setEnviando(true);
     setErro("");
     try {
@@ -152,7 +153,7 @@ function Senha() {
       setSenha("");
       setSalvo(true);
     } catch (problema) {
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
     } finally {
       setEnviando(false);
     }
@@ -167,7 +168,7 @@ function Senha() {
         </div>
       </header>
       <div className="pf-linha pf-linha-senha">
-        <Campo id="pf-senha" rotulo={t.novaSenha} type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} erro={erro} />
+        <Campo id="pf-senha" rotulo={t.novaSenha} type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} erro={traduzir(erro)} />
         <button type="submit" className="pf-botao-contorno pf-senha-botao" disabled={!senha || enviando}>
           {enviando ? t.salvando : t.trocarSenha}
         </button>
@@ -197,7 +198,7 @@ function ExcluirConta() {
       sair();
       navigate("/login", { replace: true });
     } catch (problema) {
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
       setEnviando(false);
     }
   }
@@ -220,7 +221,7 @@ function ExcluirConta() {
           <p id="pf-confirmar-texto">
             <Svg nome="alerta" tamanho={18} /> {t.excluirConfirmar}
           </p>
-          {erro && <span className="campo-erro">{erro}</span>}
+          {erro && <span className="campo-erro">{traduzirErroApi(erro)}</span>}
           <div className="pf-acoes">
             <button type="button" className="pf-botao-contorno" onClick={() => setConfirmando(false)} disabled={enviando}>
               {t.manter}

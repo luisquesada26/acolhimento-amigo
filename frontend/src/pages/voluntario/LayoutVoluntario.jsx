@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
 import RodapeApp from "../../components/RodapeApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzirErroApi } from "../../services/errosApi";
 import usePainel from "./usePainel";
 import BarraTopo from "./BarraTopo";
 import { NAVEGACAO, Svg } from "./comum";
@@ -50,7 +51,7 @@ export default function LayoutVoluntario() {
     return (
       <main className="painel-estado" lang={LANG[idioma]}>
         <p className="aviso" role="alert">
-          {painel.erro}
+          {traduzirErroApi(painel.erro)}
         </p>
         <button type="button" className="botao botao-primario" onClick={painel.recarregar}>
           {t.tentarDeNovo}

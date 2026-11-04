@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
 import { momento } from "./comum";
 
 const PARAMETRO = "atendimentos";
@@ -31,7 +31,8 @@ export function situacao(a, agora) {
 
 const Contexto = createContext(null);
 
-// a lista fica no layout: o botão do topo e o painel usam a mesma, em qualquer tela do usuário
+// a lista fica no layout: o botão do topo e o painel usam a mesma, em qualquer tela do usuário.
+// O erro fica como a API mandou; o painel traduz na hora de mostrar
 export function AtendimentosProvider({ ativo, children }) {
   const [lista, setLista] = useState(null);
   const [erro, setErro] = useState("");
@@ -41,7 +42,7 @@ export function AtendimentosProvider({ ativo, children }) {
     api
       .get("/meus-agendamentos")
       .then(({ data }) => setLista(data))
-      .catch((problema) => setErro(lerErro(problema).mensagem));
+      .catch((problema) => setErro(lerErroSemTraduzir(problema).mensagem));
   }, []);
 
   useEffect(() => {

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { lerErro } from "../../../services/api";
+import api, { lerErroSemTraduzir } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
 import { useTextos } from "../../../context/IdiomaContext";
 import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, validarPerfil } from "./pecasPerfil";
+import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 // primeiro acesso: antes de buscar, a pessoa deixa o contato para o voluntário
@@ -16,6 +16,7 @@ export default function CompletarPerfil() {
   const tudo = useTextos(traducoes);
   const t = tudo.primeiro;
   const tp = tudo.perfil;
+  const traduzir = useErros();
   const [dados, setDados] = useState({
     telefone: usuario.telefone ?? "",
     pais_origem: usuario.pais_origem ?? "",
@@ -33,7 +34,7 @@ export default function CompletarPerfil() {
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem("");
-    const novos = validarPerfil(dados, tudo.erros);
+    const novos = validarPerfil(dados);
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -48,7 +49,7 @@ export default function CompletarPerfil() {
       atualizarUsuario(data);
       navigate("/usuario", { replace: true });
     } catch (problema) {
-      const { mensagem: texto, campos } = lerErro(problema);
+      const { mensagem: texto, campos } = lerErroSemTraduzir(problema);
       setErros(campos);
       setMensagem(texto);
     } finally {
@@ -101,7 +102,7 @@ export default function CompletarPerfil() {
             maxLength={20}
             value={dados.telefone}
             onChange={(e) => mudar("telefone", e.target.value)}
-            erro={erros.telefone}
+            erro={traduzir(erros.telefone)}
           />
           <Campo
             id="pf-pais"
@@ -112,14 +113,14 @@ export default function CompletarPerfil() {
             maxLength={60}
             value={dados.pais_origem}
             onChange={(e) => mudar("pais_origem", e.target.value)}
-            erro={erros.pais_origem}
+            erro={traduzir(erros.pais_origem)}
           />
           <ListaPaises id="pf-lista-paises" />
         </div>
 
-        <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={erros.idiomas} />
+        <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={traduzir(erros.idiomas)} />
 
-        <Aviso texto={mensagem} />
+        <Aviso texto={traduzir(mensagem)} />
 
         <button type="submit" className="botao botao-primario pf-enviar" disabled={enviando}>
           {enviando ? tp.salvando : t.enviar}

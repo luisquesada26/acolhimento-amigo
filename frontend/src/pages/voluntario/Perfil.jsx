@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { nomeDoIdioma } from "./usePainel";
 import { Interruptor, Svg, useAcao } from "./comum";
-import Avatar, { reduzirFoto } from "../../components/Avatar";
+import Avatar, { ERROS_FOTO, reduzirFoto } from "../../components/Avatar";
 import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea } from "../../dados/areas";
+import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
 const IDIOMAS = ["pt", "en", "es", "fr"];
@@ -28,7 +29,8 @@ function CampoFixo({ icone, rotulo, valor }) {
   );
 }
 
-// mostra o valor e vira formulário no lápis; "plano" é sem cartão próprio, para ficar dentro de um bloco
+// mostra o valor e vira formulário no lápis; "plano" é sem cartão próprio, para ficar dentro de um bloco.
+// aoSalvar devolve a chave do erro nas traduções ou a mensagem como a API mandou
 function CampoEditavel({ id, icone, rotulo, mostrar, inicial, aoSalvar, editor, largo = false, plano = false, vazio }) {
   const t = useTextos(traducoes);
   const [editando, setEditando] = useState(false);
@@ -96,7 +98,7 @@ function CampoEditavel({ id, icone, rotulo, mostrar, inicial, aoSalvar, editor, 
       </div>
       {erro && (
         <p className="vol-erro" role="alert">
-          {erro}
+          {traduzirMensagem(erro, t)}
         </p>
       )}
     </form>
@@ -159,6 +161,7 @@ function FotoPerfil({ perfil, salvarPerfil }) {
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState("");
   const t = useTextos(traducoes);
+  const errosFoto = useTextos(ERROS_FOTO);
 
   async function escolher(evento) {
     const arquivo = evento.target.files[0];
@@ -171,7 +174,7 @@ function FotoPerfil({ perfil, salvarPerfil }) {
       const mensagem = await salvarPerfil({ foto });
       if (mensagem) setErro(mensagem);
     } catch (falha) {
-      setErro(falha.message);
+      setErro(falha.chave);
     }
     setOcupado(false);
   }
@@ -200,7 +203,7 @@ function FotoPerfil({ perfil, salvarPerfil }) {
       </div>
       {erro && (
         <p className="vol-erro" role="alert">
-          {erro}
+          {errosFoto[erro] ?? traduzirMensagem(erro, t)}
         </p>
       )}
     </div>
@@ -279,7 +282,7 @@ function AbaDados({ painel }) {
             ) : null
           }
           inicial={voluntario.idiomas ?? []}
-          aoSalvar={(v) => (v.length ? salvar({ voluntario: { idiomas: v } }) : Promise.resolve(t.erroIdioma))}
+          aoSalvar={(v) => (v.length ? salvar({ voluntario: { idiomas: v } }) : Promise.resolve("erroIdioma"))}
           editor={(v, setV, id) => <ChipsIdiomas valor={v} setValor={setV} id={id} />}
         />
       </section>

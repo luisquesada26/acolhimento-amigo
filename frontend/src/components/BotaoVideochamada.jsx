@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from "react";
-import api, { lerErro } from "../services/api";
+import api, { lerErroSemTraduzir } from "../services/api";
+import { traduzirErroApi } from "../services/errosApi";
 import { useTextos } from "../context/IdiomaContext";
 import "./videochamada.css";
 
@@ -83,7 +84,7 @@ export default function BotaoVideochamada({ atendimento, className = "", aoAtual
       aoAtualizar?.(atualizado);
     } catch (problema) {
       aba?.close();
-      setErro(lerErro(problema).mensagem);
+      setErro(lerErroSemTraduzir(problema).mensagem);
     } finally {
       setAbrindo(false);
     }
@@ -96,7 +97,7 @@ export default function BotaoVideochamada({ atendimento, className = "", aoAtual
       </button>
       {erro && (
         <small className="videochamada-erro" role="alert">
-          {erro}
+          {traduzirErroApi(erro)}
         </small>
       )}
     </span>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { textosAtuais } from "../../context/IdiomaContext";
-import api, { lerErro } from "../../services/api";
+import api, { lerErroSemTraduzir } from "../../services/api";
 
 const IDIOMAS = {
   pt: { pt: "Português", en: "Inglês", es: "Espanhol", fr: "Francês" },
@@ -45,7 +45,7 @@ export default function usePainel() {
         areas: areas.data,
       });
     } catch (erro) {
-      setDados((atual) => ({ ...atual, carregando: false, erro: lerErro(erro).mensagem }));
+      setDados((atual) => ({ ...atual, carregando: false, erro: lerErroSemTraduzir(erro).mensagem }));
     }
   }, []);
 
@@ -97,14 +97,14 @@ export default function usePainel() {
     { chave: "horario", feito: horariosLivres.length > 0 },
   ];
 
-  // as ações devolvem a mensagem de erro da API, para a tela mostrar
+  // as ações devolvem a mensagem de erro como a API mandou; a tela traduz na hora de mostrar
   async function executar(acao) {
     try {
       await acao();
       await carregar();
       return null;
     } catch (erro) {
-      return lerErro(erro).mensagem;
+      return lerErroSemTraduzir(erro).mensagem;
     }
   }
 
@@ -137,7 +137,7 @@ export default function usePainel() {
           await api.post("/horarios", horario);
           criados++;
         } catch (erro) {
-          erros.push(lerErro(erro).mensagem);
+          erros.push(lerErroSemTraduzir(erro).mensagem);
         }
       }
       await carregar();
@@ -154,7 +154,7 @@ export default function usePainel() {
         await carregar();
         return { erro: null, desativado: status === 200 };
       } catch (erro) {
-        return { erro: lerErro(erro).mensagem, desativado: false };
+        return { erro: lerErroSemTraduzir(erro).mensagem, desativado: false };
       }
     },
     salvarPerfil: (campos) => executar(() => api.put("/me", campos)),
@@ -165,7 +165,7 @@ export default function usePainel() {
         navigate("/login");
         return null;
       } catch (erro) {
-        return lerErro(erro).mensagem;
+        return lerErroSemTraduzir(erro).mensagem;
       }
     },
     recarregar: carregar,
