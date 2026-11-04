@@ -6,7 +6,11 @@ Projeto final do curso Full Stack da Toti, turma 58, grupo 5.
 
 ## Acesse online
 
-O site está no ar em **https://acolhimento-amigo.vercel.app**. Para entrar sem criar conta, use um dos usuários de teste (senha de todos: `senha123`):
+- **Site em produção:** https://acolhimento-amigo.vercel.app
+- **Vídeo de demonstração (2 min):** [assistir no Google Drive](https://drive.google.com/file/d/1UDJVzRwmNNQJDGGo47wl7meuq6ApEuRL/view?usp=sharing)
+- **Slides da apresentação:** [apresentacao-grupo-5.pdf](docs/apresentacao-grupo-5.pdf)
+
+Para entrar no site sem criar conta, use um dos usuários de teste (senha de todos: `senha123`):
 
 | Perfil | E-mail |
 | --- | --- |
