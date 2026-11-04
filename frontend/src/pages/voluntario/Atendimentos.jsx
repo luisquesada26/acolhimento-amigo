@@ -3,12 +3,14 @@ import { useOutletContext } from "react-router-dom";
 import Historico from "./Historico";
 import DetalheAtendimento from "./DetalheAtendimento";
 import { AcoesAtendimento, Aguardando, Pessoa, diaExtenso, quando } from "./comum";
-import { useTextos } from "../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../context/IdiomaContext";
+import { COMO_ESCRITO, traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 
 function ItemAtendimento({ atendimento, cancelar, marcarRealizado }) {
   const [aberto, setAberto] = useState(false);
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
   const idCaso = `caso-${atendimento.id}`;
 
   return (
@@ -21,7 +23,7 @@ function ItemAtendimento({ atendimento, cancelar, marcarRealizado }) {
           </time>
         </div>
         <Pessoa usuario={atendimento.usuario} />
-        <span className="vol-servico">{atendimento.servico.titulo}</span>
+        <span className="vol-servico">{traduzido(atendimento.servico, "titulo", idioma)}</span>
         <button type="button" className="vol-botao-secundario" aria-expanded={aberto} aria-controls={idCaso} onClick={() => setAberto(!aberto)}>
           {aberto ? t.fechar : t.verCaso}
         </button>
@@ -29,7 +31,7 @@ function ItemAtendimento({ atendimento, cancelar, marcarRealizado }) {
       {aberto && (
         <div className="atend-detalhe" id={idCaso}>
           <blockquote className="vol-caso">
-            <p>{atendimento.descricao}</p>
+            <p {...COMO_ESCRITO}>{atendimento.descricao}</p>
           </blockquote>
           <AcoesAtendimento id={atendimento.id} marcarRealizado={marcarRealizado} cancelar={cancelar} />
         </div>

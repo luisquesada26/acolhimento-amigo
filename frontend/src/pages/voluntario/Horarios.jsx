@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Svg, diaExtenso, useAcao } from "./comum";
-import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 
 const dois = (n) => String(n).padStart(2, "0");
@@ -176,7 +177,10 @@ function ExcluirHorario({ horario, excluirHorario }) {
 export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
   const [filtro, setFiltro] = useState("todos");
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
   const hoje = paraIso(new Date());
+  // no horário reservado, o serviço vem como título e a tradução ao lado
+  const nomeDoServico = (a) => traduzido({ titulo: a.servico, traducoes: a.servico_traducoes }, "titulo", idioma);
 
   // só de hoje em diante; o que já passou fica no histórico
   const proximos = horarios
@@ -231,7 +235,7 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
                                     <Svg nome="pessoas" tamanho={14} /> {t.reservado}
                                   </span>
                                   <span className="agenda-quem">
-                                    {h.agendamento?.usuario} · {h.agendamento?.servico}
+                                    {h.agendamento?.usuario} · {h.agendamento && nomeDoServico(h.agendamento)}
                                   </span>
                                 </>
                               ) : (

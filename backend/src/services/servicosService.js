@@ -2,6 +2,7 @@ const { transacao } = require("../database/conexao");
 const repo = require("../repositories/servicosRepository");
 const { voluntarioLogado, garantirDono } = require("./permissoes");
 const { ErroApp } = require("../middlewares/erros");
+const traducao = require("./traducao");
 
 const formatar = (s) => ({ ...s, ativo: Boolean(s.ativo) });
 
@@ -21,17 +22,22 @@ async function buscar(id, opcoes) {
   return formatar(servico);
 }
 
+// o tradutor responde antes de gravar; se ele falhar, o serviço salva igual, sem tradução
 async function criar(usuario, dados) {
   const voluntario = await voluntarioLogado(usuario);
-  return formatar(await repo.criar({ ...dados, voluntario_id: voluntario.id }));
+  const traducoes = await traducao.traduzirCampos({ titulo: dados.titulo, descricao: dados.descricao });
+  return formatar(await repo.criar({ ...dados, voluntario_id: voluntario.id, traducoes }));
 }
 
+// só o título ou a descrição que mudou vai para o tradutor; a tradução do outro fica
 async function atualizar(usuario, id, dados) {
-  await garantirDono((await buscar(id)).voluntario_id, usuario);
+  const atual = await buscar(id);
+  await garantirDono(atual.voluntario_id, usuario);
+  const traducoes = await traducao.traduzirCampos({ titulo: dados.titulo, descricao: dados.descricao }, atual.traducoes);
 
   const campos = { ...dados };
   if (campos.ativo !== undefined) campos.ativo = campos.ativo ? 1 : 0;
-  return formatar(await repo.atualizar(id, campos));
+  return formatar(await repo.atualizar(id, campos, traducoes));
 }
 
 // se ja tem agendamento ligado, so desativa para nao perder o historico.

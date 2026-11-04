@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Interruptor, Janela, Svg, useAcao } from "./comum";
-import { useTextos } from "../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
@@ -76,6 +77,9 @@ function CartaoServico({ servico, editarServico, excluirServico }) {
   const [confirmando, setConfirmando] = useState(false);
   const [desativou, setDesativou] = useState(false);
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
+  // no cartão, no idioma da bandeira; o formulário de editar recebe o serviço como ele escreveu
+  const titulo = traduzido(servico, "titulo", idioma);
   const ativar = useAcao(() => editarServico(servico.id, { ativo: !servico.ativo }));
   const excluir = useAcao(async () => {
     const { erro, desativado } = await excluirServico(servico.id);
@@ -105,17 +109,17 @@ function CartaoServico({ servico, editarServico, excluirServico }) {
   return (
     <li className={servico.ativo ? "servico-cartao" : "servico-cartao servico-inativo"}>
       <div className="servico-topo">
-        <h2>{servico.titulo}</h2>
+        <h2>{titulo}</h2>
         <div className="servico-icones">
-          <button type="button" className="pagina-icone" onClick={() => setEditando(true)} aria-label={t.editarNome(servico.titulo)} title={t.editar}>
+          <button type="button" className="pagina-icone" onClick={() => setEditando(true)} aria-label={t.editarNome(titulo)} title={t.editar}>
             <Svg nome="editar" tamanho={18} />
           </button>
-          <button type="button" className="pagina-icone" onClick={() => setConfirmando(true)} aria-label={t.excluirNome(servico.titulo)} title={t.excluir}>
+          <button type="button" className="pagina-icone" onClick={() => setConfirmando(true)} aria-label={t.excluirNome(titulo)} title={t.excluir}>
             <Svg nome="lixo" tamanho={18} />
           </button>
         </div>
       </div>
-      <p>{servico.descricao}</p>
+      <p>{traduzido(servico, "descricao", idioma)}</p>
       <div className="servico-rodape">
         <span className="servico-duracao">
           <Svg nome="relogio" tamanho={16} /> {servico.duracao_min} min

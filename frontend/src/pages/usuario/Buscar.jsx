@@ -1,10 +1,11 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../../components/Avatar";
 import { Bandeira } from "../../components/SeletorIdioma";
 import { useAuth } from "../../context/AuthContext";
 import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea, visualDaArea } from "../../dados/areas";
+import { traduzido } from "../../dados/conteudo";
 import { traduzirErroApi } from "../../services/errosApi";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
@@ -16,6 +17,8 @@ import "./busca.css";
 
 const IDIOMAS = ["pt", "en", "es", "fr"];
 const TURNOS = ["manha", "tarde", "noite"];
+// a API manda todos de uma vez e a tela mostra de 12 em 12: 12 fecha a linha com 1, 2, 3 ou 4 colunas
+const POR_VEZ = 12;
 
 // o número só aparece quando a API respondeu; antes disso, um esqueleto no lugar
 function Numero({ valor }) {
@@ -45,10 +48,10 @@ function Cartao({ voluntario, ordem }) {
             </span>
           </span>
         </span>
-        <span className="bus-bio">{voluntario.bio}</span>
+        <span className="bus-bio">{traduzido(voluntario, "bio", idioma)}</span>
         <span className="bus-tags">
           {voluntario.servicos.map((s) => (
-            <span key={s.id}>{s.titulo}</span>
+            <span key={s.id}>{traduzido(s, "titulo", idioma)}</span>
           ))}
         </span>
         <span className="bus-cartao-pe">
@@ -96,6 +99,10 @@ export default function Buscar() {
   const lista = useMemo(() => [...busca.voluntarios].sort((a, b) => a.nome.localeCompare(b.nome, localeAtual())), [busca.voluntarios, idioma]);
 
   const areaEscolhida = busca.areas.find((a) => String(a.id) === filtros.area);
+
+  const [visiveis, setVisiveis] = useState(POR_VEZ);
+  // filtro novo volta para os 12 primeiros
+  useEffect(() => setVisiveis(POR_VEZ), [filtros]);
 
   function irParaResultados() {
     resultados.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -264,11 +271,27 @@ export default function Buscar() {
             ))}
           </ul>
         ) : lista.length ? (
-          <ul className="bus-grade">
-            {lista.map((v, i) => (
-              <Cartao key={v.id} voluntario={v} ordem={i} />
-            ))}
-          </ul>
+          <>
+            <ul className="bus-grade">
+              {/* a ordem conta dentro de cada leva, para os novos cartões subirem sem esperar */}
+              {lista.slice(0, visiveis).map((v, i) => (
+                <Cartao key={v.id} voluntario={v} ordem={i % POR_VEZ} />
+              ))}
+            </ul>
+            {lista.length > visiveis && (
+              <div className="bus-mais">
+                <span className="bus-mais-texto" aria-live="polite">
+                  {t.mostrando(visiveis, lista.length)}
+                </span>
+                <span className="bus-mais-barra" aria-hidden="true">
+                  <span style={{ width: `${(visiveis / lista.length) * 100}%` }} />
+                </span>
+                <button type="button" onClick={() => setVisiveis((n) => n + POR_VEZ)}>
+                  {t.mostrarMais} <Svg nome="descer" tamanho={18} />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="bus-vazio">
             <Svg nome="busca" tamanho={28} />

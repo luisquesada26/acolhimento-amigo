@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { OrdenarPorData, Status, Svg, dataComAno } from "./comum";
 import DetalheAtendimento from "./DetalheAtendimento";
-import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { chaveDoPais, nomeDoPais } from "../../dados/paises";
 import { traducoes } from "./traducoes";
 
@@ -13,7 +14,14 @@ const normalizar = (texto) =>
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase();
 
-const unicos = (lista) => [...new Set(lista)].sort((a, b) => a.localeCompare(b, localeAtual()));
+// cada serviço vira uma opção pelo título original (o valor do filtro), com o nome no idioma da bandeira
+function servicosDe(atendimentos, idioma) {
+  const porTitulo = new Map();
+  for (const a of atendimentos) {
+    if (!porTitulo.has(a.servico.titulo)) porTitulo.set(a.servico.titulo, traduzido(a.servico, "titulo", idioma));
+  }
+  return [...porTitulo].map(([valor, nome]) => ({ valor, nome })).sort((a, b) => a.nome.localeCompare(b.nome, localeAtual()));
+}
 
 // o mesmo país escrito de jeitos diferentes ("Colômbia", "colombia") vira uma opção só,
 // com o nome no idioma da bandeira; o valor da opção é a chave do país
@@ -36,9 +44,10 @@ export default function Relatorios() {
   const [ordem, setOrdem] = useState("desc");
   const [abertoId, setAbertoId] = useState(null);
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
 
   const todos = [...painel.todos].sort((a, b) => (ordem === "desc" ? b.inicio - a.inicio : a.inicio - b.inicio));
-  const servicos = unicos(todos.map((a) => a.servico.titulo));
+  const servicos = servicosDe(todos, idioma);
   const paises = paisesDe(todos);
 
   const filtrados = todos.filter(
@@ -92,8 +101,8 @@ export default function Relatorios() {
             <select id="relatorio-servico" value={servico} onChange={(e) => setServico(e.target.value)}>
               <option value="">{t.todos}</option>
               {servicos.map((s) => (
-                <option key={s} value={s}>
-                  {s}
+                <option key={s.valor} value={s.valor}>
+                  {s.nome}
                 </option>
               ))}
             </select>
@@ -148,7 +157,7 @@ export default function Relatorios() {
                       <small>{t.fala(a.usuario.idiomas)}</small>
                     </td>
                     <td>{nomeDoPais(a.usuario.pais_origem)}</td>
-                    <td>{a.servico.titulo}</td>
+                    <td>{traduzido(a.servico, "titulo", idioma)}</td>
                     <td>
                       <time dateTime={`${a.horario.data}T${a.horario.hora_inicio}`}>
                         <strong>{dataComAno(a.inicio)}</strong>

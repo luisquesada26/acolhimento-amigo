@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../services/api";
 import { traduzirErroApi } from "../../services/errosApi";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
-import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { Svg, quando } from "../voluntario/comum";
 import { momento } from "./comum";
 import { situacao, useAbertura, useAtendimentos } from "./useAtendimentos";
@@ -68,6 +69,7 @@ function ConfirmarCancelamento({ atendimento, aoCancelar, aoManter }) {
 // uma linha: data, hora, serviço e voluntário; nos próximos, a videochamada e o cancelar
 function ItemCompacto({ atendimento: a, agora, aoCancelar, aoAtualizar }) {
   const t = useTextos(traducoes).atendimentos;
+  const { idioma } = useIdioma();
   const [confirmando, setConfirmando] = useState(false);
   const botaoCancelar = useRef(null);
   const inicio = momento(a.horario);
@@ -87,7 +89,7 @@ function ItemCompacto({ atendimento: a, agora, aoCancelar, aoAtualizar }) {
             {t.horario(a.horario.hora_inicio, a.horario.hora_fim)}
             {estado === "confirmado" && ` · ${quando(inicio)}`}
           </small>
-          <strong>{a.servico.titulo}</strong>
+          <strong>{traduzido(a.servico, "titulo", idioma)}</strong>
           <span>{a.voluntario.nome}</span>
         </span>
       </Link>

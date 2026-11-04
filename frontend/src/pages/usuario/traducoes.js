@@ -49,6 +49,8 @@ export const traducoes = {
       vazioTexto: "Tente outra palavra ou tire algum filtro.",
       proximoHorario: "Próximo horário",
       semHorario: "Sem horário livre",
+      mostrando: (n, total) => `Mostrando ${n} de ${total}`,
+      mostrarMais: "Mostrar mais",
     },
 
     voluntario: {
@@ -251,6 +253,8 @@ export const traducoes = {
       vazioTexto: "Try a different word or remove a filter.",
       proximoHorario: "Next available",
       semHorario: "No available slots",
+      mostrando: (n, total) => `Showing ${n} of ${total}`,
+      mostrarMais: "Show more",
     },
 
     voluntario: {
@@ -454,6 +458,8 @@ export const traducoes = {
       vazioTexto: "Prueba con otra palabra o quita algún filtro.",
       proximoHorario: "Próximo horario",
       semHorario: "Sin horarios disponibles",
+      mostrando: (n, total) => `Mostrando ${n} de ${total}`,
+      mostrarMais: "Mostrar más",
     },
 
     voluntario: {
@@ -658,6 +664,8 @@ export const traducoes = {
       vazioTexto: "Essayez un autre mot ou retirez un filtre.",
       proximoHorario: "Prochain créneau",
       semHorario: "Aucun créneau disponible",
+      mostrando: (n, total) => `${n} sur ${total} affichés`,
+      mostrarMais: "Voir plus",
     },
 
     voluntario: {

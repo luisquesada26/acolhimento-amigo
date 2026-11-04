@@ -12,6 +12,7 @@ function formatar(h) {
     agendamento_status,
     agendamento_usuario,
     agendamento_servico,
+    agendamento_servico_traducoes,
     agendamento_descricao,
     ...horario
   } = h;
@@ -22,6 +23,7 @@ function formatar(h) {
         status: agendamento_status,
         usuario: agendamento_usuario,
         servico: agendamento_servico,
+        servico_traducoes: agendamento_servico_traducoes,
         descricao: agendamento_descricao,
       }
     : null;

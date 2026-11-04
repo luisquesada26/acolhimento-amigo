@@ -83,7 +83,9 @@ Ainda não existe perfil de administrador, então quem cuida das áreas são os 
 | GET | `/voluntarios?q=&area=&idioma=&disponivel=semana&data=&turno=` | público | Busca. Só aparece quem está ativo e tem serviço ativo |
 | GET | `/voluntarios/:id` | público | Perfil com serviços ativos e horários livres futuros |
 
-`q` procura no nome, na bio e no título e descrição dos serviços. O voluntário edita os próprios dados pelo `PUT /me`.
+`q` procura no nome, na bio e no título e descrição dos serviços, no original e nas traduções que ainda valem ("visa" acha "Visto e residência"). O voluntário edita os próprios dados pelo `PUT /me`.
+
+Toda resposta que traz a bio, ou o título e a descrição de um serviço, traz também o `traducoes` do mesmo objeto: `{ "bio": { "origem": "texto que foi traduzido", "pt": "...", "en": "...", "es": "...", "fr": "..." } }` no voluntário e as chaves `titulo` e `descricao` no serviço. Vem `null` quando não tem tradução, e a tradução só vale se `origem` for igual ao texto atual. Nos agendamentos fica em `servico.traducoes` e na agenda (`/meus-horarios`) em `agendamento.servico_traducoes`, só com o título.
 
 Filtros de horário: `disponivel=semana` (próximos 7 dias), `data=AAAA-MM-DD` (um dia) e `turno=manha` (06:00 a 11:59), `tarde` (12:00 a 17:59) ou `noite` (18:00 a 23:59). Juntos, valem para o mesmo horário livre, e o `proximo_horario` de cada voluntário já vem dentro deles. Turno ou data inválidos respondem `400`.
 
@@ -146,7 +148,11 @@ Resposta de `POST /agendamentos`:
   "criado_em": "2026-10-18 16:20:00",
   "horario": { "id": 2, "data": "2026-10-19", "hora_inicio": "10:00", "hora_fim": "10:45" },
   "voluntario": { "id": 1, "nome": "Rafael Almeida", "foto": null, "area": "Jurídico" },
-  "servico": { "id": 2, "titulo": "Protocolo de refúgio" },
+  "servico": {
+    "id": 2,
+    "titulo": "Protocolo de refúgio",
+    "traducoes": { "titulo": { "origem": "Protocolo de refúgio", "pt": "Protocolo de refúgio", "en": "Refugee protocol", "es": "Protocolo de refugio", "fr": "Récépissé de demande d'asile" } }
+  },
   "usuario": { "id": 1, "nome": "Luis Quesada", "email": "usuario@teste.com", "telefone": "11987654321", "pais_origem": "Venezuela", "idiomas": ["es", "pt"] }
 }
 ```

@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { nomeDoIdioma } from "./usePainel";
 import { Interruptor, Svg, useAcao } from "./comum";
+import { formatarTelefone, limparTelefone, mascaraTelefone } from "./telefone";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../components/Avatar";
 import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea } from "../../dados/areas";
+import { traduzido } from "../../dados/conteudo";
 import { nomeDoPais } from "../../dados/paises";
 import { traduzirMensagem } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
@@ -239,18 +241,18 @@ function AbaDados({ painel }) {
           icone="telefone"
           rotulo={t.telefone}
           plano
-          mostrar={perfil.telefone}
+          mostrar={perfil.telefone && formatarTelefone(perfil.telefone)}
           vazio={t.naoInformadoOpcional}
-          inicial={perfil.telefone ?? ""}
+          inicial={limparTelefone(perfil.telefone)}
           aoSalvar={(v) => salvar({ telefone: v.trim() || null })}
           editor={(v, setV, id) => (
             <input
               id={id}
               className="perfil-input"
               aria-labelledby={`${id}-rotulo`}
-              value={v}
+              value={mascaraTelefone(v)}
               maxLength={20}
-              onChange={(e) => setV(e.target.value)}
+              onChange={(e) => setV(limparTelefone(e.target.value))}
               autoComplete="tel"
               placeholder="(11) 91234-5678"
             />
@@ -288,12 +290,13 @@ function AbaDados({ painel }) {
         />
       </section>
 
+      {/* a bio aparece no idioma da bandeira; para editar, volta o texto que o voluntário escreveu */}
       <CampoEditavel
           id="campo-bio"
           icone="texto"
           rotulo={t.sobreVoce}
           largo
-          mostrar={voluntario.bio}
+          mostrar={traduzido(voluntario, "bio", idioma)}
           vazio={t.bioVazia}
           inicial={voluntario.bio ?? ""}
           aoSalvar={(v) => salvar({ voluntario: { bio: v.trim() || null } })}

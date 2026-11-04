@@ -8,7 +8,8 @@ import { useAuth } from "../../../context/AuthContext";
 import { localeAtual, useTextos } from "../../../context/IdiomaContext";
 import { nomeDoPais } from "../../../dados/paises";
 import { Aviso, Campo } from "../../login/Campos";
-import { Svg, formatarTelefone } from "../../voluntario/comum";
+import { Svg } from "../../voluntario/comum";
+import { formatarTelefone, limparTelefone, mascaraTelefone } from "../../voluntario/telefone";
 import { nomeDoIdioma } from "../../voluntario/usePainel";
 import { traducoes } from "../traducoes";
 import Endereco, { linhasDoEndereco } from "./Endereco";
@@ -25,7 +26,7 @@ function dadosDe(usuario) {
   return {
     nome: usuario.nome ?? "",
     email: usuario.email ?? "",
-    telefone: usuario.telefone ?? "",
+    telefone: limparTelefone(usuario.telefone),
     // o país do banco aparece no campo já no idioma da bandeira
     pais_origem: nomeDoPais(usuario.pais_origem ?? ""),
     idiomas: usuario.idiomas ?? ["pt"],
@@ -99,8 +100,8 @@ function DadosPessoais({ usuario, aoSalvar }) {
           inputMode="tel"
           autoComplete="tel"
           maxLength={20}
-          value={dados.telefone}
-          onChange={(e) => mudar("telefone", e.target.value)}
+          value={mascaraTelefone(dados.telefone)}
+          onChange={(e) => mudar("telefone", limparTelefone(e.target.value))}
           erro={traduzir(erros.telefone)}
         />
         <Campo

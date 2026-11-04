@@ -3,7 +3,8 @@ import { Link, useOutletContext } from "react-router-dom";
 import Historico from "./Historico";
 import DetalheAtendimento from "./DetalheAtendimento";
 import Saudacao from "./Saudacao";
-import { localeAtual, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 import { Aguardando, HorariosLivres, ListaAtendimentos, Numeros, Pendencias, ProximoAtendimento } from "./comum";
 
@@ -17,6 +18,7 @@ export default function PainelVoluntario() {
   const [mes, setMes] = useState("");
   const [abertoId, setAbertoId] = useState(null);
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
 
   return (
     <>
@@ -83,7 +85,7 @@ export default function PainelVoluntario() {
               <ul className="painel-servicos">
                 {painel.servicos.map((s) => (
                   <li key={s.id}>
-                    <strong>{s.titulo}</strong>
+                    <strong>{traduzido(s, "titulo", idioma)}</strong>
                     <span>
                       {s.duracao_min} min · {s.ativo ? t.servicoAtivo : t.servicoInativo}
                     </span>
