@@ -502,6 +502,7 @@
 
   .conteudo-rodape nav a,
   .voltar-topo {
+    justify-content: center;
     min-width: 44px;
     min-height: 44px;
   }
@@ -632,6 +633,11 @@
 
   .conteudo-rodape nav {
     gap: 4px 22px;
+  }
+
+  /* no celular os links ficam alinhados à esquerda, embaixo do logo */
+  .conteudo-rodape nav a {
+    justify-content: flex-start;
   }
 
   .rodape-inicio {
