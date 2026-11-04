@@ -272,6 +272,18 @@ a {
   outline-offset: 2px;
 }
 
+/* quem pede menos movimento no sistema não vê os cartões e botões deslizando */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* tipo de conta: radio com cara de cartão */
 .escolha-perfil {
   margin: 0;
@@ -379,6 +391,7 @@ a {
 
 .seletor-texto {
   flex: 1;
+  min-width: 0;
 }
 
 .seletor-vazio {
