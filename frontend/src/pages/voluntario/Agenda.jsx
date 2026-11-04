@@ -3,7 +3,8 @@ import { Link, useOutletContext } from "react-router-dom";
 import { Svg, diaExtenso } from "./comum";
 import DetalheAtendimento from "./DetalheAtendimento";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
-import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, textosAtuais, useIdioma, useTextos } from "../../context/IdiomaContext";
+import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 
 // os nomes dos dias e das visões vêm das traduções (diasSemana e visoes)
@@ -57,16 +58,18 @@ function tituloDaVisao(visao, referencia, dias) {
 function Etiqueta({ atendimento, aoAbrir, completa = false }) {
   const { horario, usuario, servico, status } = atendimento;
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
+  const nomeDoServico = traduzido(servico, "titulo", idioma);
   return (
     <button
       type="button"
       className={`agenda-etiqueta agenda-etiqueta-${status}`}
       onClick={() => aoAbrir(atendimento.id)}
-      aria-label={`${horario.hora_inicio}, ${usuario.nome}, ${servico.titulo}, ${t.statusAria[status] ?? status}`}
+      aria-label={`${horario.hora_inicio}, ${usuario.nome}, ${nomeDoServico}, ${t.statusAria[status] ?? status}`}
     >
       <span className="agenda-etiqueta-hora">{horario.hora_inicio}</span>
       <span className="agenda-etiqueta-nome">{completa ? usuario.nome : nomeCurto(usuario.nome)}</span>
-      {completa && <span className="agenda-etiqueta-servico">{servico.titulo}</span>}
+      {completa && <span className="agenda-etiqueta-servico">{nomeDoServico}</span>}
     </button>
   );
 }

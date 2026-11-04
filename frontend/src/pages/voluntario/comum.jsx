@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { localeAtual, textosAtuais, useTextos } from "../../context/IdiomaContext";
+import { localeAtual, textosAtuais, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { traduzirMensagem } from "../../services/errosApi";
 import { nomeDoPais } from "../../dados/paises";
+import { COMO_ESCRITO, traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 import Avatar from "../../components/Avatar";
 import BotaoVideochamada from "../../components/BotaoVideochamada";
@@ -374,6 +375,7 @@ function ItemAguardando({ atendimento, marcarRealizado, cancelar }) {
 
 export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoAtualizar, titulo: tituloRecebido }) {
   const t = useTextos(traducoes);
+  const { idioma } = useIdioma();
   const titulo = tituloRecebido ?? t.proximoAtendimento;
   if (!atendimento) {
     return (
@@ -395,7 +397,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoA
             </time>
           </p>
           <Pessoa usuario={atendimento.usuario} />
-          <p className="vol-servico">{atendimento.servico.titulo}</p>
+          <p className="vol-servico">{traduzido(atendimento.servico, "titulo", idioma)}</p>
         </div>
         <div className="vol-proximo-lado">
           {/* verde aqui, para não se confundir com o botão azul da videochamada */}
@@ -404,7 +406,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoA
         </div>
       </div>
       <blockquote className="vol-caso">
-        <p>{atendimento.descricao}</p>
+        <p {...COMO_ESCRITO}>{atendimento.descricao}</p>
       </blockquote>
       {/* a chave zera o painel quando este sai e o próximo da fila entra no lugar */}
       <AcoesAtendimento key={atendimento.id} id={atendimento.id} marcarRealizado={marcarRealizado} cancelar={cancelar} />
@@ -414,6 +416,7 @@ export function ProximoAtendimento({ atendimento, cancelar, marcarRealizado, aoA
 
 // com aoAbrir, cada linha vira um botão que abre o atendimento
 export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir }) {
+  const { idioma } = useIdioma();
   if (!itens.length) return <p className="vol-vazio">{vazio}</p>;
 
   return (
@@ -428,7 +431,7 @@ export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir
             <span className="vol-lista-texto">
               <strong>{a.usuario.nome}</strong>
               <span>
-                {a.servico.titulo} · {a.horario.hora_inicio}
+                {traduzido(a.servico, "titulo", idioma)} · {a.horario.hora_inicio}
               </span>
             </span>
             {mostrarStatus && <Status status={a.status} />}

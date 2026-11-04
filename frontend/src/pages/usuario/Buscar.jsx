@@ -5,6 +5,7 @@ import { Bandeira } from "../../components/SeletorIdioma";
 import { useAuth } from "../../context/AuthContext";
 import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { nomeDaArea, visualDaArea } from "../../dados/areas";
+import { traduzido } from "../../dados/conteudo";
 import { traduzirErroApi } from "../../services/errosApi";
 import { nomeDoIdioma } from "../voluntario/usePainel";
 import { Svg, quando } from "../voluntario/comum";
@@ -45,10 +46,10 @@ function Cartao({ voluntario, ordem }) {
             </span>
           </span>
         </span>
-        <span className="bus-bio">{voluntario.bio}</span>
+        <span className="bus-bio">{traduzido(voluntario, "bio", idioma)}</span>
         <span className="bus-tags">
           {voluntario.servicos.map((s) => (
-            <span key={s.id}>{s.titulo}</span>
+            <span key={s.id}>{traduzido(s, "titulo", idioma)}</span>
           ))}
         </span>
         <span className="bus-cartao-pe">
