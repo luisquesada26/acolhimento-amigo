@@ -201,9 +201,11 @@ export default function Horarios({ horarios, criarHorarios, excluirHorario }) {
           meses.map((mes) => {
             const doMes = visiveis.filter((h) => h.data.startsWith(mes));
             const dias = [...new Set(doMes.map((h) => h.data))];
+            // o leitor de tela lê o nome do mês, não "2026-11"
+            const nomeDoMes = maiuscula(new Date(`${mes}-01T00:00:00`).toLocaleDateString(localeAtual(), { month: "long", year: "numeric" }));
             return (
-              <section key={mes} className="horarios-mes" aria-label={mes}>
-                <h3>{maiuscula(new Date(`${mes}-01T00:00:00`).toLocaleDateString(localeAtual(), { month: "long", year: "numeric" }))}</h3>
+              <section key={mes} className="horarios-mes" aria-label={nomeDoMes}>
+                <h3>{nomeDoMes}</h3>
                 <div className="agenda-dias">
                   {dias.map((dia) => (
                     <div key={dia} className="agenda-dia">

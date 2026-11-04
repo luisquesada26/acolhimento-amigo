@@ -16,14 +16,15 @@ export function IconeArea({ nome, tamanho = 20 }) {
   );
 }
 
-// todos os voluntários, sem filtro, para os números do topo e a contagem por área
+// todos os voluntários, sem filtro, para os números do topo e a contagem por área.
+// null enquanto a API não responde: a tela mostra o esqueleto, não um zero que ainda não é verdade
 export function useTodos() {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState(null);
   useEffect(() => {
     api
       .get("/voluntarios")
       .then((resposta) => setTodos(resposta.data))
-      .catch(() => setTodos([]));
+      .catch(() => {});
   }, []);
   return todos;
 }

@@ -83,7 +83,7 @@ export default function LayoutVoluntario() {
         <nav aria-label={t.areaDoVoluntario}>
           {grupos.map((grupo) => (
             <div key={grupo} className="painel-menu-grupo">
-              <span className="painel-menu-rotulo">{t.grupos[grupo] ?? grupo}</span>
+              <span className="painel-menu-rotulo">{t.grupos[grupo]}</span>
               <ul>
                 {NAVEGACAO.filter((item) => item.grupo === grupo).map((item) => (
                   <li key={item.caminho}>
@@ -91,10 +91,10 @@ export default function LayoutVoluntario() {
                       to={item.caminho}
                       end={item.caminho === "/voluntario"}
                       className={({ isActive }) => (isActive ? "painel-item painel-item-atual" : "painel-item")}
-                      title={recolhido ? (t.menu[item.icone] ?? item.nome) : undefined}
+                      title={recolhido ? t.menu[item.icone] : undefined}
                     >
                       <Svg nome={item.icone} />
-                      <span className="painel-item-texto">{t.menu[item.icone] ?? item.nome}</span>
+                      <span className="painel-item-texto">{t.menu[item.icone]}</span>
                       {item.icone === "atendimentos" && painel.futuros.length > 0 && (
                         <span className="painel-contador" aria-label={t.proximosAria(painel.futuros.length)}>
                           {painel.futuros.length}

@@ -529,6 +529,27 @@
   border-radius: 20px;
 }
 
+/* número do topo enquanto a API responde: claro sobre o fundo azul, na altura do número */
+.bus-numeros .bus-esq-numero {
+  width: 64px;
+  height: 28px;
+  margin: 6px 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.14) 100%);
+  background-size: 200% 100%;
+}
+
+.bus-numeros .bus-numero-destaque .bus-esq-numero {
+  width: 100%;
+  max-width: 132px;
+  height: 22px;
+}
+
+.bus-esq-linha {
+  width: 88px;
+  height: 13px;
+  margin-top: 2px;
+}
+
 .bus-cartao {
   animation: bus-sobe 0.3s ease both;
 }
@@ -707,8 +728,9 @@
 }
 
 @media (max-width: 1180px) {
+  /* minmax(0, ...): palavra comprida, como "d’accompagnement", não alarga o topo para fora da tela */
   .bus-topo {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .bus-numeros {
@@ -722,7 +744,14 @@
   }
 
   .bus-numeros {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* só a palavra comprida quebra com hífen; "portugais" e "espagnol" ficam inteiras */
+  .bus-numeros span {
+    hyphens: auto;
+    hyphenate-limit-chars: 12;
+    overflow-wrap: break-word;
   }
 }
 

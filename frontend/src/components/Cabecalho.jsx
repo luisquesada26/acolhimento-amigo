@@ -10,7 +10,7 @@ export default function Cabecalho({ t }) {
       <Link
         to="/"
         className="cabecalho-logo"
-        aria-label={`${APP_NAME} - Início`}
+        aria-label={`${APP_NAME}, ${t.navInicio}`}
       >
         <img
           src="/images/logo.svg"
@@ -21,7 +21,7 @@ export default function Cabecalho({ t }) {
 
       <nav
         className="cabecalho-navegacao"
-        aria-label="Navegação principal"
+        aria-label={t.navPrincipal}
       >
         <a href="#inicio">{t.navInicio}</a>
         <a href="#servicos">{t.navServicos}</a>

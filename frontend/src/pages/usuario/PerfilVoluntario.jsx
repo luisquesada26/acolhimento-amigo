@@ -173,9 +173,11 @@ export default function PerfilVoluntario() {
           <h1>{voluntario.nome}</h1>
           <EtiquetaArea nome={voluntario.area} />
           <ul className="usu-perfil-dados">
-            <li>
-              <Svg nome="idioma" tamanho={15} /> {tudo.fala(voluntario.idiomas.map(nomeDoIdioma))}
-            </li>
+            {voluntario.idiomas.length > 0 && (
+              <li>
+                <Svg nome="idioma" tamanho={15} /> {tudo.fala(voluntario.idiomas.map(nomeDoIdioma))}
+              </li>
+            )}
             {voluntario.registro_profissional && (
               <li>
                 <Svg nome="registro" tamanho={15} /> {voluntario.registro_profissional}

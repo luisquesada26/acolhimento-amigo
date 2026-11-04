@@ -61,7 +61,8 @@ function paraParametros({ quando, ...resto }) {
 // a busca é feita pela API: cada filtro vira parâmetro de GET /voluntarios
 export default function useBusca() {
   const [filtros, setFiltros] = useState(FILTROS_VAZIOS);
-  const [areas, setAreas] = useState([]);
+  // null até a API responder, para o número de áreas não aparecer como zero
+  const [areas, setAreas] = useState(null);
   const [voluntarios, setVoluntarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -72,7 +73,7 @@ export default function useBusca() {
     api
       .get("/areas")
       .then((resposta) => setAreas(resposta.data))
-      .catch(() => setAreas([]));
+      .catch(() => {});
   }, []);
 
   const buscar = useCallback(async (atuais) => {
@@ -111,7 +112,8 @@ export default function useBusca() {
     mudar,
     limpar: () => setFiltros(FILTROS_VAZIOS),
     temFiltro: Object.values(filtros).some(Boolean),
-    areas,
+    areas: areas ?? [],
+    areasCarregadas: areas !== null,
     voluntarios,
     carregando,
     erro,

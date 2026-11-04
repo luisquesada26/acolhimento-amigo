@@ -90,10 +90,11 @@ export default function usePainel() {
     .reverse();
 
   const voluntario = dados.perfil?.voluntario;
+  // o texto de cada pendência vem das traduções, pela chave
   const pendencias = [
-    { chave: "perfil", titulo: "Idiomas e apresentação", feito: Boolean(voluntario?.idiomas?.length && voluntario?.bio) },
-    { chave: "servico", titulo: "Pelo menos um serviço ativo", feito: dados.servicos.some((s) => s.ativo) },
-    { chave: "horario", titulo: "Horários livres na agenda", feito: horariosLivres.length > 0 },
+    { chave: "perfil", feito: Boolean(voluntario?.idiomas?.length && voluntario?.bio) },
+    { chave: "servico", feito: dados.servicos.some((s) => s.ativo) },
+    { chave: "horario", feito: horariosLivres.length > 0 },
   ];
 
   // as ações devolvem a mensagem de erro da API, para a tela mostrar

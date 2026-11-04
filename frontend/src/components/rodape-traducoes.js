@@ -41,8 +41,8 @@ export const traducoes = {
       policia: "Policía",
       samu: "Ambulancia (SAMU)",
       bombeiros: "Bomberos",
-      mulher: "Central de Atención a la Mujer",
-      direitos: "Derechos Humanos",
+      mulher: "Línea de atención a la mujer",
+      direitos: "Línea de derechos humanos",
     },
   },
   fr: {
@@ -56,8 +56,8 @@ export const traducoes = {
       policia: "Police",
       samu: "Ambulance (SAMU)",
       bombeiros: "Pompiers",
-      mulher: "Centrale d'aide aux femmes",
-      direitos: "Droits humains",
+      mulher: "Ligne d'écoute pour les femmes",
+      direitos: "Ligne des droits humains",
     },
   },
 };

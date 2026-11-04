@@ -1,12 +1,13 @@
 import { useState } from "react";
 import SeletorArea from "../../components/SeletorArea";
 import { useTextos } from "../../context/IdiomaContext";
+import { traduzirErroApi } from "../../services/errosApi";
 import { traducoes } from "./traducoes";
 
-// erro de validação vem como chave (emailInvalido...); o que vem da API e não tem tradução aparece como veio
+// erro de validação vem como chave (emailInvalido...); o da API vem em português e o errosApi.js traduz
 function useErros() {
   const t = useTextos(traducoes);
-  return (valor) => (valor ? t.erros[valor] ?? valor : valor);
+  return (valor) => (valor ? t.erros[valor] ?? traduzirErroApi(valor) : valor);
 }
 
 export function Logo({ claro = false }) {

@@ -121,7 +121,7 @@ export default function BarraTopo({ perfil, sair }) {
           </li>
           {pagina && (
             <li>
-              <span aria-current="page">{t.menu[pagina.icone] ?? pagina.nome}</span>
+              <span aria-current="page">{t.menu[pagina.icone]}</span>
             </li>
           )}
         </ol>
