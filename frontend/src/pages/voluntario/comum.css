@@ -145,6 +145,15 @@
   font-weight: 600;
 }
 
+/* telefone e e-mail com 40px de toque no celular */
+@media (max-width: 760px), (pointer: coarse) {
+  .vol-contato a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
 /* números do painel */
 .vol-numeros {
   margin: 0;
@@ -320,6 +329,41 @@
 
   .vol-numeros-cartoes strong {
     font-size: 24px;
+  }
+}
+
+/* os cinco números sem um cartão sobrando sozinho na última linha:
+   5 numa linha quando cabem, senão 3 + 2, e no celular 2 + 2 + 1 com o último na largura toda */
+.painel-numeros {
+  container-type: inline-size;
+}
+
+@container (max-width: 899px) {
+  .vol-numeros-cartoes {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .vol-numeros-cartoes li {
+    grid-column: span 2;
+  }
+
+  .vol-numeros-cartoes li:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+}
+
+@container (max-width: 479px) {
+  .vol-numeros-cartoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vol-numeros-cartoes li,
+  .vol-numeros-cartoes li:nth-child(n + 4) {
+    grid-column: auto;
+  }
+
+  .vol-numeros-cartoes li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 
@@ -719,6 +763,14 @@
   color: var(--texto);
 }
 
+/* "Data ↓" do cabeçalho da tabela: 40px de toque sem mudar a altura do cabeçalho */
+@media (max-width: 760px), (pointer: coarse) {
+  .vol-ordenar {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+}
+
 /* janela (modal) */
 .vol-janela {
   width: min(560px, calc(100vw - 32px));
@@ -740,11 +792,18 @@
   padding: 22px 24px 24px;
 }
 
+/* em tela baixa a janela rola por dentro: o título e o fechar ficam presos em cima */
 .vol-janela-topo {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin: -22px -24px 0;
+  padding: 22px 24px 0;
+  background: #fff;
 }
 
 .vol-janela-topo h2 {

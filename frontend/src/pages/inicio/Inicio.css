@@ -2,9 +2,26 @@
 /* Página inicial */
 
 .pagina-inicio {
+  /* respiro lateral de todas as seções; no monitor largo o conteúdo para em 1240px, centralizado */
+  --inicio-lateral: max(8%, (100% - 1240px) / 2);
   min-height: 100vh;
   background: #ffffff;
   color: var(--texto);
+}
+
+/* os links do menu e do rodapé descem até a seção sem pular */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.pagina-inicio) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* no fundo azul o contorno do foco fica branco, para aparecer */
+.secao-principal :focus-visible,
+.secao-sobre :focus-visible,
+.pagina-inicio .rodape-inicio :focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
 }
 
 /* Portada principal */
@@ -14,7 +31,7 @@
   grid-template-columns: 0.9fr 1.1fr;
   align-items: center;
   gap: 42px;
-  padding: 55px 8%;
+  padding: 55px var(--inicio-lateral);
   overflow: hidden;
   background: linear-gradient(125deg, var(--marinho) 0%, var(--azul) 100%);
 }
@@ -136,7 +153,7 @@
 /* Título das seções */
 
 .secao-servicos {
-  padding: 65px 8%;
+  padding: 65px var(--inicio-lateral);
 }
 
 .titulo-secao {
@@ -261,7 +278,7 @@
   grid-template-columns: 0.75fr 1.65fr;
   align-items: center;
   gap: 45px;
-  padding: 56px 8%;
+  padding: 56px var(--inicio-lateral);
   background: #fff6e3;
 }
 
@@ -346,7 +363,7 @@
   align-items: center;
   justify-content: center;
   min-height: 175px;
-  padding: 42px 8%;
+  padding: 42px var(--inicio-lateral);
   background:
     linear-gradient(
       90deg,
@@ -382,6 +399,11 @@
   color: #ffffff;
 }
 
+/* o .rodape-inicio também é a faixa do rodapé das áreas logadas; o respiro novo vale só aqui */
+.pagina-inicio .rodape-inicio {
+  padding-inline: var(--inicio-lateral);
+}
+
 .conteudo-rodape {
   display: flex;
   align-items: center;
@@ -415,6 +437,10 @@
 
 .conteudo-rodape nav a,
 .voltar-topo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 6px;
   color: #ffffff;
   font-size: 0.9rem;
   text-decoration: none;
@@ -434,24 +460,28 @@
 /* Tablets */
 
 @media (max-width: 1100px) {
+  .pagina-inicio {
+    --inicio-lateral: 6%;
+  }
+
   .secao-principal {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 28px;
-    padding-right: 6%;
-    padding-left: 6%;
   }
 
   .imagem-principal {
     height: 310px;
   }
 
-  .secao-servicos {
-    padding-right: 6%;
-    padding-left: 6%;
-  }
-
   .grade-servicos {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* no toque o "Ver serviços" ganha altura de dedo, sem mudar o lugar do texto */
+  .link-servico {
+    min-height: 44px;
+    margin-top: 4px;
+    margin-bottom: -10px;
   }
 
   .secao-como-funciona {
@@ -462,28 +492,53 @@
   .lista-etapas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* marca à esquerda, links e voltar ao topo à direita, sem o voltar cair sozinho numa linha */
+  .conteudo-rodape {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 16px 28px;
+  }
+
+  .conteudo-rodape nav a,
+  .voltar-topo {
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 /* Celulares */
 
 @media (max-width: 700px) {
+  .pagina-inicio {
+    --inicio-lateral: max(16px, 5%);
+  }
+
   .secao-principal {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
-    padding: 42px 6%;
+    padding-block: 36px 40px;
   }
 
   .conteudo-principal h1 {
-    font-size: clamp(2.4rem, 9vw, 3.4rem);
+    margin: 14px 0;
+    font-size: clamp(2.3rem, 10vw, 3.4rem);
   }
 
+  .conteudo-principal > p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  /* a foto acompanha a largura, sem virar um quadrado que corta as pessoas */
   .imagem-principal {
-    height: 280px;
+    height: clamp(190px, 58vw, 320px);
     border-radius: 22px 22px 22px 55px;
   }
 
   .secao-servicos {
-    padding: 48px 6%;
+    padding-block: 48px;
   }
 
   /* duas colunas e cartões em pé: metade da rolagem de um cartão por linha */
@@ -499,9 +554,11 @@
     display: none;
   }
 
+  /* o botão ocupa a largura do cartão e encosta no pé dele: alvo grande sem aumentar o cartão */
   .cartao-servico .link-servico {
+    align-self: stretch;
     margin-top: auto;
-    padding-top: 8px;
+    margin-bottom: -8px;
   }
 
   .cartao-servico {
@@ -521,10 +578,13 @@
     border-radius: 12px;
   }
 
+  /* palavra longa (Empreendedorismo) quebra com hífen, não no meio da sílaba */
   .cartao-servico h3 {
     margin: 0 0 4px;
     font-size: 0.95rem;
     line-height: 1.3;
+    -webkit-hyphens: auto;
+    hyphens: auto;
   }
 
   .cartao-servico p {
@@ -533,7 +593,6 @@
   }
 
   .link-servico {
-    margin-top: 8px;
     font-size: 0.85rem;
   }
 
@@ -547,13 +606,13 @@
   }
 
   .secao-como-funciona {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 26px;
-    padding: 42px 6%;
+    padding-block: 42px;
   }
 
   .imagem-como-funciona {
-    height: 240px;
+    height: clamp(180px, 52vw, 280px);
   }
 
   .lista-etapas {
@@ -562,17 +621,23 @@
   }
 
   .secao-sobre {
-    padding: 35px 6%;
+    padding-block: 35px;
   }
 
   .conteudo-rodape {
+    display: flex;
     align-items: flex-start;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
   }
 
   .conteudo-rodape nav {
-    gap: 18px;
+    gap: 4px 22px;
+  }
+
+  /* no celular os links ficam alinhados à esquerda, embaixo do logo */
+  .conteudo-rodape nav a {
+    justify-content: flex-start;
   }
 
   .rodape-inicio {
@@ -595,7 +660,7 @@
   }
 
   .lista-etapas {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

@@ -595,10 +595,18 @@ button.agenda-vaga {
   padding: 22px;
 }
 
+/* em tela baixa a janela rola por dentro: o título e o fechar ficam presos em cima */
 .agenda-janela-topo {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  margin: -22px -22px 0;
+  padding: 22px 22px 0;
+  background: #fff;
 }
 
 .agenda-janela h2 {
@@ -1143,7 +1151,8 @@ textarea.perfil-input {
   align-self: flex-start;
 }
 
-@media (max-width: 760px), (max-height: 620px) {
+/* com a barra de abas embaixo (até 1023px) ou em tela baixa, a agenda cresce e a página rola */
+@media (max-width: 1023px), (max-height: 620px) {
   .agenda-pagina {
     height: auto;
   }
@@ -1156,7 +1165,7 @@ textarea.perfil-input {
 }
 
 /* celular: o mês inteiro cabe na tela. Dias abreviados, atendimentos e horários livres
-   viram bolinhas na cor da legenda, e tocar no número abre a visão Dia com os detalhes */
+   viram bolinhas na cor da legenda, e tocar no dia abre a visão Dia com os detalhes */
 @media (max-width: 640px) {
   .agenda-grade-mes {
     min-width: 0;
@@ -1181,21 +1190,38 @@ textarea.perfil-input {
   }
 
   .agenda-grade-mes .agenda-celula {
+    position: relative;
     align-items: center;
     padding: 4px 2px;
   }
 
+  /* as bolinhas descem para baixo do número */
   .agenda-grade-mes .agenda-celula-topo {
     flex-direction: column;
     gap: 4px;
+    margin-top: 34px;
   }
 
+  /* o número cobre a casa inteira: o dedo acerta o dia em qualquer ponto, não só no
+     círculo de 26px. Hoje continua com o círculo verde atrás do número */
   .agenda-grade-mes .agenda-numero {
-    align-self: center;
-    min-width: 26px;
-    height: 26px;
-    padding: 0 4px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px 2px 0;
+    border-radius: 0;
     font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .agenda-grade-mes .agenda-hoje .agenda-numero {
+    background: radial-gradient(circle 13px at 50% 15px, var(--verde-escuro) 12.5px, transparent 13px);
   }
 
   .agenda-grade-mes .agenda-celula ul {
@@ -1205,8 +1231,11 @@ textarea.perfil-input {
     gap: 3px;
   }
 
+  /* as bolinhas ficam por cima do número, mas o toque passa para ele */
   .agenda-grade-mes .agenda-etiqueta,
   .agenda-grade-mes .agenda-celula-topo .agenda-vaga {
+    position: relative;
+    z-index: 2;
     width: 8px;
     height: 8px;
     min-height: 0;
@@ -1215,10 +1244,70 @@ textarea.perfil-input {
     border-radius: 50%;
     font-size: 0;
     overflow: hidden;
+    pointer-events: none;
   }
 
   .agenda-grade-mes .agenda-mais {
     display: none;
+  }
+
+  /* semana em lista, um dia por linha com o nome do dia ao lado: na grade de 640px só três
+     dias apareciam e o resto ficava escondido à direita. Os 7 nomes vêm antes dos 7 dias no
+     HTML; a ordem intercala nome e dia */
+  .agenda-grade-semana {
+    min-width: 0;
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .agenda-pagina .agenda-grade-semana {
+    grid-auto-rows: auto;
+  }
+
+  .agenda-grade-semana > :nth-child(1) { order: 1; }
+  .agenda-grade-semana > :nth-child(8) { order: 2; }
+  .agenda-grade-semana > :nth-child(2) { order: 3; }
+  .agenda-grade-semana > :nth-child(9) { order: 4; }
+  .agenda-grade-semana > :nth-child(3) { order: 5; }
+  .agenda-grade-semana > :nth-child(10) { order: 6; }
+  .agenda-grade-semana > :nth-child(4) { order: 7; }
+  .agenda-grade-semana > :nth-child(11) { order: 8; }
+  .agenda-grade-semana > :nth-child(5) { order: 9; }
+  .agenda-grade-semana > :nth-child(12) { order: 10; }
+  .agenda-grade-semana > :nth-child(6) { order: 11; }
+  .agenda-grade-semana > :nth-child(13) { order: 12; }
+  .agenda-grade-semana > :nth-child(7) { order: 13; }
+  .agenda-grade-semana > :nth-child(14) { order: 14; }
+
+  .agenda-grade-semana .agenda-cabeca {
+    display: flex;
+    align-items: center;
+    padding: 10px 8px;
+    font-size: 12.5px;
+  }
+
+  .agenda-grade-semana .agenda-celula {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 56px;
+    overflow: visible;
+  }
+
+  .agenda-grade-semana .agenda-numero {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .agenda-grade-semana .agenda-celula ul {
+    flex: 1 1 180px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .agenda-grade-semana .agenda-celula li {
+    max-width: 100%;
   }
 }
 
@@ -1234,6 +1323,11 @@ textarea.perfil-input {
 
   .agenda-quem {
     grid-column: 1 / -1;
+  }
+
+  /* "Livre" e "Reservado" do tamanho do texto, não da linha inteira */
+  .agenda-horario .vol-status {
+    justify-self: start;
   }
 
   .atend-resumo {
@@ -1267,6 +1361,87 @@ textarea.perfil-input {
 
   .relatorio-busca {
     grid-column: auto;
+  }
+}
+
+/* celular: as três abas do perfil dividem a largura; "Vos informations" quebra em duas linhas
+   em vez de empurrar "Disponibilités" para fora da tela */
+@media (max-width: 640px) {
+  .perfil-abas {
+    align-self: stretch;
+    overflow: visible;
+  }
+
+  .perfil-abas button {
+    flex: 1 1 auto;
+    padding: 6px 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 400px) {
+  .perfil-abas {
+    gap: 2px;
+  }
+
+  .perfil-abas button {
+    padding-inline: 4px;
+    font-size: 13px;
+  }
+}
+
+/* tela de toque ou estreita: 44px para o dedo nos links e botões de texto */
+@media (max-width: 760px), (pointer: coarse) {
+  /* "Ver todos", "Abrir horários", "Gerenciar": a área cresce sem mexer no cartão */
+  .painel-cartao-topo a {
+    min-width: 44px;
+    padding-block: 12px;
+    margin-block: -12px;
+    text-align: center;
+  }
+
+  .painel-cabecalho .perfil-titulo .vol-interruptor {
+    min-height: 44px;
+  }
+
+  .perfil-foto-botao,
+  .perfil-foto-remover {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* o nome na tabela: a linha inteira já abre o atendimento; o botão ganha altura de dedo */
+  .historico-tabela .historico-abrir {
+    padding-block: 11px;
+    margin-block: -11px;
+  }
+}
+
+/* tablet e celular deitado com toque: a grade do mês tem casas de 96px de altura; o número e o
+   "N livres" ganham 40px para o dedo */
+@media (pointer: coarse) and (min-width: 641px) and (max-width: 1023px) {
+  .agenda-grade-mes .agenda-numero {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .agenda-grade-mes .agenda-celula-topo .agenda-vaga,
+  .agenda-grade-mes .agenda-celula-topo .agenda-mais {
+    min-height: 40px;
+  }
+}
+
+/* celular deitado: a barra de abas mais baixa, ícone e nome lado a lado */
+@media (max-width: 1023px) and (max-height: 500px) {
+  .painel-menu .painel-item,
+  .painel-recolhido .painel-menu .painel-item {
+    flex-direction: row;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 12px;
   }
 }
 
@@ -1394,9 +1569,9 @@ a.painel-item:focus-visible {
   position: relative;
 }
 
-/* no celular o menu vira uma barra de abas presa embaixo da tela; o logo vai para a barra de cima
-   e o recolhido não vale */
-@media (max-width: 760px) {
+/* no celular e no tablet o menu vira uma barra de abas presa embaixo da tela; o logo vai para a
+   barra de cima e o recolhido não vale */
+@media (max-width: 1023px) {
   .painel-menu,
   .painel-recolhido .painel-menu {
     position: fixed;
@@ -1478,6 +1653,42 @@ a.painel-item:focus-visible {
     margin: 0;
     padding: 0 5px;
     font-size: 11px;
+  }
+}
+
+/* celular estreito: "Atendimentos" e "Tableau de bord" não cabem em 70px; o nome quebra em
+   duas linhas em vez de virar "Atendiment…" */
+@media (max-width: 420px) {
+  .painel-item,
+  .painel-recolhido .painel-item {
+    padding-inline: 1px;
+  }
+
+  .painel-item-texto,
+  .painel-recolhido .painel-item-texto {
+    display: -webkit-box;
+    line-height: 1.1;
+    white-space: normal;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* tablet: a barra de abas fica no centro, sem esticar de ponta a ponta */
+@media (min-width: 761px) and (max-width: 1023px) {
+  .painel-menu,
+  .painel-recolhido .painel-menu {
+    right: auto;
+    left: 50%;
+    width: min(560px, calc(100% - 20px));
+    transform: translateX(-50%);
+  }
+
+  .painel-item,
+  .painel-recolhido .painel-item {
+    font-size: 12px;
   }
 }
 

@@ -633,7 +633,7 @@ export const traducoes = {
     busca: {
       selo: "Accompagnement gratuit en ligne",
       ola: (nome) => `Bonjour, ${nome}.`,
-      quemAjuda: "Qui peut vous aider aujourd’hui ?",
+      quemAjuda: "Qui peut vous aider aujourd’hui ?",
       buscar: "Rechercher",
       exemplo: "Nom, domaine ou sujet...",
       numerosRotulo: "La plateforme en chiffres",

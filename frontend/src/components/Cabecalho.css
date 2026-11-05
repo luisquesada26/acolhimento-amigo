@@ -3,7 +3,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 18px 6%;
+  /* no monitor largo o conteúdo fica na mesma coluna das seções */
+  padding: 18px max(6%, (100% - 1240px) / 2);
   background-color: #ffffff;
   border-bottom: 1px solid var(--borda);
 }
@@ -12,6 +13,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-height: 44px;
+  border-radius: 10px;
   color: var(--marinho);
   text-decoration: none;
   font-size: 1.2rem;
@@ -35,14 +38,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: clamp(16px, 2.2vw, 28px);
 }
 
 .cabecalho-navegacao a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 8px;
   color: var(--texto-2);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
@@ -52,6 +60,7 @@
 
 .cabecalho-acoes {
   display: flex;
+  flex: none;
   align-items: center;
   gap: 12px;
 }
@@ -77,43 +86,6 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 700px) {
-  .cabecalho {
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 16px 5%;
-  }
-
-  .cabecalho-navegacao {
-    order: 3;
-    width: 100%;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .cabecalho-logo {
-    font-size: 1.05rem;
-  }
-
-  .cabecalho-acoes {
-    gap: 8px;
-  }
-
-  .cabecalho-botao {
-    padding: 10px 14px;
-  }
-}
-
-@media (max-width: 380px) {
-  .cabecalho-navegacao {
-    gap: 12px;
-  }
-
-  .cabecalho-navegacao a {
-    font-size: 0.85rem;
-  }
-}
-
 .cabecalho-logo-imagem {
   display: block;
   width: 195px;
@@ -122,8 +94,102 @@
   object-fit: contain;
 }
 
-@media (max-width: 700px) {
+/* tablet: a navegação desce para uma segunda linha, sem quebrar os links em duas */
+@media (max-width: 1023px) {
+  .cabecalho {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding-top: 14px;
+    padding-bottom: 0;
+  }
+
   .cabecalho-logo-imagem {
-    width: 140px;
+    width: 170px;
+  }
+
+  .cabecalho-navegacao {
+    order: 3;
+    flex-basis: 100%;
+    gap: 8px;
+    border-top: 1px solid var(--borda);
+  }
+
+  .cabecalho-navegacao a {
+    min-height: 46px;
+    padding-inline: 14px;
+  }
+}
+
+/* celular: logo, idioma e entrar numa linha (o logo encolhe se o "entrar" for longo); os links embaixo */
+@media (max-width: 700px) {
+  .cabecalho {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 10px;
+    padding: 12px max(16px, 5%) 0;
+  }
+
+  .cabecalho-logo {
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .cabecalho-logo-imagem {
+    width: clamp(120px, 36vw, 150px);
+  }
+
+  .cabecalho-acoes {
+    gap: 8px;
+  }
+
+  .cabecalho-botao {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.9rem;
+  }
+
+  .cabecalho-navegacao {
+    grid-column: 1 / -1;
+    gap: 4px;
+  }
+
+  .cabecalho-navegacao a {
+    min-height: 44px;
+    padding-inline: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* só a bandeira no botão de idioma, como nas áreas logadas; o logo já leva ao início.
+   Os três links vão de ponta a ponta, alinhados com o logo e com o "Entrar" */
+@media (max-width: 480px) {
+  .cabecalho .idioma-botao {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .cabecalho .idioma-botao > span,
+  .cabecalho-navegacao a[href="#inicio"] {
+    display: none;
+  }
+
+  .cabecalho-navegacao {
+    justify-content: space-between;
+  }
+
+  .cabecalho-navegacao a {
+    padding-inline: 6px;
+    font-size: clamp(0.8rem, 4vw, 0.875rem);
+  }
+}
+
+@media (max-width: 380px) {
+  .cabecalho-botao {
+    padding: 0 12px;
+    font-size: 0.875rem;
+  }
+
+  .cabecalho-navegacao a {
+    padding-inline: 4px;
   }
 }

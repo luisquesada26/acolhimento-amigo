@@ -819,7 +819,7 @@ export const traducoes = {
     suaConta: "Votre compte",
 
     saudacao: {
-      titulo: (nome) => ["Ravi de vous revoir, ", nome, " !"],
+      titulo: (nome) => ["Ravi de vous revoir, ", nome, " !"],
       resumoProximo: (dia, hora, nome) => ["Votre prochain rendez-vous est ", dia, ` à ${hora} avec `, nome, "."],
       resumoVazio: "Aucun rendez-vous pour l’instant. Ajoutez des créneaux pour que l’on puisse vous trouver.",
       naBusca: "Visible dans la recherche",

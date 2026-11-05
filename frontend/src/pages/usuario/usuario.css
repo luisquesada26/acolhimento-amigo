@@ -363,20 +363,63 @@ a.usu-pessoa:hover,
   border-color: var(--azul);
 }
 
-@media (max-width: 760px) {
-  .usu-topo {
-    flex-wrap: wrap;
-    gap: 14px;
-    padding: 12px 16px;
+/* tela de toque ou estreita: 44px para o dedo */
+@media (max-width: 760px), (pointer: coarse) {
+  .usu-logo {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
   }
 
+  .usu-sair {
+    width: 44px;
+    height: 44px;
+  }
+
+  .usu-nav {
+    min-height: 44px;
+  }
+
+  .usu-confirmado-link {
+    min-height: 44px;
+  }
+
+  /* a área de toque cresce sem mudar o espaço entre os blocos */
+  .usu-voltar {
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  /* rodapé: o rodape-app.css só dá 40px aos telefones até 640px; celular deitado e tablet também */
+  .usu .rod-telefones a,
+  .usu .rod-topo {
+    min-height: 40px;
+  }
+}
+
+/* tablet: o nome ao lado da foto quebrava em duas linhas e apertava "Meus atendimentos";
+   fica só a foto, como no celular (o link segue com o título "Meu perfil") */
+@media (max-width: 900px) {
   .usu-pessoa-nome,
   .usu-pessoa-texto {
     display: none;
   }
 
+  /* só a foto: 44px de toque com a borda */
   .usu-pessoa {
-    padding: 0;
+    padding: 3px;
+  }
+
+  .usu-nav {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .usu-topo {
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 12px 16px;
   }
 
   .usu-navegacao {
@@ -462,5 +505,44 @@ a.usu-pessoa:hover,
 
   .usu-topo .idioma-botao > span {
     display: none;
+  }
+
+  /* bloco dentro da página: menos recuo, o texto ganha largura */
+  .usu-bloco {
+    padding: 18px 16px;
+  }
+}
+
+/* 320px: a mesma linha só cabe com o logo um pouco menor e espaços mais curtos */
+@media (max-width: 359px) {
+  .usu-topo {
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .usu-acoes {
+    gap: 6px;
+  }
+
+  .usu-topo .logo {
+    gap: 6px;
+  }
+
+  .usu-topo .logo svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .usu-topo .logo-texto span {
+    font-size: 13px;
+  }
+
+  .usu-topo .logo-texto strong {
+    font-size: 15px;
+  }
+
+  .usu-topo .idioma-botao {
+    gap: 4px;
+    padding: 0 8px;
   }
 }

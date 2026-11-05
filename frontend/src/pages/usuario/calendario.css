@@ -304,6 +304,26 @@
   font-size: 14px;
 }
 
+/* tela de toque ou estreita: 44px para o dedo nas setas, no atalho e nos horários */
+@media (max-width: 760px), (pointer: coarse) {
+  .cal-seta {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cal-mais-cedo {
+    min-height: 44px;
+  }
+
+  .cal-visao button {
+    min-height: 40px;
+  }
+
+  .cal-hora {
+    height: 44px;
+  }
+}
+
 @media (max-width: 640px) {
   .cal-barra,
   .cal-navegar {
@@ -321,15 +341,62 @@
     justify-content: space-between;
   }
 
-  .cal-semana {
-    grid-template-columns: repeat(7, minmax(110px, 1fr));
-  }
-
   .cal-dia {
     min-height: 48px;
   }
 
   .cal-dia small {
     display: none;
+  }
+}
+
+/* até 819px as sete colunas não cabem: semana em lista, um dia por linha. Na rolagem de lado
+   só os primeiros dias apareciam, e os horários de hoje ficavam escondidos à direita */
+@media (max-width: 819px) {
+  .cal-semana {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .cal-coluna {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    padding: 8px 12px;
+  }
+
+  .cal-coluna-topo {
+    flex: none;
+    width: 40px;
+  }
+
+  .cal-coluna-topo strong {
+    font-size: 20px;
+  }
+
+  .cal-coluna .cal-horas {
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .cal-coluna .cal-hora {
+    min-width: 76px;
+  }
+
+  .cal-coluna .cal-vazio {
+    margin: 0;
+    text-align: left;
+  }
+}
+
+/* celular estreito: espaço menor entre os dias, cada dia fica mais largo para o dedo */
+@media (max-width: 420px) {
+  .cal-mes {
+    gap: 2px;
   }
 }

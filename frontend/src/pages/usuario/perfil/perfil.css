@@ -697,6 +697,25 @@
   }
 }
 
+/* tela de toque ou estreita: links e botões de texto com 44px de altura para o dedo */
+@media (max-width: 760px), (pointer: coarse) {
+  /* o recuo negativo segura o espaço que já existia em volta do "Voltar" */
+  .pf-voltar {
+    padding-block: 12px;
+    margin-block: -12px -24px;
+  }
+
+  .pf-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .pf-acoes > button {
+    min-height: 44px;
+  }
+}
+
 /* celular estreito: dois cartões de idioma lado a lado não cabem */
 @media (max-width: 480px) {
   .pf-idiomas-opcoes {
