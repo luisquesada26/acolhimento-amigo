@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../../services/api";
 import { traduzirErroApi } from "../../../services/errosApi";
 import Avatar from "../../../components/Avatar";
+import { SecaoInstalar } from "../../../components/ConviteInstalar";
 import { Bandeira } from "../../../components/SeletorIdioma";
 import { useAuth } from "../../../context/AuthContext";
 import { localeAtual, useTextos } from "../../../context/IdiomaContext";
@@ -326,6 +327,7 @@ export default function MeuPerfil() {
         <DadosPessoais usuario={usuario} aoSalvar={atualizarUsuario} />
         <Endereco usuario={usuario} aoSalvar={atualizarUsuario} />
         <Senha />
+        <SecaoInstalar />
         <ExcluirConta />
       </div>
     </div>

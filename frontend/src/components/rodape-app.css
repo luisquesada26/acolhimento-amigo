@@ -80,7 +80,8 @@
   list-style: none;
 }
 
-.rod-telefones a {
+/* pílula só informativa: sem link, sem hover e fora do Tab */
+.rod-telefones li {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -91,13 +92,6 @@
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   font-size: 0.82rem;
-  text-decoration: none;
-}
-
-.rod-telefones a:hover,
-.rod-telefones a:focus-visible {
-  border-color: #fcd34d;
-  background: rgba(255, 255, 255, 0.14);
 }
 
 .rod-telefones strong {
@@ -145,8 +139,7 @@
   background: rgba(255, 255, 255, 0.14);
 }
 
-.rod-topo:focus-visible,
-.rod-telefones a:focus-visible {
+.rod-topo:focus-visible {
   outline: 2px solid #fcd34d;
   outline-offset: 2px;
 }
@@ -188,14 +181,11 @@
     grid-column: 1 / -1;
   }
 
-  .rod-telefones a {
-    width: 100%;
-    height: 100%;
+  .rod-telefones li {
     text-align: center;
   }
 
-  /* telefone e voltar ao topo com altura de dedo, também no rodapé compacto do voluntário */
-  .rod-telefones a,
+  /* voltar ao topo com altura de dedo, também no rodapé compacto do voluntário */
   .rod-topo {
     min-height: 40px;
   }

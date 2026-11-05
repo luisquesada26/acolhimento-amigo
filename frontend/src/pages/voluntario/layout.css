@@ -422,7 +422,7 @@
   gap: 6px;
 }
 
-.painel .rod-telefones a {
+.painel .rod-telefones li {
   gap: 6px;
   padding: 3px 10px;
   font-size: 12px;
@@ -488,10 +488,9 @@
   }
 }
 
-/* tela de toque: telefones e "voltar ao topo" do rodapé compacto com 40px para o dedo
+/* tela de toque: "voltar ao topo" do rodapé compacto com 40px para o dedo
    (o rodape-app.css só garante isso até 640px) */
 @media (max-width: 760px), (pointer: coarse) {
-  .painel .rod-telefones a,
   .painel .rod-topo {
     min-height: 40px;
   }
@@ -538,11 +537,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .painel .rod-telefones a {
-    width: auto;
-    height: auto;
   }
 
   .painel .rod-baixo {
