@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { IdiomaProvider } from "./context/IdiomaContext";
 import App from "./App";
+import AvisoSemInternet from "./components/AvisoSemInternet";
 import "./styles/global.css";
 
 createRoot(document.getElementById("root")).render(
@@ -11,6 +12,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <AuthProvider>
         <IdiomaProvider>
+          <AvisoSemInternet />
           <App />
         </IdiomaProvider>
       </AuthProvider>
