@@ -199,6 +199,22 @@ export const traducoes = {
       titulo: "Complete seu perfil",
       texto: "O voluntário usa esses dados para falar com você e se preparar para o atendimento.",
       enviar: "Salvar e encontrar um voluntário",
+      salvo: "Perfil salvo",
+    },
+
+    progresso: {
+      titulo: "Seu primeiro atendimento",
+      passoDe: (n) => `Passo ${n} de 3`,
+      feito: "concluído",
+      dicas: {
+        2: "Escolha uma área ou busque pelo que você precisa e abra o perfil de um voluntário.",
+        3: "Escolha um dia em “Horários livres” e conte o seu caso ao voluntário.",
+      },
+      pronto: "Tudo pronto",
+      fimTitulo: "Primeiro atendimento marcado",
+      fimTexto: (data, hora) => `${data}, às ${hora}. O voluntário já pode ver o seu caso.`,
+      ver: "Ver meu atendimento",
+      opcoes: { rotulo: "Opção", a: "A: faixa no topo", b: "B: cartão de passos" },
     },
 
     erros: {
@@ -401,6 +417,22 @@ export const traducoes = {
       titulo: "Complete your profile",
       texto: "Volunteers use these details to get in touch and prepare for your appointment.",
       enviar: "Save and find a volunteer",
+      salvo: "Profile saved",
+    },
+
+    progresso: {
+      titulo: "Your first appointment",
+      passoDe: (n) => `Step ${n} of 3`,
+      feito: "done",
+      dicas: {
+        2: "Pick an area or search for what you need, then open a volunteer’s profile.",
+        3: "Pick a day under “Available times” and tell the volunteer about your situation.",
+      },
+      pronto: "All set",
+      fimTitulo: "First appointment booked",
+      fimTexto: (data, hora) => `${data} at ${hora}. The volunteer can now see your request.`,
+      ver: "View my appointment",
+      opcoes: { rotulo: "Option", a: "A: top bar", b: "B: steps card" },
     },
 
     erros: {
@@ -609,6 +641,22 @@ export const traducoes = {
       titulo: "Completa tu perfil",
       texto: "El voluntario usa estos datos para contactarte y preparar la cita.",
       enviar: "Guardar y buscar un voluntario",
+      salvo: "Perfil guardado",
+    },
+
+    progresso: {
+      titulo: "Tu primera cita",
+      passoDe: (n) => `Paso ${n} de 3`,
+      feito: "completado",
+      dicas: {
+        2: "Elige un área o busca lo que necesitas y abre el perfil de un voluntario.",
+        3: "Elige un día en “Horarios disponibles” y cuéntale tu caso al voluntario.",
+      },
+      pronto: "Todo listo",
+      fimTitulo: "Primera cita reservada",
+      fimTexto: (data, hora) => `${data}, a las ${hora}. El voluntario ya puede ver tu caso.`,
+      ver: "Ver mi cita",
+      opcoes: { rotulo: "Opción", a: "A: franja arriba", b: "B: tarjeta de pasos" },
     },
 
     erros: {
@@ -815,6 +863,22 @@ export const traducoes = {
       titulo: "Complétez votre profil",
       texto: "Le bénévole utilise ces informations pour vous contacter et préparer le rendez-vous.",
       enviar: "Enregistrer et trouver un bénévole",
+      salvo: "Profil enregistré",
+    },
+
+    progresso: {
+      titulo: "Votre premier rendez-vous",
+      passoDe: (n) => `Étape ${n} sur 3`,
+      feito: "terminé",
+      dicas: {
+        2: "Choisissez un domaine ou cherchez ce dont vous avez besoin, puis ouvrez le profil d’un bénévole.",
+        3: "Choisissez un jour dans «\u00a0Créneaux disponibles\u00a0» et décrivez votre situation au bénévole.",
+      },
+      pronto: "C’est prêt",
+      fimTitulo: "Premier rendez-vous confirmé",
+      fimTexto: (data, hora) => `${data} à ${hora}. Le bénévole peut déjà consulter votre demande.`,
+      ver: "Voir mon rendez-vous",
+      opcoes: { rotulo: "Option", a: "A\u00a0: bandeau en haut", b: "B\u00a0: carte des étapes" },
     },
 
     erros: {

@@ -8,6 +8,7 @@ import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
 import BotaoAtendimentos from "./PainelAtendimentos";
 import { AtendimentosProvider } from "./useAtendimentos";
+import { AreaComPassos, PassosProvider, TrocaOpcao } from "./PrimeiroAcesso";
 import { traducoes } from "./traducoes";
 import "./usuario.css";
 
@@ -68,10 +69,13 @@ export default function LayoutUsuario() {
           </div>
         </header>
 
-        <main className="usu-conteudo">
-          <Outlet />
-        </main>
-        <RodapeApp />
+        <PassosProvider>
+          <AreaComPassos>
+            <Outlet />
+          </AreaComPassos>
+          <RodapeApp />
+          <TrocaOpcao />
+        </PassosProvider>
       </div>
     </AtendimentosProvider>
   );
