@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Svg, diaExtenso, useAcao } from "./comum";
+import { mostrarEFocar, useCampoPedido } from "./campoPedido";
 import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
@@ -49,6 +50,9 @@ function Disponibilidade({ criarHorarios, existentes }) {
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState(null);
   const t = useTextos(traducoes);
+  const secao = useRef(null);
+  // "Abrir horários" das pendências: o formulário fica à vista, com o foco no primeiro dia
+  useCampoPedido("disponibilidade", () => mostrarEFocar(secao.current));
 
   const horarios = montarHorarios({ dias, inicio, fim, duracao: Number(duracao), desde, semanas: Number(semanas), existentes });
 
@@ -78,7 +82,7 @@ function Disponibilidade({ criarHorarios, existentes }) {
   }
 
   return (
-    <section className="painel-cartao" aria-labelledby="disponibilidade-titulo">
+    <section className="painel-cartao" aria-labelledby="disponibilidade-titulo" ref={secao}>
       <h2 id="disponibilidade-titulo" className="painel-titulo">
         {t.quandoAtende}
       </h2>

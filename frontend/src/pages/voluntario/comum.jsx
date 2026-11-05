@@ -132,11 +132,14 @@ export const NAVEGACAO = [
   { icone: "perfil", caminho: "/voluntario/perfil", grupo: "conta" },
 ];
 
-// onde resolver cada pendência do perfil; o texto do link fica nas traduções
-const ONDE_RESOLVER = {
-  perfil: "/voluntario/perfil",
-  servico: "/voluntario/perfil?aba=servicos",
-  horario: "/voluntario/perfil?aba=agenda",
+// onde resolver cada item do perfil completo: a aba do Meu perfil e o campo que abre nela (campoPedido.js).
+// O texto do link fica nas traduções
+export const ONDE_RESOLVER = {
+  nacionalidade: "/voluntario/perfil?aba=dados&campo=campo-pais",
+  idiomas: "/voluntario/perfil?aba=dados&campo=campo-idiomas",
+  bio: "/voluntario/perfil?aba=dados&campo=campo-bio",
+  servico: "/voluntario/perfil?aba=servicos&campo=novo-servico",
+  horario: "/voluntario/perfil?aba=agenda&campo=disponibilidade",
 };
 
 // botão que chama a API, mostra o erro ao lado e fica travado enquanto espera.
@@ -446,29 +449,71 @@ export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir
   );
 }
 
-export function Pendencias({ pendencias }) {
+// banner do perfil completo no painel: os 5 itens, quantos estão prontos e o link para preencher cada um.
+// Com tudo pronto e a busca desligada, vira o botão de ligar; ligada e completa, some
+export function Pendencias({ painel }) {
   const t = useTextos(traducoes);
-  const feitas = pendencias.filter((p) => p.feito).length;
+  const { ativo, na_busca: naBusca, perfil_completo: completo } = painel.perfil.voluntario;
+  const ligar = useAcao(() => painel.salvarPerfil({ voluntario: { ativo: true } }));
+  const itens = painel.pendencias;
+  const feitas = itens.filter((p) => p.feito).length;
+
+  if (naBusca && completo) return null;
+
+  const [titulo, texto] = completo
+    ? [t.pendenciasProntoTitulo, t.pendenciasProntoTexto]
+    : naBusca
+      ? [t.pendenciasSemHorarioTitulo, t.pendenciasSemHorarioTexto]
+      : ativo
+        ? [t.pendenciasForaTitulo, t.pendenciasForaTexto]
+        : [t.pendenciasTitulo, t.pendenciasTexto];
 
   return (
     <section className="vol-pendencias" aria-labelledby="vol-pendencias-titulo">
-      <div>
-        <h2 id="vol-pendencias-titulo">{t.pendenciasTitulo}</h2>
-        <p>{t.pendenciasProntos(feitas, pendencias.length)}</p>
+      <div className="vol-pendencias-resumo">
+        <h2 id="vol-pendencias-titulo">{titulo}</h2>
+        <div className="vol-pendencias-progresso">
+          <span className="vol-pendencias-barra" aria-hidden="true">
+            {itens.map((p) => (
+              <span key={p.chave} className={p.feito ? "vol-pendencias-cheio" : undefined}></span>
+            ))}
+          </span>
+          <strong>{t.pendenciasN(feitas, itens.length)}</strong>
+        </div>
+        <p>{texto}</p>
       </div>
-      <ul>
-        {pendencias.map((p) => (
-          <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : ""}>
-            <Svg nome={p.feito ? "check" : "relogio"} tamanho={18} />
-            <span>{t.pendencias[p.chave]}</span>
-            {p.feito ? (
-              <small>{t.pronto}</small>
-            ) : (
-              <Link to={ONDE_RESOLVER[p.chave]}>{t.resolver[p.chave]}</Link>
-            )}
-          </li>
-        ))}
-      </ul>
+
+      {completo ? (
+        <div className="vol-pendencias-ligar">
+          <button type="button" className="botao botao-primario botao-voluntario" onClick={ligar.executar} disabled={ligar.ocupado}>
+            <Svg nome="busca" tamanho={18} /> {ligar.ocupado ? t.ativando : t.ativarBusca}
+          </button>
+          {ligar.erro && (
+            <p className="vol-erro" role="alert">
+              {ligar.erro}
+            </p>
+          )}
+        </div>
+      ) : (
+        <ul>
+          {itens.map((p) => (
+            <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : undefined}>
+              <span className="vol-pendencia-marca" aria-hidden="true">
+                {p.feito && <Svg nome="check" tamanho={14} />}
+              </span>
+              <span>{t.pendencias[p.chave]}</span>
+              {p.feito ? (
+                <small>{t.pronto}</small>
+              ) : (
+                <Link to={ONDE_RESOLVER[p.chave]} aria-label={`${t.resolver[p.chave]}: ${t.pendencias[p.chave]}`}>
+                  {t.resolver[p.chave]}
+                  <Svg nome="proximo" tamanho={14} />
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -492,10 +537,20 @@ export function HorariosLivres({ horarios, limite = 6 }) {
   );
 }
 
-// liga e desliga, com a palavra ao lado (não depende só da cor)
-export function Interruptor({ ligado, aoMudar, rotulo, desabilitado = false }) {
+// liga e desliga, com a palavra ao lado (não depende só da cor).
+// travado: não pode mudar agora (o porquê vai no texto de "descricao"); alerta: ligado, mas sem efeito
+export function Interruptor({ ligado, aoMudar, rotulo, desabilitado = false, travado = false, alerta = false, descricao }) {
+  const classe = `vol-interruptor${travado ? " vol-interruptor-travado" : ""}${alerta ? " vol-interruptor-alerta" : ""}`;
   return (
-    <button type="button" role="switch" aria-checked={ligado} className="vol-interruptor" onClick={aoMudar} disabled={desabilitado}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={ligado}
+      aria-describedby={descricao}
+      className={classe}
+      onClick={aoMudar}
+      disabled={desabilitado || travado}
+    >
       <span className="vol-interruptor-trilho" aria-hidden="true">
         <span></span>
       </span>
