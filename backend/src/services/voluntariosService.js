@@ -27,15 +27,18 @@ async function buscar(id) {
   if (!v) throw new ErroApp(404, "Voluntário não encontrado");
   return {
     ...formatar(v),
+    na_busca: Boolean(v.na_busca),
     servicos: await repo.servicosAtivos(id),
     horarios: v.na_busca ? await repo.horariosLivres(id) : [],
   };
 }
 
-// os 5 itens do perfil completo e se ele aparece na busca agora (ativo e com o perfil pronto para a busca)
+// os 5 itens do perfil completo e se ele aparece na busca agora (ativo e com o perfil pronto para a busca).
+// Tudo sai como true ou false: o NULL de uma coluna vazia no banco não chega à tela
 async function situacaoNaBusca(id) {
-  const { na_busca, ...requisitos } = await repo.requisitos(id);
-  return { requisitos, perfil_completo: Object.values(requisitos).every(Boolean), na_busca };
+  const { na_busca, ...linha } = await repo.requisitos(id);
+  const requisitos = Object.fromEntries(Object.entries(linha).map(([item, pronto]) => [item, Boolean(pronto)]));
+  return { requisitos, perfil_completo: Object.values(requisitos).every(Boolean), na_busca: Boolean(na_busca) };
 }
 
 // so liga a busca quem tem os 5 itens prontos

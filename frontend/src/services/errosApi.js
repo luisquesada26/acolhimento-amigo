@@ -67,6 +67,7 @@ const LINHAS = [
 
   ["Agendamento não encontrado", "Appointment not found", "Cita no encontrada", "Rendez-vous introuvable"],
   ["Este horário já passou. Escolha outro.", "This time has already passed. Choose another one.", "Este horario ya pasó. Elige otro.", "Ce créneau est déjà passé. Choisissez-en un autre."],
+  ["Este voluntário não está recebendo agendamentos agora", "This volunteer isn’t taking new appointments right now", "Este voluntario no está recibiendo citas en este momento", "Ce bénévole n’accepte pas de rendez-vous pour le moment"],
   ["Este horário acabou de ser reservado. Escolha outro.", "This time slot was just booked. Choose another one.", "Este horario acaba de ser reservado. Elige otro.", "Ce créneau vient d’être réservé. Choisissez-en un autre."],
   ["Este serviço não é oferecido pelo voluntário deste horário", "The volunteer for this time slot doesn’t offer this service", "El voluntario de este horario no ofrece este servicio", "Le bénévole de ce créneau ne propose pas ce service"],
   ["Descreva o que você precisa com pelo menos 20 caracteres", "Describe what you need in at least 20 characters", "Describe lo que necesitas con al menos 20 caracteres", "Décrivez votre besoin en au moins 20 caractères"],

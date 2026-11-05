@@ -129,6 +129,7 @@ A lista de cada um fica em `GET /meus-agendamentos`. Regras:
 
 - Só perfil `usuario` marca atendimento
 - O horário precisa estar livre e no futuro. Se já foi reservado: `409 "Este horário acabou de ser reservado. Escolha outro."`
+- O voluntário do horário precisa estar na busca (ligado e com o perfil pronto). Senão: `409 "Este voluntário não está recebendo agendamentos agora"`. Os agendamentos que já existiam continuam
 - O serviço precisa ser do mesmo voluntário do horário
 - O usuário não marca dois atendimentos confirmados que se sobrepõem, nem com voluntários diferentes: `409 "Você já tem um atendimento nesse horário"`. Vale também ao remarcar
 - Descrição com pelo menos 20 caracteres

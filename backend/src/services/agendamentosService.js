@@ -94,6 +94,10 @@ const criar = (logado, dados) =>
     if (usuario.perfil !== "usuario") throw new ErroApp(403, "Só usuários podem marcar atendimentos");
 
     const horario = await horarioDisponivel(dados.horario_id);
+    // fora da busca (desligado ou com o perfil incompleto) não entra agendamento novo; os que já existem ficam
+    if (!(await voluntariosRepo.estaNaBusca(horario.voluntario_id))) {
+      throw new ErroApp(409, "Este voluntário não está recebendo agendamentos agora");
+    }
 
     const servico = await servicosRepo.buscarPorId(dados.servico_id, { trava: "compartilhada" });
     if (!servico || !servico.ativo) throw new ErroApp(404, "Serviço não encontrado");

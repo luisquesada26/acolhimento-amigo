@@ -212,6 +212,71 @@ describe("perfil completo para aparecer na busca", { skip: !bancoLocal && "preci
     assert.equal(publico.corpo.horarios.length, 1);
   });
 
+  test("agendamento novo com voluntário fora da busca: 409, e o que já existia continua", async () => {
+    const vol = await novoVoluntario("Joana Agenda");
+    await completar(vol.token);
+    assert.equal((await pedir("POST", "/horarios", { token: vol.token, corpo: { data: amanha(), hora_inicio: "11:00", hora_fim: "11:45" } })).status, 201);
+    const [primeiro, segundo] = (await pedir("GET", "/meus-horarios", { token: vol.token })).corpo;
+    const [servico] = (await pedir("GET", "/meus-servicos", { token: vol.token })).corpo;
+
+    const cadastro = await pedir("POST", "/auth/cadastro", {
+      corpo: { nome: "Kauã Usuario", email: `kaua.${Date.now()}@teste.local`, senha: "senha123", perfil: "usuario", aceite_lgpd: true },
+    });
+    assert.equal(cadastro.status, 201);
+    tokens.push(cadastro.corpo.token);
+    const usuario = cadastro.corpo.token;
+    const marcar = (horario) =>
+      pedir("POST", "/agendamentos", {
+        token: usuario,
+        corpo: { horario_id: horario.id, servico_id: servico.id, descricao: "Preciso de ajuda com a renovação do meu protocolo." },
+      });
+
+    // completo, mas a busca ainda está desligada
+    let resposta = await marcar(primeiro);
+    assert.equal(resposta.status, 409, JSON.stringify(resposta.corpo));
+    assert.equal(resposta.corpo.erro, "Este voluntário não está recebendo agendamentos agora");
+    assert.ok((await pedir("GET", "/meus-horarios", { token: vol.token })).corpo.every((h) => h.status === "livre"), "o horário continua livre");
+
+    await pedir("PUT", "/me", { token: vol.token, corpo: { voluntario: { ativo: true } } });
+    resposta = await marcar(primeiro);
+    assert.equal(resposta.status, 201, JSON.stringify(resposta.corpo));
+    const marcado = resposta.corpo.id;
+
+    // desligou depois: o que já estava marcado fica, o novo não entra
+    await pedir("PUT", "/me", { token: vol.token, corpo: { voluntario: { ativo: false } } });
+    resposta = await marcar(segundo);
+    assert.equal(resposta.status, 409);
+    const meus = (await pedir("GET", "/meus-agendamentos", { token: usuario })).corpo;
+    assert.deepEqual(meus.map((a) => [a.id, a.status]), [[marcado, "confirmado"]]);
+  });
+
+  test("na_busca e os requisitos vêm como booleano, nunca null, mesmo com idiomas NULL no banco", async () => {
+    const { token, usuario, nome } = await novoVoluntario("Lia Nula");
+    await completar(token);
+    await pedir("PUT", "/me", { token, corpo: { voluntario: { ativo: true } } });
+    const id = (await meuPerfil(token)).id;
+
+    // a coluna é NOT NULL; aqui ela aceita NULL só durante o teste, no banco local
+    await conexao.consulta("ALTER TABLE voluntarios ALTER COLUMN idiomas DROP NOT NULL");
+    try {
+      await conexao.consulta("UPDATE voluntarios SET idiomas = NULL WHERE usuario_id = ?", [usuario.id]);
+
+      const v = await meuPerfil(token);
+      assert.strictEqual(v.na_busca, false);
+      assert.strictEqual(v.requisitos.idiomas, false);
+      assert.strictEqual(v.perfil_completo, false);
+      assert.deepEqual(v.idiomas, []);
+
+      const publico = (await pedir("GET", `/voluntarios/${id}`)).corpo;
+      assert.strictEqual(publico.na_busca, false);
+      assert.deepEqual(publico.horarios, []);
+      assert.equal(await naBusca(nome), false);
+    } finally {
+      await conexao.consulta("UPDATE voluntarios SET idiomas = 'pt' WHERE idiomas IS NULL");
+      await conexao.consulta("ALTER TABLE voluntarios ALTER COLUMN idiomas SET NOT NULL");
+    }
+  });
+
   test("os voluntários do seed continuam todos na busca", async () => {
     const { rows } = await conexao.consulta(
       "SELECT v.id FROM voluntarios v JOIN usuarios u ON u.id = v.usuario_id WHERE u.email NOT LIKE '%@teste.local'"

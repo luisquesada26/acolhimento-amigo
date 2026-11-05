@@ -40,7 +40,7 @@ function horarioQueAtende({ disponivel, data, turno }, params) {
 // A ordem e a dos itens no painel do voluntario
 const REQUISITOS = {
   nacionalidade: "btrim(COALESCE(u.pais_origem, '')) <> ''",
-  idiomas: "v.idiomas <> ''",
+  idiomas: "COALESCE(v.idiomas, '') <> ''",
   bio: "btrim(COALESCE(v.bio, '')) <> ''",
   servico: "EXISTS (SELECT 1 FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1)",
   horario: `EXISTS (SELECT 1 FROM horarios h WHERE h.voluntario_id = v.id AND h.status = 'livre' AND ${HORARIO_FUTURO})`,
@@ -150,6 +150,17 @@ async function requisitos(id) {
   return rows[0];
 }
 
+// se ele aparece na busca agora; quem nao aparece nao recebe agendamento novo
+async function estaNaBusca(id) {
+  const { rows } = await consulta(`
+    SELECT (${NA_BUSCA}) AS na_busca
+    FROM voluntarios v
+    JOIN usuarios u ON u.id = v.usuario_id
+    WHERE v.id = ?
+  `, [id]);
+  return Boolean(rows[0]?.na_busca);
+}
+
 // traducoes: so as dos campos que mudaram ({ bio: traducao ou null }); as outras ficam como estao
 async function atualizar(id, campos, traducoes = {}) {
   const sets = Object.keys(campos).map((c) => `${c} = @${c}`);
@@ -182,6 +193,7 @@ module.exports = {
   buscarPorUsuarioId,
   criar,
   requisitos,
+  estaNaBusca,
   atualizar,
   servicosAtivos,
   horariosLivres,
