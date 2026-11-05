@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../services/api";
 import { traduzirErroApi, traduzirMensagem } from "../../services/errosApi";
@@ -11,6 +11,7 @@ import { traduzido } from "../../dados/conteudo";
 import { traducoes } from "./traducoes";
 import CalendarioHorarios from "./CalendarioHorarios";
 import { useAbertura, useAtendimentos } from "./useAtendimentos";
+import { usePassos } from "./PrimeiroAcesso";
 
 const MINIMO_DESCRICAO = 20;
 
@@ -112,6 +113,7 @@ export default function PerfilVoluntario() {
   const avisoMarcado = useRef(null);
   const atendimentos = useAtendimentos();
   const { abrir: abrirAtendimentos } = useAbertura();
+  const passos = usePassos();
 
   // recarregar depois de marcar não troca a página por "Carregando", senão ela pisca e volta para o topo
   const carregar = useCallback(async () => {
@@ -130,6 +132,11 @@ export default function PerfilVoluntario() {
     setCarregando(true);
     carregar();
   }, [carregar]);
+
+  // quem chega da busca rolada começa no topo do perfil, e não no meio dele
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [id]);
 
   // o aviso fica no topo; quem marcou um horário lá embaixo precisa ver que deu certo
   useEffect(() => {
@@ -158,8 +165,10 @@ export default function PerfilVoluntario() {
   }
 
   // depois de marcar, o horário sai da agenda: recarrega e mostra a confirmação.
-  // A lista do cabeçalho também recarrega, para o número do botão já contar o novo
+  // A lista do cabeçalho também recarrega, para o número do botão já contar o novo.
+  // O primeiro atendimento fecha os passos, e o aviso dele fica no progresso
   function confirmado() {
+    if (passos.mostrar && !passos.fim) passos.marcouPrimeiro(escolhido);
     setMarcado(escolhido);
     setEscolhido(null);
     carregar();
@@ -194,7 +203,7 @@ export default function PerfilVoluntario() {
 
       {voluntario.bio && <p className="usu-perfil-bio">{traduzido(voluntario, "bio", idioma)}</p>}
 
-      {marcado && (
+      {marcado && !passos.fim && (
         <div className="usu-confirmado" role="status" ref={avisoMarcado}>
           <Svg nome="check" tamanho={20} />
           <span>

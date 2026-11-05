@@ -10,6 +10,7 @@ import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
 import BotaoAtendimentos from "./PainelAtendimentos";
 import { AtendimentosProvider } from "./useAtendimentos";
+import { FaixaPassos, PassosProvider } from "./PrimeiroAcesso";
 import { traducoes } from "./traducoes";
 import "./usuario.css";
 
@@ -71,11 +72,14 @@ export default function LayoutUsuario() {
           </div>
         </header>
 
-        <main className="usu-conteudo">
-          <ConviteInstalar app={app} />
-          <Outlet />
-        </main>
-        <RodapeApp />
+        <PassosProvider>
+          <main className="usu-conteudo">
+            <ConviteInstalar app={app} />
+            <FaixaPassos />
+            <Outlet />
+          </main>
+          <RodapeApp />
+        </PassosProvider>
       </div>
     </AtendimentosProvider>
   );

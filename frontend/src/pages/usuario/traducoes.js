@@ -201,6 +201,17 @@ export const traducoes = {
       titulo: "Complete seu perfil",
       texto: "O voluntário usa esses dados para falar com você e se preparar para o atendimento.",
       enviar: "Salvar e encontrar um voluntário",
+      salvo: "Perfil salvo",
+    },
+
+    progresso: {
+      titulo: "Seu primeiro atendimento",
+      passoDe: (n) => `Passo ${n} de 3`,
+      feito: "concluído",
+      pronto: "Tudo pronto",
+      fimTitulo: "Primeiro atendimento marcado",
+      fimTexto: (data, hora) => `${data}, às ${hora}. O voluntário já pode ver o seu caso.`,
+      ver: "Ver meu atendimento",
     },
 
     erros: {
@@ -405,6 +416,17 @@ export const traducoes = {
       titulo: "Complete your profile",
       texto: "Volunteers use these details to get in touch and prepare for your appointment.",
       enviar: "Save and find a volunteer",
+      salvo: "Profile saved",
+    },
+
+    progresso: {
+      titulo: "Your first appointment",
+      passoDe: (n) => `Step ${n} of 3`,
+      feito: "done",
+      pronto: "All set",
+      fimTitulo: "First appointment booked",
+      fimTexto: (data, hora) => `${data} at ${hora}. The volunteer can now see your request.`,
+      ver: "View my appointment",
     },
 
     erros: {
@@ -615,6 +637,17 @@ export const traducoes = {
       titulo: "Completa tu perfil",
       texto: "El voluntario usa estos datos para contactarte y preparar la cita.",
       enviar: "Guardar y buscar un voluntario",
+      salvo: "Perfil guardado",
+    },
+
+    progresso: {
+      titulo: "Tu primera cita",
+      passoDe: (n) => `Paso ${n} de 3`,
+      feito: "completado",
+      pronto: "Todo listo",
+      fimTitulo: "Primera cita reservada",
+      fimTexto: (data, hora) => `${data}, a las ${hora}. El voluntario ya puede ver tu caso.`,
+      ver: "Ver mi cita",
     },
 
     erros: {
@@ -823,6 +856,17 @@ export const traducoes = {
       titulo: "Complétez votre profil",
       texto: "Le bénévole utilise ces informations pour vous contacter et préparer le rendez-vous.",
       enviar: "Enregistrer et trouver un bénévole",
+      salvo: "Profil enregistré",
+    },
+
+    progresso: {
+      titulo: "Votre premier rendez-vous",
+      passoDe: (n) => `Étape ${n} sur 3`,
+      feito: "terminé",
+      pronto: "C’est prêt",
+      fimTitulo: "Premier rendez-vous confirmé",
+      fimTexto: (data, hora) => `${data} à ${hora}. Le bénévole peut déjà consulter votre demande.`,
+      ver: "Voir mon rendez-vous",
     },
 
     erros: {

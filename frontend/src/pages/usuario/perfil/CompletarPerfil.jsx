@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
@@ -10,6 +10,12 @@ import { limparTelefone, mascaraTelefone } from "../../voluntario/telefone";
 import { traducoes } from "../traducoes";
 import { CampoNacionalidade, EscolhaIdiomas, FotoPerfil, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
+
+// tempo para a pessoa ver o passo 1 virar ✓ antes de ir para a busca; no celular os passos ficam
+// lá em cima, então a tela sobe até eles e espera mais um pouco
+const ESPERA_PASSO_FEITO = 700;
+const ESPERA_ROLAGEM = 500;
+const esperar = (ms) => new Promise((pronto) => setTimeout(pronto, ms));
 
 // primeiro acesso: antes de buscar, a pessoa deixa o contato para o voluntário
 export default function CompletarPerfil() {
@@ -29,6 +35,9 @@ export default function CompletarPerfil() {
   const [erros, setErros] = useState({});
   const [mensagem, setMensagem] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [salvo, setSalvo] = useState(false);
+  const passoAtual = salvo ? 1 : 0;
+  const listaPassos = useRef(null);
 
   function mudar(campo, valor) {
     setDados((atual) => ({ ...atual, [campo]: valor }));
@@ -49,8 +58,14 @@ export default function CompletarPerfil() {
         idiomas: dados.idiomas,
         foto: dados.foto,
       });
+      // o usuário completo só entra na sessão depois da pausa: com ele, o layout já troca de tela
+      setSalvo(true);
+      const caixa = listaPassos.current.getBoundingClientRect();
+      const escondidos = caixa.top < 0 || caixa.bottom > window.innerHeight;
+      if (escondidos) listaPassos.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      await esperar(escondidos ? ESPERA_PASSO_FEITO + ESPERA_ROLAGEM : ESPERA_PASSO_FEITO);
       atualizarUsuario(data);
-      navigate("/usuario", { replace: true });
+      navigate("/usuario", { replace: true, state: { primeiroAcesso: true } });
     } catch (problema) {
       const { mensagem: texto, campos } = lerErroSemTraduzir(problema);
       setErros(campos);
@@ -68,10 +83,10 @@ export default function CompletarPerfil() {
           {t.bemVindo(usuario.nome.split(" ")[0])}
           <span>{t.faltaPouco}</span>
         </h1>
-        <ol className="pf-passos">
+        <ol className="pf-passos" ref={listaPassos}>
           {t.passos.map((p, i) => (
-            <li key={p.titulo} className={i === 0 ? "pf-passo-atual" : ""}>
-              <span className="pf-passo-numero">{i + 1}</span>
+            <li key={p.titulo} className={i < passoAtual ? "pf-passo-feito" : i === passoAtual ? "pf-passo-atual" : ""}>
+              <span className="pf-passo-numero">{i < passoAtual ? <Svg nome="check" tamanho={18} /> : i + 1}</span>
               <span>
                 <strong>{p.titulo}</strong>
                 <small>{p.texto}</small>
@@ -114,9 +129,9 @@ export default function CompletarPerfil() {
 
         <Aviso texto={traduzir(mensagem)} />
 
-        <button type="submit" className="botao botao-primario pf-enviar" disabled={enviando}>
-          {enviando ? tp.salvando : t.enviar}
-          {!enviando && <Svg nome="proximo" tamanho={18} />}
+        <button type="submit" className={salvo ? "botao botao-primario pf-enviar pf-enviar-salvo" : "botao botao-primario pf-enviar"} disabled={enviando}>
+          {salvo ? t.salvo : enviando ? tp.salvando : t.enviar}
+          {salvo ? <Svg nome="check" tamanho={18} /> : enviando ? null : <Svg nome="proximo" tamanho={18} />}
         </button>
       </form>
     </div>
