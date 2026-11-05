@@ -69,6 +69,9 @@ function TabelaOculta({ legenda, colunas, linhas }) {
   );
 }
 
+// o balão segue o mouse; no toque ele abre com o clique e fica até tocar em outra parte
+const soMouse = (acao) => (e) => e.pointerType === "mouse" && acao();
+
 // balão com o valor, no hover ou no toque; nas pontas ele encosta na borda para não sair do cartão
 function Dica({ titulo, linhas, posicao, total }) {
   const lado = posicao === 0 ? " grafico-dica-inicio" : posicao === total - 1 ? " grafico-dica-fim" : "";
@@ -110,14 +113,14 @@ function PorMes({ atendimentos, mes, nomeDoMes }) {
               {g.cancelados}
             </li>
           </ul>
-          <div className="grafico-colunas" aria-hidden="true" onMouseLeave={() => setAtivo(null)}>
+          <div className="grafico-colunas" aria-hidden="true" onPointerLeave={soMouse(() => setAtivo(null))}>
             {meses.map((m, i) => {
               const total = m.realizados + m.cancelados;
               return (
                 <div
                   key={m.mes}
                   className={`grafico-coluna${m.mes === mes ? " grafico-coluna-destaque" : ""}`}
-                  onMouseEnter={() => setAtivo(i)}
+                  onPointerEnter={soMouse(() => setAtivo(i))}
                   onClick={() => setAtivo(i)}
                 >
                   <div className="grafico-coluna-area">
@@ -276,7 +279,7 @@ function DiasETurnos({ atendimentos }) {
           <p className="grafico-destaque grafico-destaque-texto">
             <strong>{nomeCelula(topo.dia, topo.turno)}</strong> <span>{g.diasResumo(topo.total)}</span>
           </p>
-          <div className="grafico-calor" aria-hidden="true" onMouseLeave={() => setAtivo(null)}>
+          <div className="grafico-calor" aria-hidden="true" onPointerLeave={soMouse(() => setAtivo(null))}>
             <span></span>
             {TURNOS.map((turno) => (
               <span key={turno} className="grafico-calor-turno">
@@ -293,7 +296,7 @@ function DiasETurnos({ atendimentos }) {
                     <span
                       key={turno}
                       className={`grafico-calor-celula grafico-nivel-${nivel(total, maximo)}`}
-                      onMouseEnter={() => setAtivo(chave)}
+                      onPointerEnter={soMouse(() => setAtivo(chave))}
                       onClick={() => setAtivo(chave)}
                     >
                       {total || ""}
