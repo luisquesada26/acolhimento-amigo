@@ -115,8 +115,8 @@ export const icones = {
   registro: "M3 5h18v14H3z M7 15h4 M7 11h10",
   proximo: "M9 18l6-6-6-6",
   descer: "M6 9l6 6 6-6",
-  relatorio: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8 M8 9h2",
   busca: "M11 3a8 8 0 1 0 0 16a8 8 0 1 0 0-16z M21 21l-4.3-4.3",
+  baixar: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",
 };
 
 export function Svg({ nome, tamanho }) {
@@ -128,7 +128,6 @@ export const NAVEGACAO = [
   { icone: "painel", caminho: "/voluntario", grupo: "trabalho" },
   { icone: "agenda", caminho: "/voluntario/agenda", grupo: "trabalho" },
   { icone: "atendimentos", caminho: "/voluntario/atendimentos", grupo: "trabalho" },
-  { icone: "relatorio", caminho: "/voluntario/relatorios", grupo: "trabalho" },
   { icone: "perfil", caminho: "/voluntario/perfil", grupo: "conta" },
 ];
 
