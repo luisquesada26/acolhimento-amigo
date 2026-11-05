@@ -24,7 +24,7 @@ export default function PainelVoluntario() {
     <>
       <Saudacao painel={painel} />
 
-      {!painel.perfilCompleto && <Pendencias pendencias={painel.pendencias} />}
+      <Pendencias painel={painel} />
 
       <section className="painel-numeros" aria-labelledby="numeros-titulo">
         <div className="painel-cartao-topo">

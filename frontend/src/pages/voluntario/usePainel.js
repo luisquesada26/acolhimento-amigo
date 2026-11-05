@@ -90,12 +90,9 @@ export default function usePainel() {
     .reverse();
 
   const voluntario = dados.perfil?.voluntario;
-  // o texto de cada pendência vem das traduções, pela chave
-  const pendencias = [
-    { chave: "perfil", feito: Boolean(voluntario?.idiomas?.length && voluntario?.bio) },
-    { chave: "servico", feito: dados.servicos.some((s) => s.ativo) },
-    { chave: "horario", feito: horariosLivres.length > 0 },
-  ];
+  // os 5 itens do perfil completo vêm prontos da API ({ nacionalidade: true, ... }), na ordem do banner.
+  // O texto de cada um vem das traduções, pela chave
+  const pendencias = Object.entries(voluntario?.requisitos ?? {}).map(([chave, feito]) => ({ chave, feito }));
 
   // as ações devolvem a mensagem de erro como a API mandou; a tela traduz na hora de mostrar
   async function executar(acao) {
@@ -121,7 +118,6 @@ export default function usePainel() {
     meses,
     numerosDoPeriodo,
     pendencias,
-    perfilCompleto: pendencias.every((p) => p.feito),
     // concluir já leva a anotação, se o voluntário escreveu
     marcarRealizado: (id, anotacao = "") =>
       executar(() => api.put(`/agendamentos/${id}`, { status: "realizado", ...(anotacao.trim() ? { anotacao: anotacao.trim() } : {}) })),

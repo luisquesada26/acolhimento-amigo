@@ -587,28 +587,29 @@
   line-height: 1.5;
 }
 
-/* perfil incompleto */
+/* perfil completo: os 5 itens para aparecer na busca */
 .vol-pendencias {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px 24px;
+  gap: 16px 28px;
   padding: 20px 22px;
   border: 1px solid #b9d7c5;
   border-radius: 20px;
   background: var(--verde-claro);
 }
 
-.vol-pendencias > div {
+.vol-pendencias-resumo {
   flex: 1 1 280px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .vol-pendencias h2 {
   font-size: 17px;
+  line-height: 1.3;
   color: #0d4f29;
 }
 
@@ -618,40 +619,100 @@
   line-height: 1.5;
 }
 
+/* "2 de 5 prontos" com uma barra de 5 partes, uma por item */
+.vol-pendencias-progresso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.vol-pendencias-progresso strong {
+  color: #0d4f29;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.vol-pendencias-barra {
+  display: flex;
+  gap: 4px;
+}
+
+.vol-pendencias-barra span {
+  width: 26px;
+  height: 7px;
+  border-radius: 999px;
+  background: #cfe5d8;
+}
+
+.vol-pendencias-barra span.vol-pendencias-cheio {
+  background: var(--verde-escuro);
+}
+
 .vol-pendencias ul {
   flex: 1 1 320px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .vol-pendencias li {
+  min-height: 46px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 6px 8px 6px 12px;
   border-radius: 12px;
   background: #fff;
   color: var(--texto);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.vol-pendencia-marca {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #b9c7da;
+  border-radius: 50%;
+  color: #fff;
 }
 
 .vol-pendencias li small {
   margin-left: auto;
-  color: #8a5a00;
+  padding-right: 6px;
+  color: var(--verde-escuro);
   font-size: 12.5px;
   font-weight: 800;
 }
 
 .vol-pendencias li.vol-pendencia-feita {
-  color: var(--verde-escuro);
+  background: rgba(255, 255, 255, 0.55);
+  color: #2f5a41;
+  font-weight: 600;
 }
 
-.vol-pendencias li.vol-pendencia-feita small {
-  color: var(--verde-escuro);
+.vol-pendencias li.vol-pendencia-feita .vol-pendencia-marca {
+  border-color: var(--verde-escuro);
+  background: var(--verde-escuro);
+}
+
+/* o banner com tudo pronto: o botão de ligar a busca no lugar da lista */
+.vol-pendencias-ligar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.vol-pendencias-ligar .botao {
+  gap: 8px;
+  height: 50px;
 }
 
 /* horários livres */
@@ -687,10 +748,29 @@
 }
 
 .vol-pendencias li a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   margin-left: auto;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--verde-claro);
   color: var(--verde-escuro);
   font-size: 13px;
   font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.vol-pendencias li a:hover {
+  background: #d9efe2;
+}
+
+.vol-pendencias li a:focus-visible {
+  outline: 2px solid var(--verde-escuro);
+  outline-offset: 2px;
 }
 
 /* interruptor de ligar e desligar */
@@ -742,6 +822,90 @@
 .vol-interruptor:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+/* travado até o perfil ficar completo: o motivo fica no texto ao lado */
+.vol-interruptor.vol-interruptor-travado:disabled {
+  opacity: 1;
+  color: var(--texto-2);
+  cursor: not-allowed;
+}
+
+.vol-interruptor-travado .vol-interruptor-trilho {
+  background: #e3e9f2;
+}
+
+.vol-interruptor-travado .vol-interruptor-trilho span {
+  box-shadow: 0 0 0 1px #d5dfee;
+}
+
+/* ligado, mas sem efeito (falta algo do perfil): o amarelo só no trilho */
+.vol-interruptor-alerta[aria-checked="true"] .vol-interruptor-trilho {
+  background: #e8b04b;
+}
+
+/* o que falta para a busca, embaixo do interruptor do Meu perfil: cada item é um link para o campo */
+.perfil-busca-aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 6px 0 4px;
+  color: var(--texto);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.perfil-busca-aviso-icone {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff4dc;
+  color: #8a5a00;
+}
+
+.perfil-busca-pronta .perfil-busca-aviso-icone {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.perfil-busca-aviso ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.perfil-busca-aviso a {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1.5px solid var(--borda-campo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--verde-escuro);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.perfil-busca-aviso a:hover {
+  border-color: #b9d7c5;
+  background: var(--verde-claro);
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .perfil-busca-aviso a {
+    min-height: 40px;
+  }
 }
 
 /* cabeçalho de tabela que ordena pela data */
