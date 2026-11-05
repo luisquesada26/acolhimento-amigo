@@ -280,7 +280,7 @@ function AbaDados({ painel }) {
               rotuloId={`${id}-rotulo`}
               valor={v}
               aoMudar={setV}
-              placeholder={t.comeceEscrever}
+              placeholder={t.buscarPais}
               textos={{ mostrar: t.paisMostrar, nenhum: t.paisNenhum }}
               classeEntrada="perfil-input"
             />
