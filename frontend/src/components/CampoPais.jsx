@@ -4,19 +4,18 @@ import { LANG, useIdioma } from "../context/IdiomaContext";
 import { codigoDoPais, nomeDoPais, normalizar } from "../dados/paises";
 import "./campo-pais.css";
 
-// bandeira em SVG porque o Windows não desenha emoji de bandeira; cada arquivo só baixa quando aparece na tela
-const ARQUIVOS = import.meta.glob("../../node_modules/country-flag-icons/3x2/*.svg", { eager: true, query: "?no-inline", import: "default" });
-
-// União Europeia e pseudo-região não são país; Antártida e ilhas desabitadas não têm quem nasça lá
-const FORA = new Set(["EU", "XA", "AQ", "BV", "HM", "UM"]);
+// bandeira em SVG porque o Windows não desenha emoji de bandeira; cada arquivo só baixa quando aparece na tela,
+// o JS leva só o endereço. Ficam de fora União Europeia, pseudo-regiões, Antártida e ilhas desabitadas
+const ARQUIVOS = import.meta.glob(["../../node_modules/country-flag-icons/3x2/??.svg", "!../../node_modules/country-flag-icons/3x2/{EU,XA,XC,XO,AQ,BV,HM,UM}.svg"], {
+  eager: true,
+  query: "?no-inline",
+  import: "default",
+});
 
 const IDIOMAS = Object.keys(LANG);
 
-const BANDEIRAS = {};
-for (const [caminho, url] of Object.entries(ARQUIVOS)) {
-  const codigo = caminho.match(/\/([A-Z]{2})\.svg$/)?.[1];
-  if (codigo && !FORA.has(codigo)) BANDEIRAS[codigo] = url;
-}
+// ".../3x2/BR.svg" -> "BR"
+const BANDEIRAS = Object.fromEntries(Object.entries(ARQUIVOS).map(([arquivo, url]) => [arquivo.slice(-6, -4), url]));
 
 // cada país com o nome nos 4 idiomas, montado uma vez só, na primeira busca
 let paises = null;
@@ -214,6 +213,9 @@ export default function CampoPais({ id, valor, aoMudar, rotuloId, descricaoId, i
         onFocus={(e) => e.target.select()}
         onClick={(e) => {
           if (aberto) return;
+          // clicando em cima do texto já selecionado, o Chrome põe o cursor no lugar do clique e o select() sozinho
+          // não percebe a mudança; desfazer antes faz a seleção valer
+          e.currentTarget.setSelectionRange(0, 0);
           e.currentTarget.select();
           abrir();
         }}

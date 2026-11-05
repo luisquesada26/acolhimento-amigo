@@ -7,8 +7,8 @@
 /* [role] na frente: o ".campo input" global vem depois no CSS e também define o padding */
 .cpais input.cpais-entrada[role="combobox"] {
   width: 100%;
-  padding-left: 52px;
-  padding-right: 50px;
+  padding-left: 50px;
+  padding-right: 46px;
   text-overflow: ellipsis;
 }
 
