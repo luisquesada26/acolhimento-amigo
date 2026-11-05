@@ -172,14 +172,11 @@ export const traducoes = {
     oQueContou: "O que a pessoa contou",
     foiCancelado: "Este atendimento foi cancelado.",
 
-    // histórico (Historico.jsx)
-    historico: "Histórico",
-    filtrarHistorico: "Filtrar o histórico",
+    // lista de atendimentos (TodosAtendimentos.jsx)
     filtrosHistorico: { todos: "Todos", realizado: "Realizados", confirmado: "Agendados", cancelado: "Cancelados" },
     pessoa: "Pessoa",
     servico: "Serviço",
     situacao: "Situação",
-    historicoVazio: "Seus atendimentos que já aconteceram aparecem aqui.",
 
     // agenda (Agenda.jsx); a abreviação do dia são as 3 primeiras letras
     diasSemana: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
@@ -476,13 +473,10 @@ export const traducoes = {
     oQueContou: "What they told you",
     foiCancelado: "This appointment was cancelled.",
 
-    historico: "History",
-    filtrarHistorico: "Filter history",
     filtrosHistorico: { todos: "All", realizado: "Completed", confirmado: "Scheduled", cancelado: "Cancelled" },
     pessoa: "Person",
     servico: "Service",
     situacao: "Status",
-    historicoVazio: "Your past appointments will show up here.",
 
     diasSemana: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     visoes: { mes: "Month", semana: "Week", dia: "Day" },
@@ -773,13 +767,10 @@ export const traducoes = {
     oQueContou: "Lo que contó la persona",
     foiCancelado: "Esta cita se canceló.",
 
-    historico: "Historial",
-    filtrarHistorico: "Filtrar el historial",
     filtrosHistorico: { todos: "Todas", realizado: "Realizadas", confirmado: "Programadas", cancelado: "Canceladas" },
     pessoa: "Persona",
     servico: "Servicio",
     situacao: "Estado",
-    historicoVazio: "Aquí aparecerán tus citas pasadas.",
 
     diasSemana: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
     visoes: { mes: "Mes", semana: "Semana", dia: "Día" },
@@ -1069,13 +1060,10 @@ export const traducoes = {
     oQueContou: "Ce que la personne a expliqué",
     foiCancelado: "Ce rendez-vous a été annulé.",
 
-    historico: "Historique",
-    filtrarHistorico: "Filtrer l’historique",
     filtrosHistorico: { todos: "Tous", realizado: "Effectués", confirmado: "Programmés", cancelado: "Annulés" },
     pessoa: "Personne",
     servico: "Service",
     situacao: "Statut",
-    historicoVazio: "Vos rendez-vous passés apparaîtront ici.",
 
     diasSemana: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
     visoes: { mes: "Mois", semana: "Semaine", dia: "Jour" },
