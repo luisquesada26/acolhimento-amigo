@@ -429,8 +429,13 @@
     padding-bottom: 84px;
   }
 
-  .usu:has(.pas-cartao) .pas-troca {
-    bottom: 92px;
+  /* enquanto a barra de opções existir, o cartão fica logo acima dela */
+  .usu:has(.pas-troca) .pas-cartao {
+    bottom: 66px;
+  }
+
+  .usu:has(.pas-troca):has(.pas-cartao) {
+    padding-bottom: 140px;
   }
 
   .pas-cartao .pas-selo,
@@ -482,7 +487,7 @@
 
   .pas-cartao .pas-fim {
     flex: 1;
-    flex-wrap: nowrap;
+    gap: 10px 12px;
     padding: 0;
     background: none;
     color: #fff;
@@ -503,10 +508,12 @@
   }
 
   .pas-cartao .pas-fim-botao {
-    flex: none;
-    padding: 0 14px;
     background: #fff;
     color: var(--verde-escuro);
+  }
+
+  .pas-cartao .pas-fim-botao:hover {
+    background: var(--verde-claro);
   }
 }
 
@@ -528,7 +535,28 @@
     font-size: 14px;
   }
 
-  /* só o passo atual leva o nome; os outros ficam na bolinha */
+  /* só o passo atual leva o nome, com a largura que ele pede; os outros ficam na bolinha */
+  .pas-faixa .pas-etapas,
+  .pas-faixa .pas-etapa {
+    gap: 8px;
+  }
+
+  .pas-faixa .pas-etapa:not(:last-child) {
+    flex: 1 0 auto;
+  }
+
+  .pas-faixa .pas-etapa:not(:last-child)::after {
+    min-width: 12px;
+  }
+
+  .pas-faixa .pas-atual:not(:last-child) {
+    flex: 0 1 auto;
+  }
+
+  .pas-faixa .pas-etapa-texto strong {
+    font-size: 13.5px;
+  }
+
   .pas-faixa .pas-etapa:not(.pas-atual) .pas-etapa-texto,
   .pas-faixa .pas-etapa-texto small {
     display: none;
