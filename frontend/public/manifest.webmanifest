@@ -5,7 +5,7 @@
   "description": "Apoio e orientação gratuitos para pessoas imigrantes, com atendimento online de voluntários.",
   "lang": "pt-BR",
   "dir": "ltr",
-  "start_url": "/",
+  "start_url": "/login",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#FBFCFE",

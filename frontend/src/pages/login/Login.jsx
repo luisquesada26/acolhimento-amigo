@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { FormCadastro, FormEntrar, Logo } from "./Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
+import { paginaInicial, useAuth } from "../../context/AuthContext";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { useCadastro, useEntrar } from "./useFormularios";
 import { traducoes } from "./traducoes";
@@ -16,7 +17,11 @@ export default function Login() {
   );
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
+  const { logado, usuario } = useAuth();
   const ehEntrar = modo === "entrar";
+
+  // o app instalado abre aqui; quem já entrou segue direto para a sua área
+  if (logado) return <Navigate to={paginaInicial(usuario.perfil)} replace />;
 
   return (
     <main className="login" lang={LANG[idioma]}>

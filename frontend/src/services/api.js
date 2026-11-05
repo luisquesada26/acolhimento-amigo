@@ -27,6 +27,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// sessão vencida (o token vale 7 dias) ou inválida: a API responde 401 e a pessoa volta para o login.
+// Sem isso o login, que manda quem tem sessão para a sua área, e a área recusada se mandariam um para o outro
+api.interceptors.response.use(
+  (resposta) => resposta,
+  (erro) => {
+    const comSessao = Boolean(erro.config?.headers?.Authorization) && !erro.config.url?.startsWith("/auth/");
+    if (erro.response?.status === 401 && comSessao) {
+      localStorage.removeItem(CHAVE_SESSAO);
+      window.location.replace("/login");
+    }
+    return Promise.reject(erro);
+  }
+);
+
 // em desenvolvimento, cada chamada aparece no console do navegador
 if (import.meta.env.DEV) {
   api.interceptors.request.use((config) => {
