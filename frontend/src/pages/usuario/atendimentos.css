@@ -474,8 +474,8 @@
     top: 100%;
     right: 0;
     width: auto;
-    max-height: calc(100vh - var(--ma-topo, 120px) - 8px);
-    max-height: calc(100dvh - var(--ma-topo, 120px) - 8px);
+    max-height: calc(100vh - var(--ma-topo, 120px) - 8px - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - var(--ma-topo, 120px) - 8px - env(safe-area-inset-bottom));
     border-width: 0 0 1px;
     border-radius: 0 0 var(--raio) var(--raio);
   }
