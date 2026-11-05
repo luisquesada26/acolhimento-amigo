@@ -8,7 +8,7 @@ import { Aviso, Campo } from "../../login/Campos";
 import { Svg } from "../../voluntario/comum";
 import { limparTelefone, mascaraTelefone } from "../../voluntario/telefone";
 import { traducoes } from "../traducoes";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
+import { CampoNacionalidade, EscolhaIdiomas, FotoPerfil, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 // primeiro acesso: antes de buscar, a pessoa deixa o contato para o voluntário
@@ -107,18 +107,7 @@ export default function CompletarPerfil() {
             onChange={(e) => mudar("telefone", limparTelefone(e.target.value))}
             erro={traduzir(erros.telefone)}
           />
-          <Campo
-            id="pf-pais"
-            rotulo={tp.nacionalidade}
-            list="pf-lista-paises"
-            autoComplete="country-name"
-            placeholder={tp.comeceEscrever}
-            maxLength={60}
-            value={dados.pais_origem}
-            onChange={(e) => mudar("pais_origem", e.target.value)}
-            erro={traduzir(erros.pais_origem)}
-          />
-          <ListaPaises id="pf-lista-paises" />
+          <CampoNacionalidade valor={dados.pais_origem} aoMudar={(pais) => mudar("pais_origem", pais)} erro={traduzir(erros.pais_origem)} />
         </div>
 
         <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={traduzir(erros.idiomas)} />
