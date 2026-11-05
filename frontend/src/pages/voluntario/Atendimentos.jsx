@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import Historico from "./Historico";
+import TodosAtendimentos from "./TodosAtendimentos";
 import DetalheAtendimento from "./DetalheAtendimento";
 import { AcoesAtendimento, Aguardando, Pessoa, diaExtenso, quando } from "./comum";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
@@ -69,7 +69,7 @@ export default function Atendimentos() {
         )}
       </section>
 
-      <Historico passados={painel.passados} aoAbrir={setAbertoId} />
+      <TodosAtendimentos atendimentos={painel.todos} aoAbrir={setAbertoId} />
 
       <DetalheAtendimento atendimento={painel.todos.find((a) => a.id === abertoId) ?? null} aoFechar={() => setAbertoId(null)} painel={painel} />
     </>
