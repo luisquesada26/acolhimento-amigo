@@ -13,7 +13,7 @@ import { formatarTelefone, limparTelefone, mascaraTelefone } from "../../volunta
 import { nomeDoIdioma } from "../../voluntario/usePainel";
 import { traducoes } from "../traducoes";
 import Endereco, { linhasDoEndereco } from "./Endereco";
-import { EscolhaIdiomas, FotoPerfil, ListaPaises, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
+import { CampoNacionalidade, EscolhaIdiomas, FotoPerfil, useErros, usePaisNaBandeira, validarPerfil } from "./pecasPerfil";
 import "./perfil.css";
 
 function desde(criadoEm) {
@@ -104,17 +104,7 @@ function DadosPessoais({ usuario, aoSalvar }) {
           onChange={(e) => mudar("telefone", limparTelefone(e.target.value))}
           erro={traduzir(erros.telefone)}
         />
-        <Campo
-          id="pf-pais"
-          rotulo={t.nacionalidade}
-          list="pf-lista-paises"
-          autoComplete="country-name"
-          maxLength={60}
-          value={dados.pais_origem}
-          onChange={(e) => mudar("pais_origem", e.target.value)}
-          erro={traduzir(erros.pais_origem)}
-        />
-        <ListaPaises id="pf-lista-paises" />
+        <CampoNacionalidade valor={dados.pais_origem} aoMudar={(pais) => mudar("pais_origem", pais)} erro={traduzir(erros.pais_origem)} />
       </div>
 
       <EscolhaIdiomas valor={dados.idiomas} aoMudar={(idiomas) => mudar("idiomas", idiomas)} erro={traduzir(erros.idiomas)} />

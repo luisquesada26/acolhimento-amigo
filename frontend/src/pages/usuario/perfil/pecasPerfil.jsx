@@ -1,15 +1,12 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../../components/Avatar";
+import CampoPais from "../../../components/CampoPais";
 import { Bandeira } from "../../../components/SeletorIdioma";
-import { localeAtual, useIdioma, useTextos } from "../../../context/IdiomaContext";
+import { useIdioma, useTextos } from "../../../context/IdiomaContext";
 import { chaveDoPais, nomeDoPais } from "../../../dados/paises";
 import { traduzirMensagem } from "../../../services/errosApi";
 import { Svg } from "../../voluntario/comum";
 import { traducoes } from "../traducoes";
-
-// países sugeridos no campo de nacionalidade, pelo código ISO; o nome sai no idioma da bandeira
-// a pessoa pode escrever outro
-const PAISES = ["AF", "AO", "AR", "BD", "BO", "BR", "CM", "CN", "CO", "CU", "EC", "GH", "GW", "HT", "LB", "MA", "MZ", "NG", "PS", "PY", "PE", "CD", "SN", "SY", "UA", "UY", "VE"];
 
 export const IDIOMAS_PERFIL = [
   { codigo: "pt", nome: "Português" },
@@ -116,18 +113,29 @@ export function EscolhaIdiomas({ valor, aoMudar, erro }) {
   );
 }
 
-export function ListaPaises({ id }) {
-  const { idioma } = useIdioma();
-  const nomes = useMemo(() => {
-    const regioes = new Intl.DisplayNames([localeAtual()], { type: "region" });
-    return PAISES.map((codigo) => regioes.of(codigo)).sort((a, b) => a.localeCompare(b, localeAtual()));
-  }, [idioma]); // o idioma muda o locale lido por localeAtual()
-
+// a nacionalidade do usuário, no primeiro acesso e no Meu perfil
+export function CampoNacionalidade({ valor, aoMudar, erro }) {
+  const t = useTextos(traducoes).perfil;
   return (
-    <datalist id={id}>
-      {nomes.map((p) => (
-        <option key={p} value={p} />
-      ))}
-    </datalist>
+    <div className="campo">
+      <label htmlFor="pf-pais" id="pf-pais-rotulo">
+        {t.nacionalidade}
+      </label>
+      <CampoPais
+        id="pf-pais"
+        rotuloId="pf-pais-rotulo"
+        valor={valor}
+        aoMudar={aoMudar}
+        invalido={Boolean(erro)}
+        descricaoId={erro ? "pf-pais-erro" : undefined}
+        placeholder={t.comeceEscrever}
+        textos={{ mostrar: t.paisMostrar, nenhum: t.paisNenhum }}
+      />
+      {erro && (
+        <span id="pf-pais-erro" className="campo-erro">
+          {erro}
+        </span>
+      )}
+    </div>
   );
 }
