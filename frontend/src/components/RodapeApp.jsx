@@ -3,7 +3,7 @@ import { useTextos } from "../context/IdiomaContext";
 import { traducoes } from "./rodape-traducoes";
 import "./rodape-app.css";
 
-// telefones públicos de emergência do Brasil, para quem chegou agora no país
+// telefones públicos de emergência do Brasil, para quem chegou agora no país; só informativos, sem link
 const TELEFONES = [
   ["190", "policia"],
   ["192", "samu"],
@@ -42,10 +42,8 @@ export default function RodapeApp() {
           <ul className="rod-telefones">
             {TELEFONES.map(([numero, chave]) => (
               <li key={numero}>
-                <a href={`tel:${numero}`} aria-label={t.ligarPara(numero, t.telefones[chave])}>
-                  <strong>{numero}</strong>
-                  <span>{t.telefones[chave]}</span>
-                </a>
+                <strong>{numero}</strong>
+                <span>{t.telefones[chave]}</span>
               </li>
             ))}
           </ul>
