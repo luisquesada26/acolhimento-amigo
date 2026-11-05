@@ -1,0 +1,518 @@
+/* gráficos do painel do voluntário */
+
+.graficos {
+  --grafico-realizado: #1fa35a;
+  --grafico-cancelado: #b42318;
+  --grafico-barra: var(--azul);
+  --grafico-outros: #9fb0cc;
+  --grafico-nivel-0: var(--fundo);
+  --grafico-nivel-1: #c9d8f8;
+  --grafico-nivel-2: #8fb0ef;
+  --grafico-nivel-3: #4f82e3;
+  --grafico-nivel-4: var(--azul);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 3 colunas no monitor, 2 no tablet e 1 no celular */
+.graficos-grade {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.grafico-cartao {
+  grid-column: span 2;
+  min-width: 0;
+}
+
+.grafico-cartao-mes {
+  grid-column: span 4;
+}
+
+@container (max-width: 959px) {
+  .grafico-cartao {
+    grid-column: span 3;
+  }
+
+  .grafico-cartao-mes {
+    grid-column: 1 / -1;
+  }
+}
+
+@container (max-width: 599px) {
+  .graficos-grade {
+    gap: 14px;
+  }
+
+  .grafico-cartao,
+  .grafico-cartao-mes {
+    grid-column: 1 / -1;
+  }
+}
+
+.grafico-titulo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-2);
+}
+
+.grafico-destaque {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  color: var(--texto-2);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.grafico-destaque strong {
+  color: var(--texto);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.grafico-destaque-texto strong {
+  font-size: 22px;
+}
+
+.grafico-vazio {
+  padding: 4px 0 0;
+}
+
+.grafico-nota {
+  color: var(--texto-3);
+  font-size: 12.5px;
+}
+
+.grafico-realizado {
+  background: var(--grafico-realizado);
+}
+
+.grafico-cancelado {
+  background: var(--grafico-cancelado);
+}
+
+.grafico-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.grafico-legenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grafico-chave {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* colunas empilhadas por mês */
+.grafico-colunas {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.grafico-coluna {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 22px;
+  border-radius: 10px 10px 0 0;
+  cursor: default;
+}
+
+.grafico-coluna:hover,
+.grafico-coluna-destaque {
+  background: var(--fundo);
+}
+
+.grafico-coluna-area {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.grafico-pilha {
+  position: relative;
+  width: 24px;
+  min-height: 6px;
+}
+
+.grafico-pilha-valor {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--texto);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 2px de branco separando realizados e cancelados; ponta de cima arredondada, base reta */
+.grafico-pilha-partes {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+}
+
+.grafico-pilha-partes span {
+  flex-basis: 0;
+  min-height: 3px;
+}
+
+.grafico-coluna-mes {
+  padding: 8px 0 6px;
+  color: var(--texto-3);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.grafico-coluna-destaque .grafico-coluna-mes {
+  color: var(--texto);
+  font-weight: 800;
+}
+
+/* balão do valor */
+.grafico-dica {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: max-content;
+  max-width: 220px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: var(--marinho);
+  box-shadow: 0 10px 24px rgba(8, 33, 82, 0.25);
+  color: #dbe4f5;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  pointer-events: none;
+}
+
+.grafico-dica strong {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.grafico-dica > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.grafico-dica-inicio {
+  left: 0;
+  transform: none;
+}
+
+.grafico-dica-fim {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.grafico-traco {
+  width: 12px;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+/* realizados e cancelados numa barra só */
+.grafico-medidor {
+  display: flex;
+  gap: 2px;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.grafico-medidor span {
+  flex-basis: 0;
+  min-width: 4px;
+}
+
+/* a porcentagem é o número principal do painel: grande e no meio do cartão */
+.grafico-taxa {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.grafico-taxa .grafico-destaque {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.grafico-taxa .grafico-destaque strong {
+  font-size: 52px;
+}
+
+@container (max-width: 599px) {
+  .grafico-taxa .grafico-destaque strong {
+    font-size: 42px;
+  }
+}
+
+/* barras deitadas (serviços e países) */
+.grafico-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grafico-barras li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.grafico-barra-texto {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.grafico-barra-texto span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.grafico-barra-texto strong {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.grafico-barra-trilho {
+  display: block;
+  height: 10px;
+}
+
+.grafico-barra {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--grafico-barra);
+}
+
+.grafico-barra-outros {
+  background: var(--grafico-outros);
+}
+
+.grafico-idiomas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+}
+
+.grafico-idiomas h4 {
+  color: var(--texto-3);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.grafico-idiomas ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grafico-idiomas li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--azul-claro);
+  color: var(--azul-escuro);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* mapa de calor: dias nas linhas, turnos nas colunas */
+.grafico-calor {
+  display: grid;
+  grid-template-columns: auto repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  align-items: center;
+}
+
+.grafico-calor-turno {
+  padding-bottom: 4px;
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.grafico-calor-dia {
+  padding-right: 8px;
+  color: var(--texto-3);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.grafico-calor-celula {
+  position: relative;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+
+.grafico-calor-celula:hover {
+  outline: 2px solid var(--marinho);
+  outline-offset: -2px;
+}
+
+.grafico-nivel-0 {
+  background: var(--grafico-nivel-0);
+}
+
+.grafico-nivel-1 {
+  background: var(--grafico-nivel-1);
+  color: var(--texto);
+}
+
+.grafico-nivel-2 {
+  background: var(--grafico-nivel-2);
+  color: var(--texto);
+}
+
+.grafico-nivel-3 {
+  background: var(--grafico-nivel-3);
+  color: #fff;
+}
+
+.grafico-nivel-4 {
+  background: var(--grafico-nivel-4);
+  color: #fff;
+}
+
+.grafico-escala {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--texto-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.grafico-escala i {
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.grafico-escala i:first-of-type {
+  margin-left: 4px;
+}
+
+.grafico-escala i:last-of-type {
+  margin-right: 4px;
+}
+
+/* conta sem nenhum atendimento */
+.graficos-vazio {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+}
+
+.graficos-vazio > div {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.graficos-vazio p {
+  color: var(--texto-2);
+  line-height: 1.5;
+}
+
+.graficos-vazio a {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.graficos-vazio-icone {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--azul-claro);
+  color: var(--azul);
+}
+
+/* só para o leitor de tela */
+.grafico-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

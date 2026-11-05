@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import Historico from "./Historico";
+import Graficos from "./Graficos";
 import DetalheAtendimento from "./DetalheAtendimento";
 import Saudacao from "./Saudacao";
 import { localeAtual, useIdioma, useTextos } from "../../context/IdiomaContext";
@@ -99,7 +99,7 @@ export default function PainelVoluntario() {
         </div>
       </div>
 
-      <Historico passados={painel.passados} aoAbrir={setAbertoId} />
+      <Graficos painel={painel} mes={mes} aoMudarMes={setMes} nomeDoMes={nomeDoMes} />
 
       <DetalheAtendimento atendimento={painel.todos.find((a) => a.id === abertoId) ?? null} aoFechar={() => setAbertoId(null)} painel={painel} />
     </>
