@@ -6,7 +6,6 @@ export const traducoes = {
     voltarTopo: "Voltar ao topo",
     emergencia: "Em emergência",
     gratuito: "Ligação gratuita, de qualquer telefone, 24 horas.",
-    ligarPara: (numero, nome) => `Ligar para ${numero}, ${nome}`,
     telefones: {
       policia: "Polícia",
       samu: "SAMU",
@@ -21,7 +20,6 @@ export const traducoes = {
     voltarTopo: "Back to top",
     emergencia: "In an emergency",
     gratuito: "Free call from any phone, 24 hours a day.",
-    ligarPara: (numero, nome) => `Call ${numero}, ${nome}`,
     telefones: {
       policia: "Police",
       samu: "Ambulance (SAMU)",
@@ -36,7 +34,6 @@ export const traducoes = {
     voltarTopo: "Volver arriba",
     emergencia: "En una emergencia",
     gratuito: "Llamada gratuita desde cualquier teléfono, las 24 horas.",
-    ligarPara: (numero, nome) => `Llamar al ${numero}, ${nome}`,
     telefones: {
       policia: "Policía",
       samu: "Ambulancia (SAMU)",
@@ -51,7 +48,6 @@ export const traducoes = {
     voltarTopo: "Retour en haut",
     emergencia: "En cas d'urgence",
     gratuito: "Appel gratuit depuis n'importe quel téléphone, 24 h sur 24.",
-    ligarPara: (numero, nome) => `Appeler le ${numero}, ${nome}`,
     telefones: {
       policia: "Police",
       samu: "Ambulance (SAMU)",

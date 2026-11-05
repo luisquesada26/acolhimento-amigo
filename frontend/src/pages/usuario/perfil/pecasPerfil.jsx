@@ -95,17 +95,20 @@ export function EscolhaIdiomas({ valor, aoMudar, erro }) {
     <fieldset className="campo pf-idiomas" aria-describedby={erro ? "pf-idiomas-erro" : undefined}>
       <legend>{t.idiomasPergunta}</legend>
       <span className="dica">{t.idiomasDica}</span>
-      <div className="pf-idiomas-opcoes">
-        {IDIOMAS_PERFIL.map((i) => {
-          const marcado = valor.includes(i.codigo);
-          return (
-            <label key={i.codigo} lang={i.codigo} className={marcado ? "pf-idioma pf-idioma-ligado" : "pf-idioma"}>
-              <input type="checkbox" value={i.codigo} checked={marcado} onChange={() => alternar(i.codigo)} />
-              <Bandeira codigo={i.codigo} />
-              {i.nome}
-            </label>
-          );
-        })}
+      {/* as colunas seguem a largura do campo, não a da tela */}
+      <div className="pf-idiomas-caixa">
+        <div className="pf-idiomas-opcoes">
+          {IDIOMAS_PERFIL.map((i) => {
+            const marcado = valor.includes(i.codigo);
+            return (
+              <label key={i.codigo} lang={i.codigo} className={marcado ? "pf-idioma pf-idioma-ligado" : "pf-idioma"}>
+                <input type="checkbox" value={i.codigo} checked={marcado} onChange={() => alternar(i.codigo)} />
+                <Bandeira codigo={i.codigo} />
+                {i.nome}
+              </label>
+            );
+          })}
+        </div>
       </div>
       {erro && (
         <span id="pf-idiomas-erro" className="campo-erro">
