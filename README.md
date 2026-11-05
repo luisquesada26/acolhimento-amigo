@@ -237,7 +237,7 @@ Só quem cuida do banco cria migration. Toda migration vai em um pull request pr
 | --- | --- | --- |
 | `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idiomas`, `foto`, `cep`, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário. O endereço é opcional e só a própria pessoa vê |
 | `areas` | `nome` | As áreas de atendimento: Jurídico, Psicologia, Moradia e as outras |
-| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `traducoes`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca. `traducoes` guarda a bio nos 4 idiomas |
+| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `traducoes`, `ativo` | Dados profissionais de quem é voluntário. A conta nova nasce com `ativo` desligado, e ele só liga com o perfil completo; desligado, não aparece na busca. `traducoes` guarda a bio nos 4 idiomas |
 | `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `traducoes`, `ativo` | O que cada voluntário oferece. `traducoes` guarda o título e a descrição nos 4 idiomas |
 | `horarios` | `voluntario_id`, `data`, `hora_inicio`, `hora_fim`, `status` | A agenda do voluntário: cada horário está `livre` ou `reservado` |
 | `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao`, `link_video`, `google_evento_id` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |

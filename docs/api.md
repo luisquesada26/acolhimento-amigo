@@ -27,7 +27,7 @@ A API descobre quem é a pessoa pelo token. Por isso ninguém manda `usuario_id`
 | --- | --- | --- | --- |
 | POST | `/auth/cadastro` | público | Cria a conta e já devolve `{ token, usuario }` |
 | POST | `/auth/login` | público | Recebe `{ email, senha }` e devolve `{ token, usuario }` |
-| GET | `/me` | os dois | Meus dados. O voluntário recebe junto `voluntario` com os dados profissionais |
+| GET | `/me` | os dois | Meus dados. O voluntário recebe junto `voluntario` com os dados profissionais e a situação na busca: `requisitos` (os 5 itens do perfil completo, cada um `true` ou `false`), `perfil_completo` e `na_busca` |
 | PUT | `/me` | os dois | Edita meus dados, inclusive a senha e o endereço (`cep` com 8 números, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` com a sigla; tudo opcional, `null` apaga). O voluntário pode mandar `voluntario` com area_id, registro_profissional, idiomas, bio e ativo |
 | DELETE | `/me` | os dois | Exclui a minha conta e libera os horários que eu tinha reservado |
 
@@ -51,6 +51,8 @@ Cadastro de voluntário:
 ```
 
 `voluntario` só é obrigatório quando `perfil` é `voluntario`, e no cadastro basta a `area_id`. Registro profissional, idiomas e bio o voluntário completa depois pelo `PUT /me`. Sem `"aceite_lgpd": true` o cadastro não passa.
+
+A conta nova de voluntário nasce fora da busca (`ativo: false`). O `PUT /me` com `"voluntario": { "ativo": true }` só passa com o perfil completo: nacionalidade (`pais_origem`), pelo menos um idioma, bio, pelo menos um serviço ativo e pelo menos um horário livre no futuro. Faltando algo, responde `400 "Complete o perfil para aparecer na busca"`, com um item em `detalhes` para cada coisa que falta (`pais_origem`, `voluntario.idiomas`, `voluntario.bio`, `servicos`, `horarios`). Desligar sempre pode.
 
 Os idiomas aceitos são `pt`, `en`, `es` e `fr`, tanto nos `idiomas` do voluntário quanto nos `idiomas` do usuário, que é uma lista com pelo menos um (no cadastro, sem a lista, fica `["pt"]`). Qualquer outro responde `400`.
 
@@ -80,8 +82,8 @@ Ainda não existe perfil de administrador, então quem cuida das áreas são os 
 
 | Método | Rota | Quem | Descrição |
 | --- | --- | --- | --- |
-| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana&data=&turno=` | público | Busca. Só aparece quem está ativo e tem serviço ativo |
-| GET | `/voluntarios/:id` | público | Perfil com serviços ativos e horários livres futuros |
+| GET | `/voluntarios?q=&area=&idioma=&disponivel=semana&data=&turno=` | público | Busca. Só aparece quem está ativo e tem nacionalidade, idiomas, bio e serviço ativo. O horário futuro não conta aqui, só para ligar a busca |
+| GET | `/voluntarios/:id` | público | Perfil com serviços ativos e horários livres futuros. Fora da busca, o perfil abre sem horários, para ninguém marcar pelo link direto |
 
 `q` procura no nome, na bio e no título e descrição dos serviços, no original e nas traduções que ainda valem ("visa" acha "Visto e residência"). O voluntário edita os próprios dados pelo `PUT /me`.
 
