@@ -332,6 +332,41 @@
   }
 }
 
+/* os cinco números sem um cartão sobrando sozinho na última linha:
+   5 numa linha quando cabem, senão 3 + 2, e no celular 2 + 2 + 1 com o último na largura toda */
+.painel-numeros {
+  container-type: inline-size;
+}
+
+@container (max-width: 899px) {
+  .vol-numeros-cartoes {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .vol-numeros-cartoes li {
+    grid-column: span 2;
+  }
+
+  .vol-numeros-cartoes li:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+}
+
+@container (max-width: 479px) {
+  .vol-numeros-cartoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vol-numeros-cartoes li,
+  .vol-numeros-cartoes li:nth-child(n + 4) {
+    grid-column: auto;
+  }
+
+  .vol-numeros-cartoes li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
 /* azul, como o "marcado" do calendário */
 .vol-quando {
   padding: 6px 12px;
