@@ -13,7 +13,7 @@ export default function Saudacao({ painel }) {
   const { proximo } = painel;
   const hoje = new Date().toDateString();
   const atendimentosHoje = painel.todos.filter((a) => a.status !== "cancelado" && a.inicio.toDateString() === hoje).length;
-  const naBusca = Boolean(painel.perfil.voluntario.ativo);
+  const naBusca = Boolean(painel.perfil.voluntario.na_busca);
 
   const titulo = s.titulo(
     <span key="nome" className="saudacao-nome">

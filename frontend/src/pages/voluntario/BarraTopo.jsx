@@ -22,7 +22,8 @@ function MenuConta({ perfil, sair, app }) {
   const caixa = useRef(null);
   const botao = useRef(null);
   const id = useId();
-  const naBusca = perfil.voluntario.ativo;
+  // na busca é ligado e com o perfil pronto; a API responde as duas coisas juntas
+  const naBusca = perfil.voluntario.na_busca;
 
   useEffect(() => {
     if (!aberto) return undefined;
@@ -73,7 +74,7 @@ function MenuConta({ perfil, sair, app }) {
         </Avatar>
         <span className="barra-conta-texto">
           <strong>{perfil.nome}</strong>
-          <small className={naBusca ? "barra-conta-ativo" : undefined}>{naBusca ? t.naBusca : t.pausado}</small>
+          <small className={naBusca ? "barra-conta-ativo" : undefined}>{naBusca ? t.naBusca : t.foraDaBusca}</small>
         </span>
         <span className="barra-conta-seta">
           <Svg nome="descer" tamanho={16} />
