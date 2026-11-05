@@ -154,6 +154,7 @@ export default function TodosAtendimentos({ atendimentos, aoAbrir }) {
             onPointerEnter={prepararExcel}
             onFocus={prepararExcel}
             disabled={exportando || !itens.length}
+            aria-busy={exportando}
           >
             <Svg nome="baixar" tamanho={18} /> {exportando ? t.exportando : t.exportarExcel}
           </button>

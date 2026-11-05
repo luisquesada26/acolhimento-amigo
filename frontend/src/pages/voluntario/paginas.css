@@ -273,6 +273,11 @@ a.painel-item {
   color: var(--verde-escuro);
 }
 
+/* desligado porque a lista está vazia: não é espera */
+.atend-exportar:disabled:not([aria-busy="true"]) {
+  cursor: not-allowed;
+}
+
 .atend-resultado .vol-erro {
   flex-basis: 100%;
 }
