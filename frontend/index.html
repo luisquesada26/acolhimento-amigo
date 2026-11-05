@@ -2,9 +2,22 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover: a página usa a tela inteira e o CSS desvia das áreas seguras com env(safe-area-inset-*) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Acolhimento Amigo</title>
+    <meta
+      name="description"
+      content="Apoio e orientação gratuitos para pessoas imigrantes, com atendimento online de voluntários."
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- instalar no celular: o manifesto vale no Android e no computador; as tags apple-* no iPhone -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#FBFCFE" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Acolhimento" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

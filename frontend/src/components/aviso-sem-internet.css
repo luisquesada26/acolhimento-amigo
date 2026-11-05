@@ -1,0 +1,24 @@
+/* aviso de sem internet: faixa marinho no alto da página, no fluxo (empurra a tela, não cobre).
+   relative + z-index: a foto do login é fixa na janela inteira e pintava por cima da faixa */
+.pwa-sem-internet {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  background: var(--marinho);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* o amarelo fica só no ícone */
+.pwa-sem-internet svg {
+  flex-shrink: 0;
+  color: #ffc94d;
+}

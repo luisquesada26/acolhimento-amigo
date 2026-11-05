@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "../login/Campos";
+import ConviteInstalar from "../../components/ConviteInstalar";
 import RodapeApp from "../../components/RodapeApp";
+import { useInstalarApp } from "../../components/useInstalarApp";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { traduzirErroApi } from "../../services/errosApi";
 import usePainel from "./usePainel";
@@ -28,6 +30,7 @@ export default function LayoutVoluntario() {
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido);
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
+  const app = useInstalarApp();
 
   function alternarMenu() {
     const novo = !recolhido;
@@ -111,8 +114,9 @@ export default function LayoutVoluntario() {
       </aside>
 
       <div className="painel-coluna">
-        <BarraTopo perfil={perfil} sair={painel.sair} />
+        <BarraTopo perfil={perfil} sair={painel.sair} app={app} />
         <main className="painel-conteudo">
+          <ConviteInstalar app={app} />
           <Outlet context={painel} />
         </main>
         <RodapeApp />

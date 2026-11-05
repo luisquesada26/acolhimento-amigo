@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
+import { ItemInstalar } from "../../components/ConviteInstalar";
 import { useTextos } from "../../context/IdiomaContext";
 import { NAVEGACAO, Svg } from "./comum";
 import { traducoes } from "./traducoes";
@@ -14,8 +15,8 @@ function paginaAtual(pathname) {
   )[0];
 }
 
-// foto, nome e status; abre o menu com meu perfil e sair
-function MenuConta({ perfil, sair }) {
+// foto, nome e status; abre o menu com meu perfil, instalar app (quando dá) e sair
+function MenuConta({ perfil, sair, app }) {
   const t = useTextos(traducoes);
   const [aberto, setAberto] = useState(false);
   const caixa = useRef(null);
@@ -91,6 +92,7 @@ function MenuConta({ perfil, sair }) {
               <Svg nome="perfil" tamanho={18} />
               {t.menu.perfil}
             </Link>
+            <ItemInstalar app={app} aoEscolher={() => setAberto(false)} />
             <button role="menuitem" type="button" className="barra-conta-item barra-conta-sair" onClick={sair}>
               <Svg nome="sair" tamanho={18} />
               {t.sair}
@@ -104,7 +106,7 @@ function MenuConta({ perfil, sair }) {
 
 // barra de cima das telas do voluntário: onde a pessoa está, o idioma e a conta
 // o logo só aparece no celular, quando o menu vai para baixo
-export default function BarraTopo({ perfil, sair }) {
+export default function BarraTopo({ perfil, sair, app }) {
   const { pathname } = useLocation();
   const t = useTextos(traducoes);
   const pagina = paginaAtual(pathname);
@@ -130,7 +132,7 @@ export default function BarraTopo({ perfil, sair }) {
 
       <div className="painel-barra-acoes">
         <SeletorIdioma />
-        <MenuConta perfil={perfil} sair={sair} />
+        <MenuConta perfil={perfil} sair={sair} app={app} />
       </div>
     </header>
   );
