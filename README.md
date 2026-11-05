@@ -50,8 +50,9 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 | Voluntário (logado) | eu posso... | Ver o caso e o contato de quem marcou comigo | `GET /meus-agendamentos` | Pronto |
 | Voluntário (logado) | eu posso... | Concluir um atendimento escrevendo o que foi feito e o próximo passo | `PUT /agendamentos/:id` | Pronto |
 | Voluntário (logado) | eu posso... | Cancelar um atendimento | `DELETE /agendamentos/:id` | Pronto |
-| Voluntário (logado) | eu posso... | Ver meu histórico filtrando realizados e cancelados | `GET /meus-agendamentos` | Pronto |
-| Voluntário (logado) | eu posso... | Buscar nos relatórios quem atendi por nome, data, serviço e nacionalidade | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Ver todos os meus atendimentos filtrando realizados, agendados e cancelados | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Buscar nos atendimentos quem atendi por nome, data, serviço e nacionalidade | `GET /meus-agendamentos` | Pronto |
+| Voluntário (logado) | eu posso... | Exportar para Excel a lista de atendimentos, inteira ou com os filtros | `GET /meus-agendamentos` | Pronto |
 | Voluntário (logado) | eu posso... | Escolher se apareço ou não na busca | `PUT /me` | Pronto |
 | Voluntário (logado) | eu posso... | Editar meus dados, foto, idiomas e apresentação | `GET /me`, `PUT /me` | Pronto |
 | Voluntário (logado) | eu posso... | Excluir minha conta | `DELETE /me` | Pronto |
@@ -60,7 +61,7 @@ Cada ação mostra a rota da API que ela usa. A coluna **Situação** diz em que
 
 - Backend: Node.js, Express, Zod, bcrypt e JWT
 - Banco: PostgreSQL (no Supabase) com o pacote pg
-- Frontend: React + Vite, React Router e Axios
+- Frontend: React + Vite, React Router e Axios; write-excel-file gera a planilha dos atendimentos e só carrega no clique
 - Publicação: Vercel (site e API num projeto só) e Supabase (banco)
 
 ## Arquitetura
@@ -237,7 +238,7 @@ Só quem cuida do banco cria migration. Toda migration vai em um pull request pr
 | --- | --- | --- |
 | `usuarios` | `nome`, `email`, `senha_hash`, `telefone`, `perfil`, `pais_origem`, `idiomas`, `foto`, `cep`, `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado` | Todas as contas. O `perfil` diz se a pessoa é usuário ou voluntário. O endereço é opcional e só a própria pessoa vê |
 | `areas` | `nome` | As áreas de atendimento: Jurídico, Psicologia, Moradia e as outras |
-| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `traducoes`, `ativo` | Dados profissionais de quem é voluntário. Com `ativo` desligado, não aparece na busca. `traducoes` guarda a bio nos 4 idiomas |
+| `voluntarios` | `usuario_id`, `area_id`, `registro_profissional`, `idiomas`, `bio`, `traducoes`, `ativo` | Dados profissionais de quem é voluntário. A conta nova nasce com `ativo` desligado, e ele só liga com o perfil completo; desligado, não aparece na busca. `traducoes` guarda a bio nos 4 idiomas |
 | `servicos` | `voluntario_id`, `titulo`, `descricao`, `duracao_min`, `traducoes`, `ativo` | O que cada voluntário oferece. `traducoes` guarda o título e a descrição nos 4 idiomas |
 | `horarios` | `voluntario_id`, `data`, `hora_inicio`, `hora_fim`, `status` | A agenda do voluntário: cada horário está `livre` ou `reservado` |
 | `agendamentos` | `horario_id`, `usuario_id`, `servico_id`, `descricao`, `status`, `anotacao`, `link_video`, `google_evento_id` | Junta quem marcou, o horário e o serviço. Fica `confirmado`, `realizado` ou `cancelado` |

@@ -395,6 +395,8 @@
 
 .rodape-inicio {
   padding: 28px 8% 18px;
+  /* no iPhone o azul desce até a borda e o texto fica acima da barrinha de início */
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
   background: var(--marinho);
   color: #ffffff;
 }

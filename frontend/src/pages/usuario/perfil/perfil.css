@@ -94,10 +94,28 @@
   margin: -2px 0 10px;
 }
 
+/* cada cartão precisa de uns 175px (bandeira, nome e caixinha); as colunas contam a largura do campo:
+   1 coluna, 2 quando cabem e 4 só com folga, nunca 3 + 1 */
+.pf-idiomas-caixa {
+  container-type: inline-size;
+}
+
 .pf-idiomas-opcoes {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
+}
+
+@container (min-width: 400px) {
+  .pf-idiomas-opcoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 800px) {
+  .pf-idiomas-opcoes {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* .pf-idiomas na frente: o ".campo label" global zera o padding */
@@ -106,7 +124,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 38px 14px 16px;
+  padding: 14px 12px 14px 16px;
   border: 1.5px solid var(--borda-campo);
   border-radius: var(--raio);
   background: #fbfcfe;
@@ -144,11 +162,12 @@
   color: var(--azul-escuro);
 }
 
-/* caixinha de marcar: vazia mostra que dá para escolher mais de um */
+/* caixinha de marcar: vazia mostra que dá para escolher mais de um.
+   Fica no fluxo, depois do nome, para nunca cobrir a última letra */
 .pf-idioma::after {
   content: "";
-  position: absolute;
-  right: 12px;
+  flex: none;
+  margin-left: auto;
   width: 18px;
   height: 18px;
   border: 1.5px solid var(--borda-campo);
@@ -659,10 +678,6 @@
 }
 
 @media (max-width: 640px) {
-  .pf-idiomas-opcoes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .pf-enviar {
     align-self: stretch;
     min-width: 0;
@@ -713,12 +728,5 @@
 
   .pf-acoes > button {
     min-height: 44px;
-  }
-}
-
-/* celular estreito: dois cartões de idioma lado a lado não cabem */
-@media (max-width: 480px) {
-  .pf-idiomas-opcoes {
-    grid-template-columns: minmax(0, 1fr);
   }
 }

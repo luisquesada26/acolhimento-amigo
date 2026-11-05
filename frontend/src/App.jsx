@@ -8,7 +8,6 @@ import PainelVoluntario from "./pages/voluntario/PainelVoluntario";
 import Agenda from "./pages/voluntario/Agenda";
 import Atendimentos from "./pages/voluntario/Atendimentos";
 import Perfil from "./pages/voluntario/Perfil";
-import Relatorios from "./pages/voluntario/Relatorios";
 import LayoutUsuario from "./pages/usuario/LayoutUsuario";
 import Buscar from "./pages/usuario/Buscar";
 import PerfilVoluntario from "./pages/usuario/PerfilVoluntario";
@@ -48,7 +47,8 @@ export default function App() {
         <Route index element={<PainelVoluntario />} />
         <Route path="agenda" element={<Agenda />} />
         <Route path="atendimentos" element={<Atendimentos />} />
-        <Route path="relatorios" element={<Relatorios />} />
+        {/* os relatórios viraram os filtros da lista de atendimentos */}
+        <Route path="relatorios" element={<Navigate to="/voluntario/atendimentos" replace />} />
         <Route path="perfil" element={<Perfil />} />
       </Route>
 

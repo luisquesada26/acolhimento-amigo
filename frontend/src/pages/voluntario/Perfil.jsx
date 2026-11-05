@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import { nomeDoIdioma } from "./usePainel";
-import { Interruptor, Svg, useAcao } from "./comum";
+import { Interruptor, ONDE_RESOLVER, Svg, useAcao } from "./comum";
+import { mostrarEFocar, useCampoPedido } from "./campoPedido";
 import { formatarTelefone, limparTelefone, mascaraTelefone } from "./telefone";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../components/Avatar";
+import CampoPais, { BandeiraDoPais } from "../../components/CampoPais";
 import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
@@ -40,6 +42,21 @@ function CampoEditavel({ id, icone, rotulo, mostrar, inicial, aoSalvar, editor, 
   const [valor, setValor] = useState(inicial);
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const caixa = useRef(null);
+  const [focar, setFocar] = useState(false);
+
+  // o link "Informar" das pendências chega com ?campo=<id>: o campo já abre editando, à vista e com o foco
+  useCampoPedido(id, () => {
+    setValor(inicial);
+    setEditando(true);
+    setFocar(true);
+  });
+
+  useEffect(() => {
+    if (!focar || !editando) return;
+    mostrarEFocar(caixa.current);
+    setFocar(false);
+  }, [focar, editando]);
 
   async function salvar(evento) {
     evento.preventDefault();
@@ -80,7 +97,7 @@ function CampoEditavel({ id, icone, rotulo, mostrar, inicial, aoSalvar, editor, 
 
   if (!editando) {
     return (
-      <div className={classe}>
+      <div className={classe} ref={caixa}>
         {topo}
         <div className="perfil-campo-valor">{mostrar || <em>{vazio ?? t.naoInformado}</em>}</div>
       </div>
@@ -88,7 +105,7 @@ function CampoEditavel({ id, icone, rotulo, mostrar, inicial, aoSalvar, editor, 
   }
 
   return (
-    <form className={classe} onSubmit={salvar} noValidate>
+    <form className={classe} onSubmit={salvar} noValidate ref={caixa}>
       {topo}
       <div className="perfil-campo-editor">{editor(valor, setValor, id)}</div>
       <div className="vol-acoes">
@@ -263,11 +280,26 @@ function AbaDados({ painel }) {
           icone="globo"
           rotulo={t.nacionalidade}
           plano
-          mostrar={nomeDoPais(perfil.pais_origem)}
+          mostrar={
+            perfil.pais_origem && (
+              <span className="cpais-valor">
+                <BandeiraDoPais pais={perfil.pais_origem} />
+                {nomeDoPais(perfil.pais_origem)}
+              </span>
+            )
+          }
           inicial={nomeDoPais(perfil.pais_origem ?? "")}
           aoSalvar={(v) => salvar({ pais_origem: v.trim() || null })}
           editor={(v, setV, id) => (
-            <input id={id} className="perfil-input" aria-labelledby={`${id}-rotulo`} value={v} maxLength={60} onChange={(e) => setV(e.target.value)} placeholder={t.exPais} />
+            <CampoPais
+              id={id}
+              rotuloId={`${id}-rotulo`}
+              valor={v}
+              aoMudar={setV}
+              placeholder={t.buscarPais}
+              textos={{ mostrar: t.paisMostrar, nenhum: t.paisNenhum }}
+              classeEntrada="perfil-input"
+            />
           )}
         />
         <CampoEditavel
@@ -358,13 +390,39 @@ function AbaServicos({ painel }) {
   );
 }
 
+// o que falta para a busca, logo abaixo do interruptor: cada item é um link para o campo
+function AvisoBusca({ id, texto, faltam }) {
+  const t = useTextos(traducoes);
+  return (
+    <div id={id} className={faltam.length ? "perfil-busca-aviso" : "perfil-busca-aviso perfil-busca-pronta"}>
+      <span className="perfil-busca-aviso-icone" aria-hidden="true">
+        <Svg nome={faltam.length ? "alerta" : "check"} tamanho={16} />
+      </span>
+      <span>{texto}</span>
+      {faltam.length > 0 && (
+        <ul>
+          {faltam.map((item) => (
+            <li key={item}>
+              <Link to={ONDE_RESOLVER[item]}>{t.pendencias[item]}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function Perfil() {
   const painel = useOutletContext();
   const [parametros, setParametros] = useSearchParams();
   const t = useTextos(traducoes);
   const aba = ABAS.includes(parametros.get("aba")) ? parametros.get("aba") : "dados";
-  const ativo = painel.perfil.voluntario.ativo;
+  const { ativo, na_busca: naBusca, perfil_completo: completo, requisitos } = painel.perfil.voluntario;
   const busca = useAcao(() => painel.salvarPerfil({ voluntario: { ativo: !ativo } }));
+  const faltam = Object.keys(requisitos).filter((item) => !requisitos[item]);
+  // desligado, só liga com o perfil completo; ligado, sempre pode desligar
+  const travado = !ativo && !completo;
+  const aviso = completo ? (ativo ? null : t.buscaPronta) : !ativo ? t.buscaFaltaLigar : naBusca ? t.buscaFaltaHorario : t.buscaFaltaVoltar;
 
   return (
     <>
@@ -372,8 +430,17 @@ export default function Perfil() {
         {/* o interruptor da busca fica ao lado do título */}
         <div className="perfil-titulo">
           <h1>{t.meuPerfil}</h1>
-          <Interruptor ligado={ativo} aoMudar={busca.executar} desabilitado={busca.ocupado} rotulo={ativo ? t.aparecendoBusca : t.foraBusca} />
+          <Interruptor
+            ligado={ativo}
+            aoMudar={busca.executar}
+            desabilitado={busca.ocupado}
+            travado={travado}
+            alerta={ativo && !naBusca}
+            descricao={aviso ? "perfil-busca-aviso" : undefined}
+            rotulo={naBusca ? t.aparecendoBusca : t.foraBusca}
+          />
         </div>
+        {aviso && <AvisoBusca id="perfil-busca-aviso" texto={aviso} faltam={faltam} />}
         <p>{t.perfilSubtitulo}</p>
         {busca.erro && (
           <p className="vol-erro" role="alert">

@@ -115,8 +115,8 @@ export const icones = {
   registro: "M3 5h18v14H3z M7 15h4 M7 11h10",
   proximo: "M9 18l6-6-6-6",
   descer: "M6 9l6 6 6-6",
-  relatorio: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8 M8 9h2",
   busca: "M11 3a8 8 0 1 0 0 16a8 8 0 1 0 0-16z M21 21l-4.3-4.3",
+  baixar: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",
 };
 
 export function Svg({ nome, tamanho }) {
@@ -128,15 +128,17 @@ export const NAVEGACAO = [
   { icone: "painel", caminho: "/voluntario", grupo: "trabalho" },
   { icone: "agenda", caminho: "/voluntario/agenda", grupo: "trabalho" },
   { icone: "atendimentos", caminho: "/voluntario/atendimentos", grupo: "trabalho" },
-  { icone: "relatorio", caminho: "/voluntario/relatorios", grupo: "trabalho" },
   { icone: "perfil", caminho: "/voluntario/perfil", grupo: "conta" },
 ];
 
-// onde resolver cada pendência do perfil; o texto do link fica nas traduções
-const ONDE_RESOLVER = {
-  perfil: "/voluntario/perfil",
-  servico: "/voluntario/perfil?aba=servicos",
-  horario: "/voluntario/perfil?aba=agenda",
+// onde resolver cada item do perfil completo: a aba do Meu perfil e o campo que abre nela (campoPedido.js).
+// O texto do link fica nas traduções
+export const ONDE_RESOLVER = {
+  nacionalidade: "/voluntario/perfil?aba=dados&campo=campo-pais",
+  idiomas: "/voluntario/perfil?aba=dados&campo=campo-idiomas",
+  bio: "/voluntario/perfil?aba=dados&campo=campo-bio",
+  servico: "/voluntario/perfil?aba=servicos&campo=novo-servico",
+  horario: "/voluntario/perfil?aba=agenda&campo=disponibilidade",
 };
 
 // botão que chama a API, mostra o erro ao lado e fica travado enquanto espera.
@@ -446,29 +448,71 @@ export function ListaAtendimentos({ itens, vazio, mostrarStatus = false, aoAbrir
   );
 }
 
-export function Pendencias({ pendencias }) {
+// banner do perfil completo no painel: os 5 itens, quantos estão prontos e o link para preencher cada um.
+// Com tudo pronto e a busca desligada, vira o botão de ligar; ligada e completa, some
+export function Pendencias({ painel }) {
   const t = useTextos(traducoes);
-  const feitas = pendencias.filter((p) => p.feito).length;
+  const { ativo, na_busca: naBusca, perfil_completo: completo } = painel.perfil.voluntario;
+  const ligar = useAcao(() => painel.salvarPerfil({ voluntario: { ativo: true } }));
+  const itens = painel.pendencias;
+  const feitas = itens.filter((p) => p.feito).length;
+
+  if (naBusca && completo) return null;
+
+  const [titulo, texto] = completo
+    ? [t.pendenciasProntoTitulo, t.pendenciasProntoTexto]
+    : naBusca
+      ? [t.pendenciasSemHorarioTitulo, t.pendenciasSemHorarioTexto]
+      : ativo
+        ? [t.pendenciasForaTitulo, t.pendenciasForaTexto]
+        : [t.pendenciasTitulo, t.pendenciasTexto];
 
   return (
     <section className="vol-pendencias" aria-labelledby="vol-pendencias-titulo">
-      <div>
-        <h2 id="vol-pendencias-titulo">{t.pendenciasTitulo}</h2>
-        <p>{t.pendenciasProntos(feitas, pendencias.length)}</p>
+      <div className="vol-pendencias-resumo">
+        <h2 id="vol-pendencias-titulo">{titulo}</h2>
+        <div className="vol-pendencias-progresso">
+          <span className="vol-pendencias-barra" aria-hidden="true">
+            {itens.map((p) => (
+              <span key={p.chave} className={p.feito ? "vol-pendencias-cheio" : undefined}></span>
+            ))}
+          </span>
+          <strong>{t.pendenciasN(feitas, itens.length)}</strong>
+        </div>
+        <p>{texto}</p>
       </div>
-      <ul>
-        {pendencias.map((p) => (
-          <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : ""}>
-            <Svg nome={p.feito ? "check" : "relogio"} tamanho={18} />
-            <span>{t.pendencias[p.chave]}</span>
-            {p.feito ? (
-              <small>{t.pronto}</small>
-            ) : (
-              <Link to={ONDE_RESOLVER[p.chave]}>{t.resolver[p.chave]}</Link>
-            )}
-          </li>
-        ))}
-      </ul>
+
+      {completo ? (
+        <div className="vol-pendencias-ligar">
+          <button type="button" className="botao botao-primario botao-voluntario" onClick={ligar.executar} disabled={ligar.ocupado}>
+            <Svg nome="busca" tamanho={18} /> {ligar.ocupado ? t.ativando : t.ativarBusca}
+          </button>
+          {ligar.erro && (
+            <p className="vol-erro" role="alert">
+              {ligar.erro}
+            </p>
+          )}
+        </div>
+      ) : (
+        <ul>
+          {itens.map((p) => (
+            <li key={p.chave} className={p.feito ? "vol-pendencia-feita" : undefined}>
+              <span className="vol-pendencia-marca" aria-hidden="true">
+                {p.feito && <Svg nome="check" tamanho={14} />}
+              </span>
+              <span>{t.pendencias[p.chave]}</span>
+              {p.feito ? (
+                <small>{t.pronto}</small>
+              ) : (
+                <Link to={ONDE_RESOLVER[p.chave]} aria-label={`${t.resolver[p.chave]}: ${t.pendencias[p.chave]}`}>
+                  {t.resolver[p.chave]}
+                  <Svg nome="proximo" tamanho={14} />
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -492,10 +536,20 @@ export function HorariosLivres({ horarios, limite = 6 }) {
   );
 }
 
-// liga e desliga, com a palavra ao lado (não depende só da cor)
-export function Interruptor({ ligado, aoMudar, rotulo, desabilitado = false }) {
+// liga e desliga, com a palavra ao lado (não depende só da cor).
+// travado: não pode mudar agora (o porquê vai no texto de "descricao"); alerta: ligado, mas sem efeito
+export function Interruptor({ ligado, aoMudar, rotulo, desabilitado = false, travado = false, alerta = false, descricao }) {
+  const classe = `vol-interruptor${travado ? " vol-interruptor-travado" : ""}${alerta ? " vol-interruptor-alerta" : ""}`;
   return (
-    <button type="button" role="switch" aria-checked={ligado} className="vol-interruptor" onClick={aoMudar} disabled={desabilitado}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={ligado}
+      aria-describedby={descricao}
+      className={classe}
+      onClick={aoMudar}
+      disabled={desabilitado || travado}
+    >
       <span className="vol-interruptor-trilho" aria-hidden="true">
         <span></span>
       </span>
