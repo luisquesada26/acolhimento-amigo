@@ -1,15 +1,4 @@
-/* progresso do primeiro acesso (prefixo pas): opção A é a faixa no topo, opção B o cartão de passos */
-
-.pas-area {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.pas-area > .usu-conteudo {
-  flex: 1 1 0%;
-  min-width: 0;
-}
+/* progresso do primeiro acesso (prefixo pas): faixa no topo da busca e do perfil do voluntário */
 
 .pas-sr {
   position: absolute;
@@ -34,17 +23,50 @@
 /* o passo que acabou de acender pulsa duas vezes */
 @keyframes pas-acende {
   from {
-    box-shadow: 0 0 0 0 var(--pas-pulso);
+    box-shadow: 0 0 0 0 rgba(23, 87, 216, 0.45);
   }
   to {
     box-shadow: 0 0 0 10px transparent;
   }
 }
 
-/* ============ etapas: as mesmas nas duas opções ============ */
+.pas-faixa {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px 32px;
+  padding: 16px 22px;
+  border: 1px solid var(--borda);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(10, 42, 94, 0.06);
+  animation: pas-entra 0.35s ease both;
+}
+
+.pas-faixa-topo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pas-selo {
+  color: var(--azul);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pas-contagem {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* ============ etapas ============ */
 
 .pas-etapas {
   display: flex;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -52,9 +74,28 @@
 
 .pas-etapa {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 10px;
   min-width: 0;
+}
+
+.pas-etapa:last-child {
+  flex: none;
+}
+
+/* a linha entre um passo e o próximo fica verde quando o de antes acaba */
+.pas-etapa:not(:last-child)::after {
+  content: "";
+  flex: 1;
+  min-width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--borda);
+}
+
+.pas-feito::after {
+  background: var(--verde);
 }
 
 .pas-bola {
@@ -64,13 +105,24 @@
   justify-content: center;
   width: 30px;
   height: 30px;
+  border: 1.5px solid var(--borda-campo);
   border-radius: 50%;
+  color: var(--texto-3);
   font-size: 14px;
   font-weight: 800;
 }
 
 .pas-atual .pas-bola {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #fff;
   animation: pas-acende 1.1s ease-out 0.3s 2;
+}
+
+.pas-feito .pas-bola {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #fff;
 }
 
 .pas-etapa-texto {
@@ -85,16 +137,35 @@
 }
 
 .pas-etapa-texto small {
+  color: var(--texto-3);
   font-size: 12.5px;
   line-height: 1.35;
 }
 
+.pas-depois .pas-etapa-texto {
+  color: var(--texto-3);
+}
+
 /* ============ fim: primeiro atendimento marcado ============ */
 
+.pas-faixa-fim {
+  border-color: var(--verde);
+  background: var(--verde-claro);
+}
+
+.pas-faixa-fim .pas-selo,
+.pas-faixa-fim .pas-contagem {
+  color: var(--verde-escuro);
+}
+
 .pas-fim {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(22, 146, 75, 0.25);
+  color: var(--verde-escuro);
 }
 
 .pas-fim-icone {
@@ -144,378 +215,7 @@
   background: var(--verde-escuro);
 }
 
-/* ============ opção A: faixa no topo ============ */
-
-.pas-faixa {
-  --pas-pulso: rgba(23, 87, 216, 0.45);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 14px 32px;
-  padding: 16px 22px;
-  border: 1px solid var(--borda);
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(10, 42, 94, 0.06);
-  animation: pas-entra 0.35s ease both;
-}
-
-.pas-faixa-topo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pas-faixa .pas-selo {
-  color: var(--azul);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.pas-contagem {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.pas-faixa .pas-etapas {
-  gap: 12px;
-}
-
-.pas-faixa .pas-etapa {
-  flex: 1;
-}
-
-.pas-faixa .pas-etapa:last-child {
-  flex: none;
-}
-
-/* a linha entre um passo e o próximo fica verde quando o de antes acaba */
-.pas-faixa .pas-etapa:not(:last-child)::after {
-  content: "";
-  flex: 1;
-  min-width: 16px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--borda);
-}
-
-.pas-faixa .pas-feito::after {
-  background: var(--verde);
-}
-
-.pas-faixa .pas-bola {
-  border: 1.5px solid var(--borda-campo);
-  color: var(--texto-3);
-}
-
-.pas-faixa .pas-depois .pas-etapa-texto {
-  color: var(--texto-3);
-}
-
-.pas-faixa .pas-etapa-texto small {
-  color: var(--texto-3);
-}
-
-.pas-faixa .pas-atual .pas-bola {
-  border-color: var(--azul);
-  background: var(--azul);
-  color: #fff;
-}
-
-.pas-faixa .pas-feito .pas-bola {
-  border-color: var(--verde);
-  background: var(--verde);
-  color: #fff;
-}
-
-.pas-faixa-fim {
-  border-color: var(--verde);
-  background: var(--verde-claro);
-}
-
-.pas-faixa-fim .pas-selo,
-.pas-faixa-fim .pas-contagem {
-  color: var(--verde-escuro);
-}
-
-.pas-faixa .pas-fim {
-  grid-column: 1 / -1;
-  padding-top: 14px;
-  border-top: 1px solid rgba(22, 146, 75, 0.25);
-  color: var(--verde-escuro);
-}
-
-/* ============ opção B: cartão de passos ============ */
-
-.pas-cartao {
-  --pas-pulso: rgba(255, 201, 77, 0.6);
-  position: sticky;
-  top: 96px;
-  z-index: 9;
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  gap: 16px;
-  width: 300px;
-  margin: 32px clamp(16px, 2.6vw, 44px) 32px 0;
-  padding: 24px 20px;
-  border-radius: 22px;
-  color: #fff;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(255, 201, 77, 0.25) 0, transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(142, 197, 255, 0.3) 0, transparent 45%),
-    linear-gradient(150deg, var(--marinho) 0%, #0f3a8f 60%, var(--azul) 100%);
-  box-shadow: 0 20px 40px rgba(10, 42, 94, 0.18);
-  animation: pas-entra 0.35s ease both;
-}
-
-.pas-cartao .pas-selo {
-  align-self: flex-start;
-  padding: 5px 11px;
-  border: 1px solid rgba(255, 210, 122, 0.4);
-  border-radius: 999px;
-  color: #ffd27a;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.pas-agora small {
-  color: #bfdbfe;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-/* no desktop o nome do passo atual já está na lista; ele aparece no celular, onde a lista vira bolinhas */
-.pas-agora strong {
-  display: none;
-}
-
-.pas-cartao .pas-etapas {
-  flex-direction: column;
-  gap: 4px;
-}
-
-.pas-cartao .pas-etapa {
-  position: relative;
-  padding: 9px 10px;
-  border-radius: 12px;
-  color: #cfe0ff;
-  transition: background-color 0.3s ease;
-}
-
-.pas-cartao .pas-etapa + .pas-etapa::before {
-  content: "";
-  position: absolute;
-  left: 24px;
-  top: -9px;
-  height: 14px;
-  border-left: 2px dashed rgba(255, 255, 255, 0.25);
-}
-
-.pas-cartao .pas-bola {
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-}
-
-.pas-cartao .pas-etapa-texto strong {
-  color: #fff;
-}
-
-.pas-cartao .pas-atual {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.pas-cartao .pas-atual .pas-bola {
-  border-color: #ffc94d;
-  background: #ffc94d;
-  color: var(--marinho);
-}
-
-.pas-cartao .pas-feito .pas-bola {
-  border-color: var(--verde);
-  background: var(--verde);
-  color: #fff;
-}
-
-.pas-dica {
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #dbe7ff;
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
-.pas-cartao .pas-fim {
-  flex-wrap: wrap;
-  padding: 14px;
-  border-radius: 14px;
-  background: #fff;
-  color: var(--verde-escuro);
-}
-
-.pas-cartao .pas-fim-texto {
-  flex: 1;
-}
-
-.pas-cartao .pas-fim-botao {
-  flex: 1 1 100%;
-  margin-left: 0;
-}
-
-/* ============ barra provisória para trocar de opção ============ */
-
-.pas-troca {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 9;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px;
-  border-radius: 999px;
-  background: rgba(11, 27, 58, 0.94);
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  font-size: 13px;
-}
-
-.pas-troca span {
-  padding: 0 6px 0 10px;
-  color: #bfdbfe;
-  font-weight: 700;
-}
-
-.pas-troca button {
-  min-height: 36px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: #fff;
-  font-family: inherit;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.pas-troca .pas-troca-ligada {
-  background: #fff;
-  color: var(--marinho);
-}
-
-/* ============ telas menores ============ */
-
-/* o cartão desce para a base da tela, compacto, e continua à vista enquanto a pessoa rola */
-@media (max-width: 900px) {
-  .pas-cartao {
-    position: fixed;
-    top: auto;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    width: auto;
-    margin: 0;
-    padding: 12px 14px;
-    border-radius: 18px;
-  }
-
-  .usu:has(.pas-cartao) {
-    padding-bottom: 84px;
-  }
-
-  /* enquanto a barra de opções existir, o cartão fica logo acima dela */
-  .usu:has(.pas-troca) .pas-cartao {
-    bottom: 66px;
-  }
-
-  .usu:has(.pas-troca):has(.pas-cartao) {
-    padding-bottom: 140px;
-  }
-
-  .pas-cartao .pas-selo,
-  .pas-cartao .pas-dica,
-  .pas-cartao .pas-etapa-texto,
-  .pas-cartao .pas-etapa + .pas-etapa::before {
-    display: none;
-  }
-
-  .pas-cartao .pas-etapas {
-    flex-direction: row;
-    gap: 6px;
-  }
-
-  .pas-cartao .pas-etapa {
-    padding: 0;
-    background: none;
-  }
-
-  .pas-cartao .pas-atual {
-    background: none;
-  }
-
-  .pas-cartao .pas-bola {
-    width: 26px;
-    height: 26px;
-    font-size: 12px;
-  }
-
-  .pas-agora {
-    order: 2;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .pas-agora small {
-    font-size: 12px;
-  }
-
-  .pas-agora strong {
-    display: block;
-    font-size: 15px;
-    line-height: 1.25;
-  }
-
-  .pas-cartao-fim .pas-etapas {
-    display: none;
-  }
-
-  .pas-cartao .pas-fim {
-    flex: 1;
-    gap: 10px 12px;
-    padding: 0;
-    background: none;
-    color: #fff;
-  }
-
-  .pas-cartao .pas-fim-icone {
-    width: 32px;
-    height: 32px;
-  }
-
-  .pas-cartao .pas-fim-texto strong {
-    font-size: 14px;
-  }
-
-  .pas-cartao .pas-fim-texto small {
-    color: #cfe0ff;
-    font-size: 12px;
-  }
-
-  .pas-cartao .pas-fim-botao {
-    background: #fff;
-    color: var(--verde-escuro);
-  }
-
-  .pas-cartao .pas-fim-botao:hover {
-    background: var(--verde-claro);
-  }
-}
+/* ============ celular ============ */
 
 @media (max-width: 760px) {
   .pas-faixa {
@@ -535,50 +235,43 @@
     font-size: 14px;
   }
 
-  /* só o passo atual leva o nome, com a largura que ele pede; os outros ficam na bolinha */
-  .pas-faixa .pas-etapas,
-  .pas-faixa .pas-etapa {
+  .pas-etapas,
+  .pas-etapa {
     gap: 8px;
   }
 
-  .pas-faixa .pas-etapa:not(:last-child) {
+  .pas-etapa:not(:last-child) {
     flex: 1 0 auto;
   }
 
-  .pas-faixa .pas-etapa:not(:last-child)::after {
+  .pas-etapa:not(:last-child)::after {
     min-width: 12px;
   }
 
-  .pas-faixa .pas-atual:not(:last-child) {
+  /* só o passo atual leva o nome, com a largura que ele pede; os outros ficam na bolinha */
+  .pas-atual:not(:last-child) {
     flex: 0 1 auto;
   }
 
-  .pas-faixa .pas-etapa-texto strong {
-    font-size: 13.5px;
-  }
-
-  .pas-faixa .pas-etapa:not(.pas-atual) .pas-etapa-texto,
-  .pas-faixa .pas-etapa-texto small {
+  .pas-etapa:not(.pas-atual) .pas-etapa-texto,
+  .pas-etapa-texto small {
     display: none;
   }
 
-  .pas-faixa .pas-fim {
+  .pas-etapa-texto strong {
+    font-size: 13.5px;
+  }
+
+  .pas-fim {
     flex-wrap: wrap;
   }
 
-  .pas-faixa .pas-fim-texto {
+  .pas-fim-texto {
     flex: 1;
   }
 
-  .pas-faixa .pas-fim-botao {
+  .pas-fim-botao {
     flex: 1 1 100%;
     margin-left: 0;
-  }
-
-  .pas-troca {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
-    justify-content: center;
   }
 }
