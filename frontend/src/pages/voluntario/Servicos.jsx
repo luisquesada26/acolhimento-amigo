@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Interruptor, Janela, Svg, useAcao } from "./comum";
+import { useCampoPedido } from "./campoPedido";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
 import { traduzido } from "../../dados/conteudo";
 import { traduzirMensagem } from "../../services/errosApi";
@@ -157,6 +158,8 @@ function CartaoServico({ servico, editarServico, excluirServico }) {
 export function GerenciarServicos({ painel }) {
   const [criando, setCriando] = useState(false);
   const t = useTextos(traducoes);
+  // "Criar serviço" das pendências já abre o formulário do serviço novo
+  useCampoPedido("novo-servico", () => setCriando(true));
 
   return (
     <section className="servicos-bloco" aria-labelledby="servicos-bloco-titulo">
