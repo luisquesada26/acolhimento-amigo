@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { lerErroSemTraduzir } from "../../services/api";
 import { traduzirErroApi, traduzirMensagem } from "../../services/errosApi";
@@ -132,6 +132,11 @@ export default function PerfilVoluntario() {
     setCarregando(true);
     carregar();
   }, [carregar]);
+
+  // quem chega da busca rolada começa no topo do perfil, e não no meio dele
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [id]);
 
   // o aviso fica no topo; quem marcou um horário lá embaixo precisa ver que deu certo
   useEffect(() => {
