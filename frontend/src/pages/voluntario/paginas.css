@@ -1576,9 +1576,10 @@ a.painel-item:focus-visible {
   .painel-recolhido .painel-menu {
     position: fixed;
     top: auto;
-    right: 10px;
+    /* acima da barrinha de início do iPhone e longe do recorte da câmera com o celular deitado */
+    right: calc(10px + env(safe-area-inset-right));
     bottom: calc(10px + env(safe-area-inset-bottom));
-    left: 10px;
+    left: calc(10px + env(safe-area-inset-left));
     width: auto;
     height: auto;
     padding: 6px;
@@ -1720,7 +1721,7 @@ a.painel-item:focus-visible {
 
 /* janela do atendimento */
 .detalhe-janela {
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow-y: auto;
 }
 
