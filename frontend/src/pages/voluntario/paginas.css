@@ -211,34 +211,86 @@ a.painel-item {
   }
 }
 
-/* relatórios */
-.relatorio-filtros {
+/* filtros de todos os atendimentos */
+.atend-filtros {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
   align-items: end;
   gap: 12px;
 }
 
-.relatorio-busca {
+.atend-busca {
   grid-column: span 2;
 }
 
-.relatorio-busca-campo {
+.atend-busca-campo {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.relatorio-busca-campo svg {
+.atend-busca-campo svg {
   position: absolute;
   left: 14px;
   color: var(--texto-3);
   pointer-events: none;
 }
 
-.relatorio-busca-campo input {
+.atend-busca-campo input {
   width: 100%;
   padding-left: 42px !important;
+}
+
+/* o contador acompanha a pílula e os filtros; ao lado, limpar e exportar o que está na tela */
+.atend-resultado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borda);
+}
+
+.atend-contador {
+  font-weight: 800;
+}
+
+.atend-resultado-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.atend-exportar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.atend-exportar svg {
+  color: var(--verde-escuro);
+}
+
+/* desligado porque a lista está vazia: não é espera */
+.atend-exportar:disabled:not([aria-busy="true"]) {
+  cursor: not-allowed;
+}
+
+.atend-resultado .vol-erro {
+  flex-basis: 100%;
+}
+
+/* celular: os botões dividem a linha embaixo do contador */
+@media (max-width: 640px) {
+  .atend-resultado-acoes {
+    width: 100%;
+  }
+
+  .atend-resultado-acoes button {
+    flex: 1 1 auto;
+  }
 }
 
 /* calendário da agenda */
@@ -1359,7 +1411,7 @@ textarea.perfil-input {
     border-radius: 0;
   }
 
-  .relatorio-busca {
+  .atend-busca {
     grid-column: auto;
   }
 }
@@ -1608,7 +1660,7 @@ a.painel-item:focus-visible {
     min-width: 0;
   }
 
-  /* meu perfil já está no menu da conta, em cima; com quatro abas os rótulos cabem inteiros */
+  /* meu perfil já está no menu da conta, em cima; com três abas os rótulos cabem inteiros */
   .painel-menu-grupo:has(a[href="/voluntario/perfil"]) {
     display: none;
   }
@@ -1693,7 +1745,7 @@ a.painel-item:focus-visible {
   }
 }
 
-/* linhas do histórico e dos relatórios que abrem o atendimento */
+/* linhas das tabelas de atendimentos que abrem o atendimento */
 .historico-clicavel {
   cursor: pointer;
 }
