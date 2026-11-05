@@ -169,11 +169,12 @@ function CartaoPassos() {
 
 // o conteúdo da área do usuário com o progresso da opção escolhida em volta.
 // A estrutura não muda quando o progresso some, para a tela de dentro não recarregar
-export function AreaComPassos({ children }) {
+export function AreaComPassos({ topo, children }) {
   const { mostrar, opcao } = usePassos();
   return (
     <div className="pas-area">
       <main className="usu-conteudo">
+        {topo}
         {mostrar && opcao === "a" ? <FaixaPassos /> : null}
         {children}
       </main>

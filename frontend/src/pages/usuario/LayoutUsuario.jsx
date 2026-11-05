@@ -2,7 +2,9 @@ import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react
 import { Logo } from "../login/Campos";
 import SeletorIdioma from "../../components/SeletorIdioma";
 import Avatar from "../../components/Avatar";
+import ConviteInstalar from "../../components/ConviteInstalar";
 import RodapeApp from "../../components/RodapeApp";
+import { useInstalarApp } from "../../components/useInstalarApp";
 import { perfilCompleto, useAuth } from "../../context/AuthContext";
 import { LANG, useIdioma, useTextos } from "../../context/IdiomaContext";
 import { Svg } from "../voluntario/comum";
@@ -22,6 +24,7 @@ export default function LayoutUsuario() {
   const completo = perfilCompleto(usuario);
   const { idioma } = useIdioma();
   const t = useTextos(traducoes);
+  const app = useInstalarApp();
 
   // primeiro acesso: antes de qualquer tela, completar o perfil
   if (!completo && pathname !== COMPLETAR) return <Navigate to={COMPLETAR} replace />;
@@ -70,7 +73,7 @@ export default function LayoutUsuario() {
         </header>
 
         <PassosProvider>
-          <AreaComPassos>
+          <AreaComPassos topo={<ConviteInstalar app={app} />}>
             <Outlet />
           </AreaComPassos>
           <RodapeApp />

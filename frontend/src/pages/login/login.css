@@ -3,6 +3,7 @@
   isolation: isolate;
   min-height: 100vh;
   padding: 20px 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   align-items: center;
