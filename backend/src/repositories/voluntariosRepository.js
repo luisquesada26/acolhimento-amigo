@@ -36,22 +36,33 @@ function horarioQueAtende({ disponivel, data, turno }, params) {
   return condicoes.join(" AND ");
 }
 
+// perfil completo: cada item e uma condicao sobre o voluntario (v) e o usuario dele (u).
+// A ordem e a dos itens no painel do voluntario
+const REQUISITOS = {
+  nacionalidade: "btrim(COALESCE(u.pais_origem, '')) <> ''",
+  idiomas: "v.idiomas <> ''",
+  bio: "btrim(COALESCE(v.bio, '')) <> ''",
+  servico: "EXISTS (SELECT 1 FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1)",
+  horario: `EXISTS (SELECT 1 FROM horarios h WHERE h.voluntario_id = v.id AND h.status = 'livre' AND ${HORARIO_FUTURO})`,
+};
+
+// a busca exige tudo menos o horario livre, que so conta para ligar a busca:
+// senao o voluntario sumiria da busca quando os horarios dele passam
+const NA_BUSCA = ["v.ativo = 1", REQUISITOS.nacionalidade, REQUISITOS.idiomas, REQUISITOS.bio, REQUISITOS.servico].join(" AND ");
+
 const SELECT_VOLUNTARIO = `
   SELECT v.id, v.usuario_id, u.nome, u.foto, v.area_id, a.nome AS area,
-         v.registro_profissional, v.idiomas, v.bio, v.traducoes, v.ativo
+         v.registro_profissional, v.idiomas, v.bio, v.traducoes, v.ativo, (${NA_BUSCA}) AS na_busca
   FROM voluntarios v
   JOIN usuarios u ON u.id = v.usuario_id
   JOIN areas a ON a.id = v.area_id
 `;
 
-// busca: so aparece quem esta ativo e tem pelo menos um servico ativo.
+// busca: so aparece quem esta ativo e com o perfil pronto para a busca (NA_BUSCA).
 // ILIKE porque o LIKE do SQLite ignorava maiusculas e o do Postgres nao.
 // O texto tambem casa com as traducoes da bio e dos servicos: "visa" acha "Visto e residência"
 async function listar({ q, area, idioma, disponivel, data, turno }) {
-  const filtros = [
-    "v.ativo = 1",
-    "EXISTS (SELECT 1 FROM servicos s WHERE s.voluntario_id = v.id AND s.ativo = 1)",
-  ];
+  const filtros = [NA_BUSCA];
   const params = { ...agora() };
 
   if (q) {
@@ -117,13 +128,26 @@ async function buscarPorUsuarioId(usuarioId) {
   return (await consulta("SELECT * FROM voluntarios WHERE usuario_id = ?", [usuarioId])).rows[0];
 }
 
+// a conta nova nasce fora da busca: o voluntario liga depois de completar o perfil
 async function criar(v) {
   const { rows } = await consulta(`
-    INSERT INTO voluntarios (usuario_id, area_id, registro_profissional, idiomas, bio, traducoes)
-    VALUES (@usuario_id, @area_id, @registro_profissional, @idiomas, @bio, ${NOVAS_TRADUCOES})
+    INSERT INTO voluntarios (usuario_id, area_id, registro_profissional, idiomas, bio, ativo, traducoes)
+    VALUES (@usuario_id, @area_id, @registro_profissional, @idiomas, @bio, 0, ${NOVAS_TRADUCOES})
     RETURNING id
   `, { ...v, traducoes: JSON.stringify(v.traducoes ?? {}) });
   return rows[0].id;
+}
+
+// cada item do perfil completo (true ou false) e se ele aparece na busca agora, numa consulta so
+async function requisitos(id) {
+  const colunas = Object.entries(REQUISITOS).map(([nome, condicao]) => `(${condicao}) AS ${nome}`);
+  const { rows } = await consulta(`
+    SELECT ${colunas.join(", ")}, (${NA_BUSCA}) AS na_busca
+    FROM voluntarios v
+    JOIN usuarios u ON u.id = v.usuario_id
+    WHERE v.id = @id
+  `, { id, ...agora() });
+  return rows[0];
 }
 
 // traducoes: so as dos campos que mudaram ({ bio: traducao ou null }); as outras ficam como estao
@@ -157,6 +181,7 @@ module.exports = {
   buscarPorId,
   buscarPorUsuarioId,
   criar,
+  requisitos,
   atualizar,
   servicosAtivos,
   horariosLivres,

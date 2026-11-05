@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { transacao } = require("../database/conexao");
 const repo = require("../repositories/usuariosRepository");
 const voluntariosRepo = require("../repositories/voluntariosRepository");
+const voluntariosService = require("./voluntariosService");
 const areasRepo = require("../repositories/areasRepository");
 const agendamentosRepo = require("../repositories/agendamentosRepository");
 const { ErroApp } = require("../middlewares/erros");
@@ -22,6 +23,8 @@ async function montar(usuario) {
         bio: v.bio,
         traducoes: v.traducoes,
         ativo: Boolean(v.ativo),
+        // requisitos, perfil_completo e na_busca: a regra fica na API, e a tela só mostra
+        ...(await voluntariosService.situacaoNaBusca(v.id)),
       };
     }
   }
@@ -103,6 +106,8 @@ async function atualizar(id, dados) {
   await transacao(async () => {
     await repo.atualizar(id, campos);
     if (voluntario) await voluntariosRepo.atualizar(usuario.voluntario.id, camposVoluntario, traducoes);
+    // confere depois de gravar, para valer o que chegou junto (a bio e o ligar no mesmo pedido)
+    if (camposVoluntario.ativo === 1) await voluntariosService.garantirPerfilCompleto(usuario.voluntario.id);
   });
 
   return buscar(id);
