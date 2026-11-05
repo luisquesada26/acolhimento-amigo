@@ -5,7 +5,7 @@ import { localeAtual } from "../context/IdiomaContext";
 const LOCALES = ["pt-BR", "en", "es", "fr"];
 
 // sem diferenciar maiúscula, acento, espaço e pontuação: "colombia" e "Colômbia" são o mesmo país
-function normalizar(texto) {
+export function normalizar(texto) {
   return texto
     .normalize("NFD")
     .replace(/[^\p{L}\p{N}]/gu, "")
@@ -33,6 +33,9 @@ function codigoDe(texto) {
   }
   return codigos.get(normalizar(texto));
 }
+
+// "Colômbia", "colombia" ou "Colombie" viram "CO"; o que não for país volta undefined
+export const codigoDoPais = (texto) => (texto ? codigoDe(texto) : undefined);
 
 const nomesPorLocale = {};
 
