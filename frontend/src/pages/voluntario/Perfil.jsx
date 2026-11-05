@@ -4,6 +4,7 @@ import { nomeDoIdioma } from "./usePainel";
 import { Interruptor, Svg, useAcao } from "./comum";
 import { formatarTelefone, limparTelefone, mascaraTelefone } from "./telefone";
 import Avatar, { ERROS_FOTO, reduzirFoto } from "../../components/Avatar";
+import CampoPais, { BandeiraDoPais } from "../../components/CampoPais";
 import { GerenciarServicos } from "./Servicos";
 import Horarios from "./Horarios";
 import { useIdioma, useTextos } from "../../context/IdiomaContext";
@@ -263,11 +264,26 @@ function AbaDados({ painel }) {
           icone="globo"
           rotulo={t.nacionalidade}
           plano
-          mostrar={nomeDoPais(perfil.pais_origem)}
+          mostrar={
+            perfil.pais_origem && (
+              <span className="cpais-valor">
+                <BandeiraDoPais pais={perfil.pais_origem} />
+                {nomeDoPais(perfil.pais_origem)}
+              </span>
+            )
+          }
           inicial={nomeDoPais(perfil.pais_origem ?? "")}
           aoSalvar={(v) => salvar({ pais_origem: v.trim() || null })}
           editor={(v, setV, id) => (
-            <input id={id} className="perfil-input" aria-labelledby={`${id}-rotulo`} value={v} maxLength={60} onChange={(e) => setV(e.target.value)} placeholder={t.exPais} />
+            <CampoPais
+              id={id}
+              rotuloId={`${id}-rotulo`}
+              valor={v}
+              aoMudar={setV}
+              placeholder={t.comeceEscrever}
+              textos={{ mostrar: t.paisMostrar, nenhum: t.paisNenhum }}
+              classeEntrada="perfil-input"
+            />
           )}
         />
         <CampoEditavel
