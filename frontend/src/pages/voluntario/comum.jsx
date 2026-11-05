@@ -469,7 +469,7 @@ export function Pendencias({ painel }) {
         : [t.pendenciasTitulo, t.pendenciasTexto];
 
   return (
-    <section className={completo ? "vol-pendencias vol-pendencias-pronto" : "vol-pendencias"} aria-labelledby="vol-pendencias-titulo">
+    <section className="vol-pendencias" aria-labelledby="vol-pendencias-titulo">
       <div className="vol-pendencias-resumo">
         <h2 id="vol-pendencias-titulo">{titulo}</h2>
         <div className="vol-pendencias-progresso">
